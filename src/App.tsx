@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage';
 import CatatStockPage from './pages/CatatStockPage';
 import TambahProjectPage from './pages/TambahProjectPage';
 import TambahProductProjectPage from './pages/TambahProductProjectPage';
+import CatatBahanSisaPage from './pages/CatatBahanSisaPage';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         </Route>
         <Route path="/stock" element={<MainLayout />}>
           <Route path='catat' index element={<CatatStockPage />} />
+          <Route path='catatsisa' index element={<CatatBahanSisaPage />} />
         </Route>
         <Route path="/project" element={<MainLayout />}>
           <Route path='tambah' index element={<TambahProjectPage />} />

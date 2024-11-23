@@ -1,113 +1,51 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { Form } from 'react-router-dom';
+import FormHeaderStock from '../component/FormHeaderStock';
+import FormInputBarang from '../component/FormInputBarang';
 
 function CatatStockPage() {
-    const { handleSubmit, register, formState: { errors }, reset } = useForm();
+    { /* FormHandle untuk keseluruhan */ }
+    const formAll = useForm();
+    const { register: registerAll, handleSubmit: handleSubmitAll, reset: resetAll } = formAll;
+
+    { /* FormHandle untuk tambah barang */ }
+    const formBarang = useForm();
+    const { register: registerBarang, handleSubmit: handleSubmitBarang, reset: resetBarang } = formBarang;
     const [items, setItems] = useState([
         { id: 1, jumlah: 10, namaBarang: "Thinner A (Spesial)", satuan: "Liter" },
         { id: 2, jumlah: 5, namaBarang: "Cat Kayu Putih", satuan: "Kg" },
         { id: 3, jumlah: 15, namaBarang: "Vernish Transparan", satuan: "Liter" },
     ]);
 
+    { /* handle delete barang dari table */ }
     const handleDeleteItem = (id: number) => {
         const updatedItems = items.filter((item) => item.id !== id);
         setItems(updatedItems);
     }
 
+    { /* handle menambahkan barang ke table */ }
     const handleAddItem = (data: any) => {
         const newId = items.length + 1;
         const newItem = { id: newId, jumlah: data.jumlahBarang, namaBarang: data.namaBarang, satuan: data.satuan };
         setItems([...items, newItem]);
-        reset()
+        resetBarang()
+    }
+
+    { /* handle save keseluruhan ke database */ }
+    const saveItems = (data: any) => {
+        console.log(data);
+
     }
     return (
         <>
-            <div className="flex justify-start gap-x-10 items-center p-4">
-                {/* Tanggal Nota */}
-                <div className="flex flex-col items-start bg-[#bcaaa4] p-4 rounded">
-                    <label htmlFor="tanggalNota" className="text-sm font-semibold">Tanggal Nota</label>
-                    <input
-                        type="text"
-                        id="tanggalNota"
-                        className="mt-1 border border-gray-300 rounded px-2 py-1"
-                        placeholder="Input"
-                    />
-                </div>
-
-                {/* Supplier */}
-                <div className="flex flex-col items-start bg-[#bcaaa4] p-4 rounded">
-                    <label htmlFor="supplier" className="text-sm font-semibold">Supplier</label>
-                    <input
-                        type="text"
-                        id="supplier"
-                        className="mt-1 border border-gray-300 rounded px-2 py-1"
-                        placeholder="Input"
-                    />
-                </div>
-
-                {/* No Surat Jalan */}
-                <div className="flex flex-col items-start bg-[#bcaaa4] p-4 rounded">
-                    <label htmlFor="noSuratJalan" className="text-sm font-semibold">No Surat Jalan</label>
-                    <input
-                        type="text"
-                        id="noSuratJalan"
-                        className="mt-1 border border-gray-300 rounded px-2 py-1"
-                        placeholder="Input"
-                    />
-                </div>
-
-                {/* No SPB */}
-                <div className="flex flex-col items-start bg-[#bcaaa4] p-4 rounded">
-                    <label htmlFor="noSpb" className="text-sm font-semibold">No SPB</label>
-                    <input
-                        type="text"
-                        id="noSpb"
-                        className="mt-1 border border-gray-300 rounded px-2 py-1"
-                        placeholder="Input"
-                    />
-                </div>
-
-                {/* Save Button */}
-                <button className="bg-purple-500 text-white px-6 py-2 rounded-full hover:bg-purple-700">
-                    Save
-                </button>
-            </div>
-            {/* Tambah barang */}
-            <div className="flex justify-start gap-x-10 items-center p-4">
-                {/* Form Tambah Barang */}
-                <form className="flex gap-x-4 items-center" onSubmit={handleSubmit(handleAddItem)}>
-                    {/* Nama Barang */}
-                    <div className="flex flex-col items-start p-4 rounded">
-                        <label htmlFor="">Nama Barang</label>
-                        <select className='mt-1 border border-gray-300 rounded px-2 py-1 w-[200px]'
-                            {...register("namaBarang", { required: true })} name='namaBarang'>
-                            <option value="" hidden>Pilih Barang</option>
-                            <option value="thinner">Thinner</option>
-                        </select>
-                    </div>
-                    {/* Jumlah Barang */}
-                    <div className="flex flex-col items-start p-4 rounded">
-                        <label htmlFor="">Jumlah Barang</label>
-                        <input type="number" className='mt-1 border border-gray-300 rounded px-2 py-1' {...register("jumlahBarang", { required: true })} min={0} name="jumlahBarang" />
-                    </div>
-                    {/* Satuan */}
-                    <div className="flex flex-col items-start p-4 rounded">
-                        <label htmlFor="">Satuan</label>
-                        <select
-                            className='mt-1 border border-gray-300 rounded px-2 py-1 w-[200px]'
-                            {...register("satuan", { required: true })}
-                            name="satuan">
-                            <option value="" hidden>Pilih Satuan</option>
-                            <option value="kg">KG</option>
-                        </select>
-                    </div>
-                    {/* Tambah Barang Button */}
-                    <button className="bg-purple-500 text-white mt-4 px-6 py-2 rounded-full hover:bg-purple-700">
-                        Tambah Barang
-                    </button>
-                </form>
-            </div>
+            <form onSubmit={handleSubmitAll(saveItems)}>
+                <FormHeaderStock register={registerAll} />
+            </form>
+            {/* Form Tambah Barang */}
+            <form className="flex gap-x-4 items-center" onSubmit={handleSubmitBarang(handleAddItem)}>
+                <FormInputBarang register={registerBarang} />
+            </form>
             <div className="p-4">
                 {/* Header Tabel */}
                 <div className="flex justify-between items-center border-b pb-2">
@@ -117,7 +55,7 @@ function CatatStockPage() {
                     <div className="w-10 text-center"></div> {/* Kolom tombol */}
                 </div>
 
-                {/* Baris Data */}
+                {/* Data */}
                 {items.map((item) => (
                     <div
                         key={item.id}

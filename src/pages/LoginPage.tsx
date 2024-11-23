@@ -1,11 +1,9 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import Joi from 'joi';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const schema = Joi.object({
     username: Joi.string().required().messages({

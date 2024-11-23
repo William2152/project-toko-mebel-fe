@@ -126,8 +126,8 @@ function MainLayout() {
                                 <ListItemButton component={NavLink} to="/stock/catat" sx={{ pl: 4 }}>
                                     <ListItemText primary="Catat Stock Bahan" />
                                 </ListItemButton>
-                                <ListItemButton component={NavLink} to="/project/details" sx={{ pl: 4 }}>
-                                    <ListItemText primary="Lihat Stock" />
+                                <ListItemButton component={NavLink} to="/stock/catatsisa" sx={{ pl: 4 }}>
+                                    <ListItemText primary="Catat Sisa Bahan" />
                                 </ListItemButton>
                                 <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 4 }}>
                                     <ListItemText primary="Input Pemakaian Bahan" />
