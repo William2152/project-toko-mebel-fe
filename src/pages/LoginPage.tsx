@@ -1,25 +1,45 @@
-import { joiResolver } from '@hookform/resolvers/joi';
-import Joi from 'joi';
-import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { joiResolver } from "@hookform/resolvers/joi";
+import axios from "axios";
+import Joi from "joi";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const navigate = useNavigate();
   const schema = Joi.object({
     username: Joi.string().required().messages({
-      'string.empty': 'Username is required',
+      "string.empty": "Username is required",
     }),
     password: Joi.string().required().messages({
-      'string.empty': 'Password is required',
+      "string.empty": "Password is required",
     }),
   });
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     resolver: joiResolver(schema),
   });
 
+  async function loginUser(credentials) {
+    try {
+      const response = await axios.post("http://localhost:6347/auth/login", {
+        username: credentials.username,
+        password: credentials.password,
+      });
+      console.log(response.data);
+
+      console.log(response.data.accessToken);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const onSubmit = (data) => {
-    navigate("/dashboard");
+    // navigate("/dashboard");
     console.log(data);
+    loginUser(data);
   };
 
   return (
@@ -33,7 +53,9 @@ function LoginPage() {
             id="username"
             className="mb-4 p-2 border-b border-gray-300 outline-none bg-transparent"
           />
-          {errors.username && <p className="text-red-500">{errors.username.message}</p>}
+          {errors.username && (
+            <p className="text-red-500">{errors.username.message}</p>
+          )}
 
           <label htmlFor="password">Password:</label>
           <input
@@ -42,7 +64,9 @@ function LoginPage() {
             id="password"
             className="mb-4 p-2 border-b border-gray-300 outline-none bg-transparent"
           />
-          {errors.password && <p className="text-red-500">{errors.password.message}</p>}
+          {errors.password && (
+            <p className="text-red-500">{errors.password.message}</p>
+          )}
 
           <button
             type="submit"
