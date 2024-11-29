@@ -48,7 +48,6 @@ function Navbar() {
                     }}
                 >
                     <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-                    <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
                     <MenuItem onClick={() => navigate('/login')}>Logout</MenuItem>
                 </Menu>
             </div>

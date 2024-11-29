@@ -29,52 +29,89 @@ function LoginPage() {
         password: credentials.password,
       });
       console.log(response.data);
-
       console.log(response.data.accessToken);
+      sessionStorage.setItem("token", response.data.accessToken);
     } catch (error) {
       console.log(error);
     }
   }
 
   const onSubmit = (data) => {
-    // navigate("/dashboard");
     console.log(data);
     loginUser(data);
   };
-
+  //bg-gradient-to-r from-[#5a67d8] via-[#4c51bf] to-[#2b6cb0]
   return (
-    <div className="bg-[#bcaaa4] h-screen w-screen flex items-center justify-center">
-      <div className="bg-[#E7E7E7] p-8 rounded-lg flex flex-col items-center">
-        <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-          <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            {...register("username")}
-            id="username"
-            className="mb-4 p-2 border-b border-gray-300 outline-none bg-transparent"
+    <div className="flex min-h-screen bg-[#bcaaa4] justify-center items-center">
+      <div className="flex w-full max-w-4xl mx-auto bg-white p-6 md:p-10 rounded-lg shadow-lg">
+        {/* Left Section */}
+        <div className="flex flex-1 justify-center items-center md:p-6 space-x-4">
+          <img
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx5TZn5gGOAn3J9Wv9yTaLzAuCf15S7HrBPg&s"
+            alt="Company Visual"
+            className="rounded-lg shadow-xl w-full max-w-[230px] md:max-w-[300px]"
           />
-          {errors.username && (
-            <p className="text-red-500">{errors.username.message}</p>
-          )}
+        </div>
 
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            {...register("password")}
-            id="password"
-            className="mb-4 p-2 border-b border-gray-300 outline-none bg-transparent"
-          />
-          {errors.password && (
-            <p className="text-red-500">{errors.password.message}</p>
-          )}
+        {/* Right Section */}
+        <div className="w-full md:w-1/2 p-6 space-y-6">
+          <div className="text-center">
+            <h2 className="text-3xl font-semibold text-[#2b6cb0]">Welcome Back</h2>
+            <p className="text-gray-600 text-sm mt-2">
+              Please enter your credentials to continue.
+            </p>
+          </div>
 
-          <button
-            type="submit"
-            className="bg-[#65558f] text-white py-2 rounded hover:bg-blue-600"
-          >
-            Login
-          </button>
-        </form>
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            {/* Username Input */}
+            <div>
+              <label htmlFor="username" className="block text-sm font-semibold text-gray-700 mb-2">
+                Username
+              </label>
+              <input
+                type="text"
+                {...register("username")}
+                id="username"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5a67d8] transition duration-200"
+              />
+              {errors.username && (
+                <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
+              )}
+            </div>
+
+            {/* Password Input */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                {...register("password")}
+                id="password"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5a67d8] transition duration-200"
+              />
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-[#5a67d8] text-white py-3 rounded-lg hover:bg-[#4c51bf] focus:outline-none transition duration-300"
+            >
+              Login
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Forgot your password?{" "}
+              <span className="text-[#5a67d8] font-semibold hover:underline cursor-pointer">
+                Reset Password
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

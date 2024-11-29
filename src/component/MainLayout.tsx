@@ -15,11 +15,13 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import FolderIcon from '@mui/icons-material/Folder';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import ReportIcon from '@mui/icons-material/Assessment';
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 function MainLayout() {
     const [isProjectOpen, setIsProjectOpen] = useState(false);
     const [isStockOpen, setIsStockOpen] = useState(false);
     const [isReportOpen, setIsReportOpen] = useState(false);
+    const [isUserOpen, setIsUserOpen] = useState(false);
 
     const toggleProjectMenu = () => {
         if (isStockOpen) {
@@ -27,6 +29,9 @@ function MainLayout() {
         }
         if (isReportOpen) {
             setIsReportOpen(false);
+        }
+        if (isUserOpen) {
+            setIsUserOpen(false);
         }
         setIsProjectOpen(!isProjectOpen);
     };
@@ -38,6 +43,9 @@ function MainLayout() {
         if (isReportOpen) {
             setIsReportOpen(false);
         }
+        if (isUserOpen) {
+            setIsUserOpen(false);
+        }
         setIsStockOpen(!isStockOpen);
     };
 
@@ -48,7 +56,23 @@ function MainLayout() {
         if (isStockOpen) {
             setIsStockOpen(false);
         }
+        if (isUserOpen) {
+            setIsUserOpen(false);
+        }
         setIsReportOpen(!isReportOpen);
+    }
+
+    const toggleUserMenu = () => {
+        if (isProjectOpen) {
+            setIsProjectOpen(false);
+        }
+        if (isStockOpen) {
+            setIsStockOpen(false);
+        }
+        if (isReportOpen) {
+            setIsReportOpen(false);
+        }
+        setIsUserOpen(!isUserOpen);
     }
 
     return (
@@ -153,6 +177,30 @@ function MainLayout() {
                             </ListItemButton>
                             <ListItemButton component={NavLink} to="/project/details" sx={{ pl: 4 }}>
                                 <ListItemText primary="Lihat Stock" />
+                            </ListItemButton>
+                            <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 4 }}>
+                                <ListItemText primary="Input Pemakaian Bahan" />
+                            </ListItemButton>
+                        </List>
+                    </Collapse>
+
+                    {/* User */}
+                    <ListItem disablePadding>
+                        <ListItemButton onClick={toggleUserMenu}>
+                            <ListItemIcon>
+                                <AccountCircleIcon style={{ color: 'white' }} />
+                            </ListItemIcon>
+                            <ListItemText primary="User" />
+                            {isUserOpen ? <ExpandLess /> : <ExpandMore />}
+                        </ListItemButton>
+                    </ListItem>
+                    <Collapse in={isUserOpen} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            <ListItemButton component={NavLink} to="/user/tambah" sx={{ pl: 4 }}>
+                                <ListItemText primary="Tambah User" />
+                            </ListItemButton>
+                            <ListItemButton component={NavLink} to="/stock/catatsisa" sx={{ pl: 4 }}>
+                                <ListItemText primary="Catat Sisa Bahan" />
                             </ListItemButton>
                             <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 4 }}>
                                 <ListItemText primary="Input Pemakaian Bahan" />

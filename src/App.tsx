@@ -7,6 +7,7 @@ import CatatStockPage from './pages/CatatStockPage';
 import TambahProjectPage from './pages/TambahProjectPage';
 import TambahProductProjectPage from './pages/TambahProductProjectPage';
 import CatatBahanSisaPage from './pages/CatatBahanSisaPage';
+import TambahUserPage from './pages/TambahUserPage';
 
 function App() {
   return (
@@ -23,6 +24,9 @@ function App() {
         <Route path="/project" element={<MainLayout />}>
           <Route path='tambah' index element={<TambahProjectPage />} />
           <Route path='product' index element={<TambahProductProjectPage />} />
+        </Route>
+        <Route path="/user" element={<MainLayout />} >
+          <Route path='tambah' index element={<TambahUserPage />} />
         </Route>
       </Routes>
     </Router>
