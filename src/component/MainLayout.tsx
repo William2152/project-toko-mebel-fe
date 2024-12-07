@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import Navbar from './Navbar';
-import { NavLink, Outlet } from 'react-router-dom';
+import { useState } from 'react';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
     Drawer,
     List,
@@ -9,6 +8,7 @@ import {
     ListItemIcon,
     ListItemText,
     Collapse,
+    Box,
 } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -16,12 +16,17 @@ import FolderIcon from '@mui/icons-material/Folder';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import ReportIcon from '@mui/icons-material/Assessment';
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import SummarizeIcon from '@mui/icons-material/Summarize';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 function MainLayout() {
+    const role = localStorage.getItem('role');
+    const navigate = useNavigate();
     const [isProjectOpen, setIsProjectOpen] = useState(false);
     const [isStockOpen, setIsStockOpen] = useState(false);
     const [isReportOpen, setIsReportOpen] = useState(false);
     const [isUserOpen, setIsUserOpen] = useState(false);
+    const [isNotaOpen, setIsNotaOpen] = useState(false);
 
     const toggleProjectMenu = () => {
         if (isStockOpen) {
@@ -32,6 +37,9 @@ function MainLayout() {
         }
         if (isUserOpen) {
             setIsUserOpen(false);
+        }
+        if (isNotaOpen) {
+            setIsNotaOpen(false);
         }
         setIsProjectOpen(!isProjectOpen);
     };
@@ -46,6 +54,9 @@ function MainLayout() {
         if (isUserOpen) {
             setIsUserOpen(false);
         }
+        if (isNotaOpen) {
+            setIsNotaOpen(false);
+        }
         setIsStockOpen(!isStockOpen);
     };
 
@@ -58,6 +69,9 @@ function MainLayout() {
         }
         if (isUserOpen) {
             setIsUserOpen(false);
+        }
+        if (isNotaOpen) {
+            setIsNotaOpen(false);
         }
         setIsReportOpen(!isReportOpen);
     }
@@ -72,14 +86,30 @@ function MainLayout() {
         if (isReportOpen) {
             setIsReportOpen(false);
         }
+        if (isNotaOpen) {
+            setIsNotaOpen(false);
+        }
         setIsUserOpen(!isUserOpen);
+    }
+
+    const toggleNotaMenu = () => {
+        if (isProjectOpen) {
+            setIsProjectOpen(false);
+        }
+        if (isStockOpen) {
+            setIsStockOpen(false);
+        }
+        if (isReportOpen) {
+            setIsReportOpen(false);
+        }
+        if (isUserOpen) {
+            setIsUserOpen(false);
+        }
+        setIsNotaOpen(!isNotaOpen);
     }
 
     return (
         <div>
-            {/* Navbar at the top */}
-            <Navbar />
-
             {/* Main Content Area with Sidebar and Outlet */}
             <div className="flex">
                 {/* Sidebar Drawer */}
@@ -87,126 +117,181 @@ function MainLayout() {
                     variant="permanent"
                     anchor="left"
                     sx={{
-                        width: 240,
+                        width: 400,
                         flexShrink: 0,
                         '& .MuiDrawer-paper': {
-                            width: 240,
+                            width: 400,
                             boxSizing: 'border-box',
                             backgroundColor: '#bcaaa4',
                             color: 'white',
                             position: 'fixed',
-                            height: 'calc(100vh - 60px)', // Adjust based on Navbar height
-                            top: 60, // Matches Navbar height
                         },
                     }}
                 >
-                    <List>
-                        {/* Dashboard */}
-                        <ListItem disablePadding>
-                            <ListItemButton component={NavLink} to="/dashboard">
-                                <ListItemIcon>
-                                    <DashboardIcon style={{ color: 'white' }} />
-                                </ListItemIcon>
-                                <ListItemText primary="Dashboard" />
-                            </ListItemButton>
-                        </ListItem>
+                    {role == "superadmin" ? <>
+                        <div className='flex justify-center'>
+                            <Box
+                                className='flex justify-center items-center'
+                                component="img"
+                                sx={{
+                                    height: 150,
+                                    width: 150,
+                                    mt: 5,
+                                    borderRadius: "50%"
+                                }}
+                                alt="The house from the offer."
+                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx5TZn5gGOAn3J9Wv9yTaLzAuCf15S7HrBPg&s"
+                            />
+                        </div>
+                        <List sx={{ pt: 3 }}>
+                            {/* Dashboard */}
+                            <ListItem disablePadding>
+                                <ListItemButton component={NavLink} to="/dashboard"
+                                    sx={{ alignItems: "center" }}>
+                                    <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: '32px' }}>
+                                        <DashboardIcon style={{ fontSize: '32px' }} />
+                                    </ListItemIcon>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "24px" } }} sx={{ pl: 2 }} primary="Dashboard" />
+                                </ListItemButton>
+                            </ListItem>
 
-                        {/* Project with Submenu */}
-                        <ListItem disablePadding>
-                            <ListItemButton onClick={toggleProjectMenu}>
-                                <ListItemIcon>
-                                    <FolderIcon style={{ color: 'white' }} />
-                                </ListItemIcon>
-                                <ListItemText primary="Project" />
-                                {isProjectOpen ? <ExpandLess /> : <ExpandMore />}
-                            </ListItemButton>
-                        </ListItem>
-                        <Collapse in={isProjectOpen} timeout="auto" unmountOnExit>
+                            {/* Project with Submenu */}
+                            <ListItem disablePadding>
+                                <ListItemButton onClick={toggleProjectMenu}>
+                                    <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: '32px' }}>
+                                        <FolderIcon sx={{ fontSize: '32px' }} />
+                                    </ListItemIcon>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "24px" } }} sx={{ pl: 2 }} primary="Project" />
+                                    {isProjectOpen ? <ExpandLess /> : <ExpandMore />}
+                                </ListItemButton>
+                            </ListItem>
+                            <Collapse in={isProjectOpen} timeout="auto" unmountOnExit>
+                                <List component="div" disablePadding>
+                                    <ListItemButton component={NavLink} to="/project/tambah" sx={{ pl: 13 }}>
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Tambah Project" />
+                                    </ListItemButton>
+                                    <ListItemButton component={NavLink} to="/project/product" sx={{ pl: 13 }}>
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Tambah Product" />
+                                    </ListItemButton>
+                                    <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 13 }}>
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Add Team" />
+                                    </ListItemButton>
+                                </List>
+                            </Collapse>
+
+                            {/* Stock */}
+                            <ListItem disablePadding>
+                                <ListItemButton onClick={toggleStockMenu}>
+                                    <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: '32px' }}>
+                                        <InventoryIcon sx={{ fontSize: '32px' }} style={{ boxSizing: 'border-box' }} />
+                                    </ListItemIcon>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "24px" } }} sx={{ pl: 2 }} primary="Stock" />
+                                    {isStockOpen ? <ExpandLess /> : <ExpandMore />}
+                                </ListItemButton>
+                            </ListItem>
+                            <Collapse in={isStockOpen} timeout="auto" unmountOnExit>
+                                <List component="div" disablePadding>
+                                    <ListItemButton component={NavLink} to="/stock/master" sx={{ pl: 13 }}>
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Master Bahan" />
+                                    </ListItemButton>
+                                    <ListItemButton component={NavLink} to="/stock/catat" sx={{ pl: 13 }}>
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Catat Stock Bahan" />
+                                    </ListItemButton>
+                                    <ListItemButton component={NavLink} to="/stock/catatsisa" sx={{ pl: 13 }}>
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Catat Sisa Bahan" />
+                                    </ListItemButton>
+                                    <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 13 }}>
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Input Pemakaian Bahan" />
+                                    </ListItemButton>
+                                </List>
+                            </Collapse>
+
+                            {/* Report */}
+                            <ListItem disablePadding>
+                                <ListItemButton onClick={toggleReportMenu}>
+                                    <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: '32px' }}>
+                                        <ReportIcon sx={{ fontSize: '32px' }} />
+                                    </ListItemIcon>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "24px" } }} sx={{ pl: 2 }} primary="Report" />
+                                    {isReportOpen ? <ExpandLess /> : <ExpandMore />}
+                                </ListItemButton>
+                            </ListItem>
+                        </List>
+                        <Collapse in={isReportOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
-                                <ListItemButton component={NavLink} to="/project/tambah" sx={{ pl: 4 }}>
-                                    <ListItemText primary="Tambah Project" />
+                                <ListItemButton component={NavLink} to="/project/overview" sx={{ pl: 13 }}>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Catat Stock Bahan" />
                                 </ListItemButton>
-                                <ListItemButton component={NavLink} to="/project/product" sx={{ pl: 4 }}>
-                                    <ListItemText primary="Tambah Product" />
+                                <ListItemButton component={NavLink} to="/project/details" sx={{ pl: 13 }}>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Lihat Stock" />
                                 </ListItemButton>
-                                <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 4 }}>
-                                    <ListItemText primary="Add Team" />
+                                <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 13 }}>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Input Pemakaian Bahan" />
                                 </ListItemButton>
                             </List>
                         </Collapse>
 
-                        {/* Stock */}
+                        {/* Nota */}
                         <ListItem disablePadding>
-                            <ListItemButton onClick={toggleStockMenu}>
-                                <ListItemIcon>
-                                    <InventoryIcon style={{ color: 'white' }} />
+                            <ListItemButton onClick={toggleNotaMenu}>
+                                <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: '32px' }}>
+                                    <SummarizeIcon sx={{ fontSize: '32px' }} />
                                 </ListItemIcon>
-                                <ListItemText primary="Stock" />
-                                {isStockOpen ? <ExpandLess /> : <ExpandMore />}
+                                <ListItemText primaryTypographyProps={{ sx: { fontSize: "24px" } }} sx={{ pl: 2 }} primary="Nota" />
+                                {isNotaOpen ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton>
                         </ListItem>
-                        <Collapse in={isStockOpen} timeout="auto" unmountOnExit>
+                        <Collapse in={isNotaOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
-                                <ListItemButton component={NavLink} to="/stock/catat" sx={{ pl: 4 }}>
-                                    <ListItemText primary="Catat Stock Bahan" />
+                                <ListItemButton component={NavLink} to="/user/tambah" sx={{ pl: 13 }}>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Tambah User" />
                                 </ListItemButton>
-                                <ListItemButton component={NavLink} to="/stock/catatsisa" sx={{ pl: 4 }}>
-                                    <ListItemText primary="Catat Sisa Bahan" />
+                                <ListItemButton component={NavLink} to="/user/cust" sx={{ pl: 13 }}>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Tambah Customer / Supplier" />
                                 </ListItemButton>
-                                <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 4 }}>
-                                    <ListItemText primary="Input Pemakaian Bahan" />
+                                <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 13 }}>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Input Pemakaian Bahan" />
                                 </ListItemButton>
                             </List>
                         </Collapse>
 
-                        {/* Report */}
+                        {/* User */}
                         <ListItem disablePadding>
-                            <ListItemButton onClick={toggleReportMenu}>
-                                <ListItemIcon>
-                                    <ReportIcon style={{ color: 'white' }} />
+                            <ListItemButton onClick={toggleUserMenu}>
+                                <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: '32px' }}>
+                                    <AccountCircleIcon sx={{ fontSize: '32px' }} />
                                 </ListItemIcon>
-                                <ListItemText primary="Report" />
-                                {isReportOpen ? <ExpandLess /> : <ExpandMore />}
+                                <ListItemText primaryTypographyProps={{ sx: { fontSize: "24px" } }} sx={{ pl: 2 }} primary="User" />
+                                {isUserOpen ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton>
                         </ListItem>
-                    </List>
-                    <Collapse in={isReportOpen} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItemButton component={NavLink} to="/project/overview" sx={{ pl: 4 }}>
-                                <ListItemText primary="Catat Stock Bahan" />
-                            </ListItemButton>
-                            <ListItemButton component={NavLink} to="/project/details" sx={{ pl: 4 }}>
-                                <ListItemText primary="Lihat Stock" />
-                            </ListItemButton>
-                            <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 4 }}>
-                                <ListItemText primary="Input Pemakaian Bahan" />
-                            </ListItemButton>
-                        </List>
-                    </Collapse>
+                        <Collapse in={isUserOpen} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                <ListItemButton component={NavLink} to="/user/tambah" sx={{ pl: 13 }}>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Tambah User" />
+                                </ListItemButton>
+                                <ListItemButton component={NavLink} to="/user/cust" sx={{ pl: 13 }}>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Tambah Customer / Supplier" />
+                                </ListItemButton>
+                                <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 13 }}>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Input Pemakaian Bahan" />
+                                </ListItemButton>
+                            </List>
+                        </Collapse>
 
-                    {/* User */}
-                    <ListItem disablePadding>
-                        <ListItemButton onClick={toggleUserMenu}>
-                            <ListItemIcon>
-                                <AccountCircleIcon style={{ color: 'white' }} />
-                            </ListItemIcon>
-                            <ListItemText primary="User" />
-                            {isUserOpen ? <ExpandLess /> : <ExpandMore />}
-                        </ListItemButton>
-                    </ListItem>
-                    <Collapse in={isUserOpen} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItemButton component={NavLink} to="/user/tambah" sx={{ pl: 4 }}>
-                                <ListItemText primary="Tambah User" />
+                        {/* Logout */}
+                        <ListItem disablePadding>
+                            <ListItemButton component={NavLink} onClick={() => localStorage.clear()} to="/login"
+                                sx={{ alignItems: "center" }}>
+                                <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: '32px' }}>
+                                    <LogoutIcon style={{ fontSize: '32px' }} />
+                                </ListItemIcon>
+                                <ListItemText primaryTypographyProps={{ sx: { fontSize: "24px" } }} sx={{ pl: 2 }} primary="Logout" />
                             </ListItemButton>
-                            <ListItemButton component={NavLink} to="/stock/catatsisa" sx={{ pl: 4 }}>
-                                <ListItemText primary="Catat Sisa Bahan" />
-                            </ListItemButton>
-                            <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 4 }}>
-                                <ListItemText primary="Input Pemakaian Bahan" />
-                            </ListItemButton>
-                        </List>
-                    </Collapse>
+                        </ListItem>
+                    </> : <>
+
+                    </>}
                 </Drawer>
 
                 {/* Main Content */}

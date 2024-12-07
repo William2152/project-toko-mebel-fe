@@ -5,6 +5,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { useNavigate } from 'react-router-dom';
 
 function Navbar() {
+    const role = localStorage.getItem('role');
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -25,7 +26,7 @@ function Navbar() {
                 <div>Logo</div>
 
                 <div className="flex items-center cursor-pointer" onClick={handleMenuOpen}>
-                    <span className="ml-2">Admin Kantor</span>
+                    <span className="ml-2">{role}</span>
                     {isMenuOpen ? (
                         <ExpandLessIcon className="ml-1" />
                     ) : (

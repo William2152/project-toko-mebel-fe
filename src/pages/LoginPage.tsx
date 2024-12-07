@@ -28,9 +28,13 @@ function LoginPage() {
         username: credentials.username,
         password: credentials.password,
       });
-      console.log(response.data);
       console.log(response.data.accessToken);
-      sessionStorage.setItem("token", response.data.accessToken);
+      console.log(response.data.role);
+      if (response.data.accessToken && response.data.role === "superadmin") {
+        localStorage.setItem("token", response.data.accessToken);
+        localStorage.setItem("role", response.data.role);
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.log(error);
     }

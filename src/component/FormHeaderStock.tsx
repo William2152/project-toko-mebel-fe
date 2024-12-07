@@ -1,65 +1,66 @@
-import React from 'react'
+import React from 'react';
 
-function FormHeaderStock({ register }: any) {
+function FormHeaderStock({ register }) {
     return (
         <>
-            {/* Header Nota */}
-            <div className="flex justify-start gap-x-10 items-center p-4">
+            <div className="grid grid-cols-2 gap-y-6 gap-x-8">
                 {/* Tanggal Nota */}
-                <div className="flex flex-col items-start bg-[#bcaaa4] p-4 rounded">
-                    <label htmlFor="tanggalNota" className="text-sm font-semibold">Tanggal Nota</label>
+                <div className="flex gap-x-4 items-center">
+                    <label htmlFor="tanggalNota" className="w-[25%] text-2xl font-bold">Tanggal Nota</label>
                     <input
                         type="text"
                         id="tanggalNota"
-                        {...register("tanggalNota")}
-                        className="mt-1 border border-gray-300 rounded px-2 py-1"
+                        {...register("tanggalNota", { required: "Tanggal Nota wajib diisi" })}
+                        className="border-2 border-gray-300 rounded px-2 py-2 w-full"
                         placeholder="Input"
                     />
                 </div>
 
                 {/* Supplier */}
-                <div className="flex flex-col items-start bg-[#bcaaa4] p-4 rounded">
-                    <label htmlFor="supplier" className="text-sm font-semibold">Supplier</label>
+                <div className="flex gap-x-4 items-center">
+                    <label htmlFor="supplier" className="w-[25%] text-2xl font-bold">Supplier</label>
                     <input
                         type="text"
                         id="supplier"
-                        {...register("supplier")}
-                        className="mt-1 border border-gray-300 rounded px-2 py-1"
+                        {...register("supplier", { required: "Supplier wajib diisi" })}
+                        className="border-2 border-gray-300 rounded px-2 py-2 w-full"
                         placeholder="Input"
                     />
                 </div>
 
                 {/* No Surat Jalan */}
-                <div className="flex flex-col items-start bg-[#bcaaa4] p-4 rounded">
-                    <label htmlFor="noSuratJalan" className="text-sm font-semibold">No Surat Jalan</label>
+                <div className="flex gap-x-4 items-center">
+                    <label htmlFor="noSuratJalan" className="w-[25%] text-2xl font-bold">No Surat Jalan</label>
                     <input
                         type="text"
                         id="noSuratJalan"
-                        {...register("noSuratJalan")}
-                        className="mt-1 border border-gray-300 rounded px-2 py-1"
+                        {...register("noSuratJalan", { required: "No Surat Jalan wajib diisi" })}
+                        className="border-2 border-gray-300 rounded px-2 py-2 w-full"
                         placeholder="Input"
                     />
                 </div>
 
                 {/* No SPB */}
-                <div className="flex flex-col items-start bg-[#bcaaa4] p-4 rounded">
-                    <label htmlFor="noSpb" className="text-sm font-semibold">No SPB</label>
+                <div className="flex gap-x-4 items-center">
+                    <label htmlFor="noSpb" className="w-[25%] text-2xl font-bold">No SPB</label>
                     <input
                         type="text"
                         id="noSpb"
-                        {...register("noSpb")}
-                        className="mt-1 border border-gray-300 rounded px-2 py-1"
+                        {...register("noSpb", { required: "No SPB wajib diisi" })}
+                        className="border-2 border-gray-300 rounded px-2 py-2 w-full"
                         placeholder="Input"
                     />
                 </div>
+            </div>
 
-                {/* Save Button */}
-                <button type='submit' className="bg-purple-500 text-white px-6 py-2 rounded-full hover:bg-purple-700">
+            {/* Save Button */}
+            <div className="flex justify-end mt-6">
+                <button type="submit" className="bg-[#65558f] text-white px-4 py-3 rounded font-bold text-xl rounded-lg hover:bg-purple-700">
                     Save
                 </button>
             </div>
         </>
-    )
+    );
 }
 
-export default FormHeaderStock
+export default FormHeaderStock;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './component/MainLayout';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
@@ -8,16 +8,20 @@ import TambahProjectPage from './pages/TambahProjectPage';
 import TambahProductProjectPage from './pages/TambahProductProjectPage';
 import CatatBahanSisaPage from './pages/CatatBahanSisaPage';
 import TambahUserPage from './pages/TambahUserPage';
+import TambahCustomerSupplierPage from './pages/TambahCustomerSupplierPage';
+import MasterBahanPage from './pages/MasterBahanPage';
 
 function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/dashboard" element={<MainLayout />}>
           <Route index element={<DashboardPage />} />
         </Route>
         <Route path="/stock" element={<MainLayout />}>
+          <Route path='master' index element={<MasterBahanPage />} />
           <Route path='catat' index element={<CatatStockPage />} />
           <Route path='catatsisa' index element={<CatatBahanSisaPage />} />
         </Route>
@@ -27,6 +31,7 @@ function App() {
         </Route>
         <Route path="/user" element={<MainLayout />} >
           <Route path='tambah' index element={<TambahUserPage />} />
+          <Route path='cust' index element={<TambahCustomerSupplierPage />} />
         </Route>
       </Routes>
     </Router>
