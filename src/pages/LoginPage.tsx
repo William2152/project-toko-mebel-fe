@@ -2,10 +2,14 @@ import { joiResolver } from "@hookform/resolvers/joi";
 import axios from "axios";
 import Joi from "joi";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { AppDispatch } from "../../app/storeRedux";
+import { setItem } from "../../app/localStorageSlice";
 
 function LoginPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
   const schema = Joi.object({
     username: Joi.string().required().messages({
       "string.empty": "Username is required",
@@ -31,7 +35,8 @@ function LoginPage() {
       console.log(response.data.accessToken);
       console.log(response.data.role);
       if (response.data.accessToken && response.data.role === "superadmin") {
-        localStorage.setItem("token", response.data.accessToken);
+        dispatch(setItem({ key: "token", value: response.data.accessToken, ttl: 3600000 }));
+        // localStorage.setItem("token", response.data.accessToken);
         localStorage.setItem("role", response.data.role);
         navigate("/dashboard");
       }

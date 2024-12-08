@@ -10,6 +10,7 @@ import CatatBahanSisaPage from './pages/CatatBahanSisaPage';
 import TambahUserPage from './pages/TambahUserPage';
 import TambahCustomerSupplierPage from './pages/TambahCustomerSupplierPage';
 import MasterBahanPage from './pages/MasterBahanPage';
+import ListProjectPage from './pages/ListProjectPage';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/project" element={<MainLayout />}>
           <Route path='tambah' index element={<TambahProjectPage />} />
           <Route path='product' index element={<TambahProductProjectPage />} />
+          <Route path='list' index element={<ListProjectPage />} />
         </Route>
         <Route path="/user" element={<MainLayout />} >
           <Route path='tambah' index element={<TambahUserPage />} />

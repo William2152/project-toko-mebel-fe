@@ -9,6 +9,10 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableVirtuoso, TableComponents } from 'react-virtuoso';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { getItem } from '../../app/localStorageSlice';
+import { AppDispatch } from '../../app/storeRedux';
+import { RootState } from '@reduxjs/toolkit/query';
 
 interface Data {
     no: number;
@@ -83,9 +87,12 @@ function rowContent(_index: number, row: Data) {
 }
 
 function TambahUserPage() {
-    const token = localStorage.getItem('token');
+    const dispatch = useDispatch<AppDispatch>();
+    const token = useSelector((state: RootState) => state.localStorage.value);
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [rows, setRows] = useState<Data[]>([]);
+    console.log(token);
+
 
     useEffect(() => {
         axios.get('http://localhost:6347/users', {

@@ -1,13 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import helperSlice from "./helperSlice";
-import { useDispatch } from "react-redux";
+import localStorageReducer from "./localStorageSlice";
 
 export const storeRedux = configureStore({
   reducer: {
-    helperSlice: helperSlice,
+    localStorage: localStorageReducer,
   },
 });
 
 export type RootState = ReturnType<typeof storeRedux.getState>;
 export type AppDispatch = typeof storeRedux.dispatch;
-export const useAppDispatch = () => useDispatch<AppDispatch>();

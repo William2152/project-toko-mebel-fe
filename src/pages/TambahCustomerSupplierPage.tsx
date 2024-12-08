@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
+import { set, useForm } from 'react-hook-form';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -8,61 +8,53 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableVirtuoso, TableComponents } from 'react-virtuoso';
-import Chance from 'chance';
+import axios from 'axios';
+import Joi from 'joi';
+import { joiResolver } from '@hookform/resolvers/joi';
+import { useSelector } from 'react-redux';
+import { RootState } from '@reduxjs/toolkit/query';
 
 interface Data {
-    id: number;
-    Nama: string;
-    No_telepon: number;
-    Alamat: string;
+    id: number
+    no: number;
+    nama: string;
+    no_rekening?: number;
+    nama_bank?: string;
+    no_telepon: number;
+    alamat: string;
 }
 
 interface ColumnData {
-    dataKey: keyof Data;
+    dataKey: keyof Data | "aksi";
     label: string;
     numeric?: boolean;
     width?: number;
 }
 
-const chance = new Chance(42);
-
-function createData(id: number): Data {
-    return {
-        id,
-        Nama: "a",
-        No_telepon: 0,
-        Alamat: "a"
-        // state: chance.state({ full: true }),
-    };
-}
-
 const columns: ColumnData[] = [
-    {
-        width: 100,
-        label: 'Nama',
-        dataKey: 'Nama',
-    },
-    {
-        width: 100,
-        label: 'No_telepon',
-        dataKey: 'No_telepon',
-        numeric: true,
-    },
-    {
-        width: 100,
-        label: 'Alamat',
-        dataKey: 'Alamat',
-    },
+    { width: 50, label: 'No', dataKey: 'no', numeric: true },
+    { width: 100, label: 'Nama', dataKey: 'nama' },
+    { width: 100, label: 'No Rekening', dataKey: 'no_rekening' },
+    { width: 100, label: 'Nama Bank', dataKey: 'nama_bank' },
+    { width: 100, label: 'No Telepon', dataKey: 'no_telepon' },
+    { width: 100, label: 'Alamat', dataKey: 'alamat' },
+    { width: 100, label: 'Aksi', dataKey: 'aksi' },
 ];
 
-const rows: Data[] = Array.from({ length: 200 }, (_, index) => createData(index));
 
 const VirtuosoTableComponents: TableComponents<Data> = {
     Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
         <TableContainer component={Paper} {...props} ref={ref} />
     )),
     Table: (props) => (
-        <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }} />
+        <Table
+            {...props}
+            sx={{
+                borderCollapse: 'separate',
+                tableLayout: 'fixed', // Tambahkan ini
+                width: '100%', // Pastikan tabel memenuhi seluruh container
+            }}
+        />
     ),
     TableHead: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
         <TableHead {...props} ref={ref} />
@@ -73,46 +65,275 @@ const VirtuosoTableComponents: TableComponents<Data> = {
     )),
 };
 
-function fixedHeaderContent() {
-    return (
-        <TableRow>
-            {columns.map((column) => (
-                <TableCell
-                    key={column.dataKey}
-                    variant="head"
-                    align={column.numeric || false ? 'right' : 'left'}
-                    style={{ width: column.width }}
-                    sx={{ backgroundColor: 'background.paper' }}
-                >
-                    {column.label}
-                </TableCell>
-            ))}
-        </TableRow>
-    );
-}
-
-function rowContent(_index: number, row: Data) {
-    return (
-        <React.Fragment>
-            {columns.map((column) => (
-                <TableCell
-                    key={column.dataKey}
-                    align={column.numeric || false ? 'right' : 'left'}
-                >
-                    {row[column.dataKey]}
-                </TableCell>
-            ))}
-        </React.Fragment>
-    );
-}
 
 function TambahCustomerSupplierPage() {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const token = useSelector((state: RootState) => state.localStorage.value);
+    const [rows, setRows] = useState<Data[]>([]);
+    const [reload, setReload] = useState(false);
+    const [update, setUpdate] = useState(false);
+    const [updateId, setUpdateId] = useState(0);
+    const schema = Joi.object({
+        nama: Joi.string().required().messages({
+            'string.empty': 'Nama is required',
+        }),
+        noRekening: Joi.string().min(10).required().messages({
+            'string.empty': 'No Rekening is required',
+            'string.min': 'No Rekening must be at least 10 digits',
+        }),
+        namaBank: Joi.string().required().messages({
+            'string.empty': 'Nama Bank is required',
+        }),
+        noTelepon: Joi.string().min(10).required().messages({
+            'string.empty': 'No Telepon is required',
+            'string.min': 'No Telepon must be at least 10 digits',
+        }),
+        alamat: Joi.string().required().messages({
+            'string.empty': 'Alamat is required',
+        }),
+    });
+    const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm({
+        resolver: joiResolver(schema),
+    });
     const [role, setRole] = useState("");
+    const [error, setError] = useState(null);
 
-    const onSubmit = (data) => {
-        console.log(data);
+    const visibleColumns = columns.filter((column) => {
+        if (role === 'Customer') {
+            return column.dataKey !== 'no_rekening' && column.dataKey !== 'nama_bank';
+        }
+        return true;
+    });
+
+    function rowContent(_index: number, row: Data) {
+        return (
+            <>
+                {visibleColumns.map((column) => (
+                    <TableCell
+                        key={column.dataKey}
+                        align={column.numeric ? 'right' : 'left'}
+                        style={{
+                            width: column.width,
+                            padding: '8px',
+                            border: '1px solid #ddd',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                        }} // Tambahkan width di sini
+                    >
+                        {column.dataKey === 'aksi' ? (
+                            <div style={{ display: 'flex', justifyContent: 'space-evenly', gap: '10px' }}>
+                                <button onClick={() => handleUpdate(row)}
+                                    style={{
+                                        padding: '5px 10px',
+                                        backgroundColor: '#4CAF50',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '5px',
+                                        cursor: 'pointer',
+                                    }}>Update</button>
+                                <button onClick={() => handleDelete(row.id)}
+                                    style={{
+                                        padding: '5px 10px',
+                                        backgroundColor: '#4CAF50',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '5px',
+                                        cursor: 'pointer',
+                                    }}>Delete</button>
+                            </div>
+                        ) : (
+                            row[column.dataKey as keyof Data] !== undefined
+                                ? row[column.dataKey as keyof Data]
+                                : '-'
+                        )}
+                    </TableCell>
+                ))}
+            </>
+        );
+    }
+
+
+
+
+    function fixedHeaderContent() {
+        return (
+            <TableRow>
+                {visibleColumns.map((column) => (
+                    <TableCell
+                        key={column.dataKey}
+                        variant="head"
+                        align={column.numeric ? 'right' : 'left'}
+                        style={{ width: column.width }} // Tambahkan width di sini
+                        sx={{
+                            backgroundColor: 'background.paper',
+                        }}
+                    >
+                        {column.label}
+                    </TableCell>
+                ))}
+            </TableRow>
+        );
+    }
+
+
+    const handleUpdate = (row: Data) => {
+        if (role === 'Customer') {
+            setValue('nama', row.nama);
+            setValue('noTelepon', row.no_telepon);
+            setValue('alamat', row.alamat);
+            setUpdateId(row.id);
+            setUpdate(true);
+        } else if (role === 'Supplier') {
+            setValue('nama', row.nama);
+            setValue('noTelepon', row.no_telepon);
+            setValue('alamat', row.alamat);
+            setValue('noRekening', row.no_rekening);
+            setValue('namaBank', row.nama_bank);
+            setUpdateId(row.id);
+            setUpdate(true);
+        }
     };
+
+    const handleDelete = (id: number) => {
+        console.log('Deleting row with ID:', id);
+        if (role === 'Customer') {
+            axios.delete(`http://localhost:6347/api/customer/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setReload(!reload);
+        } else if (role === 'Supplier') {
+            axios.delete(`http://localhost:6347/api/supplier/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setReload(!reload);
+        }
+    };
+
+
+    const onSubmit = async (data: any) => {
+        if (update) {
+            const id = updateId;
+            if (role === "Customer") {
+                const response = await axios.put(`http://localhost:6347/api/customer/${id}`, {
+                    nama: data.nama,
+                    no_telepon: data.noTelepon,
+                    alamat: data.alamat
+                },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        }
+                    })
+                setUpdate(false);
+                reset();
+                setReload(!reload);
+            } else if (role === "Supplier") {
+                const response = await axios.put(`http://localhost:6347/api/supplier/${id}`, {
+                    nama: data.nama,
+                    no_rekening: data.noRekening,
+                    nama_bank: data.namaBank,
+                    no_telepon: data.noTelepon,
+                    alamat: data.alamat
+                },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        }
+                    })
+                setUpdate(false);
+                reset();
+                setReload(!reload);
+            }
+        } else {
+            if (role === "Customer") {
+                const response = await axios.post("http://localhost:6347/api/customer", {
+                    nama: data.nama,
+                    no_telepon: data.noTelepon,
+                    alamat: data.alamat
+                },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    })
+                console.log(response);
+            } else if (role === "Supplier") {
+                try {
+                    const response = await axios.post("http://localhost:6347/api/supplier", {
+                        nama: data.nama,
+                        no_rekening: data.noRekening,
+                        nama_bank: data.namaBank,
+                        no_telepon: data.noTelepon,
+                        alamat: data.alamat
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    reset();
+                    setError(null);
+                } catch (error) {
+                    // Menangani error dan menyimpannya dalam state
+                    if (error.response) {
+                        // Jika backend memberikan response error
+                        setError(`Error: ${error.response.data.message || 'Something went wrong'}`);
+                    } else if (error.request) {
+                        // Jika request berhasil dikirim tetapi tidak ada response
+                        setError('No response received from the server');
+                    } else {
+                        // Jika ada masalah dalam pembuatan request
+                        setError(`Error: ${error.message}`);
+                    }
+                }
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (role === 'Supplier' && token) {
+            axios.get('http://localhost:6347/api/supplier', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+                .then(response => {
+                    console.log(response.data);
+
+                    const dataWithNo = response.data.data.map((item: Omit<Data, 'no'> & { id: string }, index: number) => ({
+                        ...item,
+                        no: index + 1,
+                        id: item.id,
+                    }));
+                    setRows(dataWithNo);
+                })
+                .catch(error => {
+                    console.error('Error fetching users:', error);
+                });
+        } else if (role === 'Customer' && token) {
+            axios.get('http://localhost:6347/api/customer', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+                .then(response => {
+                    console.log(response.data);
+
+                    const dataWithNo = response.data.data.map((item: Omit<Data, 'no'>, index: number) => ({
+                        ...item,
+                        no: index + 1,
+                    }));
+                    setRows(dataWithNo);
+                })
+                .catch(error => {
+                    console.error('Error fetching users:', error);
+                });
+        }
+    }, [role, token, reload]);
+
 
     return (
         <>
@@ -126,137 +347,97 @@ function TambahCustomerSupplierPage() {
             {/* Form Container */}
             <div className="border-2 rounded-lg shadow-2xl mx-12">
                 <div className="container mx-auto px-12 py-12">
+                    {error && (
+                        <div style={{ color: 'red', padding: '10px', border: '1px solid red', borderRadius: '5px' }}>
+                            {error}
+                        </div>
+                    )}
                     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-6">
-                        {/* Tombol Submit */}
                         <div className="flex justify-end mt-4">
-                            <button
-                                type="submit"
-                                className="bg-[#65558f] hover:bg-[#56437b] text-white px-6 py-3 rounded-lg font-bold text-xl"
-                            >
-                                Tambah User
+                            <button type="submit" className="bg-[#65558f] hover:bg-[#56437b] text-white px-6 py-3 rounded-lg font-bold text-xl">
+                                {update == true ? "Update User" : "Tambah User"}
                             </button>
                         </div>
-                        {/* Role */}
+
                         <div className="flex items-center gap-x-4">
-                            <label htmlFor="role" className="w-[25%] text-xl font-bold">
-                                Role
-                            </label>
+                            <label htmlFor="role" className="w-[25%] text-xl font-bold">Role</label>
                             <select
                                 id="role"
                                 onChange={(e) => setRole(e.target.value)}
-                                // {...register("role", { required: "Role is required" })}
                                 className="border-2 border-gray-300 rounded px-4 py-2 w-full"
                             >
                                 <option value="">-- Pilih Role --</option>
                                 <option value="Customer">Customer</option>
                                 <option value="Supplier">Supplier</option>
                             </select>
-                            {errors.role && (
-                                <span className="text-red-500 text-sm">{errors.role.message}</span>
-                            )}
+                            {errors.role && <span className="text-red-500 text-sm">{errors.role.message}</span>}
                         </div>
 
-                        {/* Nama */}
                         <div className="flex items-center gap-x-4">
-                            <label htmlFor="nama" className="w-[25%] text-xl font-bold">
-                                Nama
-                            </label>
+                            <label htmlFor="nama" className="w-[25%] text-xl font-bold">Nama</label>
                             <input
                                 type="text"
                                 id="nama"
-                                {...register("nama", { required: "Nama is required" })}
+                                {...register("nama")}
                                 className="border-2 border-gray-300 rounded px-4 py-2 w-full"
                             />
-                            {errors.nama && (
-                                <span className="text-red-500 text-sm">{errors.nama.message}</span>
-                            )}
+                            {errors.nama && <span className="text-red-500 text-sm">{errors.nama.message}</span>}
                         </div>
 
                         {role === "Supplier" && (
                             <>
-                                {/* No Rekening */}
                                 <div className="flex items-center gap-x-4">
-                                    <label htmlFor="noRekening" className="w-[25%] text-xl font-bold">
-                                        No Rekening
-                                    </label>
+                                    <label htmlFor="noRekening" className="w-[25%] text-xl font-bold">No Rekening</label>
                                     <input
                                         type="text"
                                         id="noRekening"
-                                        {...register("noRekening", {
-                                            required: "No Rekening is required",
-                                            pattern: {
-                                                value: /^[0-9]+$/,
-                                                message: "No Rekening must be a number",
-                                            },
-                                        })}
+                                        {...register("noRekening")}
                                         className="border-2 border-gray-300 rounded px-4 py-2 w-full"
                                     />
-                                    {errors.noRekening && (
-                                        <span className="text-red-500 text-sm">{errors.noRekening.message}</span>
-                                    )}
+                                    {errors.noRekening && <span className="text-red-500 text-sm">{errors.noRekening.message}</span>}
                                 </div>
 
-                                {/* Nama Bank */}
                                 <div className="flex items-center gap-x-4">
-                                    <label htmlFor="namaBank" className="w-[25%] text-xl font-bold">
-                                        Nama Bank
-                                    </label>
+                                    <label htmlFor="namaBank" className="w-[25%] text-xl font-bold">Nama Bank</label>
                                     <input
                                         type="text"
                                         id="namaBank"
-                                        {...register("namaBank", { required: "Nama Bank is required" })}
+                                        {...register("namaBank")}
                                         className="border-2 border-gray-300 rounded px-4 py-2 w-full"
                                     />
-                                    {errors.namaBank && (
-                                        <span className="text-red-500 text-sm">{errors.namaBank.message}</span>
-                                    )}
+                                    {errors.namaBank && <span className="text-red-500 text-sm">{errors.namaBank.message}</span>}
                                 </div>
                             </>
                         )}
-                        {/* No Telepon */}
+
                         <div className="flex items-center gap-x-4">
-                            <label htmlFor="noTelepon" className="w-[25%] text-xl font-bold">
-                                No Telepon
-                            </label>
+                            <label htmlFor="noTelepon" className="w-[25%] text-xl font-bold">No Telepon</label>
                             <input
                                 type="text"
                                 id="noTelepon"
-                                {...register("noTelepon", {
-                                    required: "No Telepon is required",
-                                    pattern: {
-                                        value: /^[0-9]+$/,
-                                        message: "No Telepon must be a number",
-                                    },
-                                })}
+                                {...register("noTelepon")}
                                 className="border-2 border-gray-300 rounded px-4 py-2 w-full"
                             />
-                            {errors.noTelepon && (
-                                <span className="text-red-500 text-sm">{errors.noTelepon.message}</span>
-                            )}
+                            {errors.noTelepon && <span className="text-red-500 text-sm">{errors.noTelepon.message}</span>}
                         </div>
 
-                        {/* Alamat */}
                         <div className="flex items-center gap-x-4">
-                            <label htmlFor="alamat" className="w-[25%] text-xl font-bold">
-                                Alamat
-                            </label>
+                            <label htmlFor="alamat" className="w-[25%] text-xl font-bold">Alamat</label>
                             <textarea
                                 id="alamat"
-                                {...register("alamat", { required: "Alamat is required" })}
+                                {...register("alamat")}
                                 className="border-2 border-gray-300 rounded px-4 py-2 w-full"
                                 rows="4"
                             ></textarea>
-                            {errors.alamat && (
-                                <span className="text-red-500 text-sm">{errors.alamat.message}</span>
-                            )}
+                            {errors.alamat && <span className="text-red-500 text-sm">{errors.alamat.message}</span>}
                         </div>
                     </form>
-                    <Paper className='mt-10' sx={{ height: 200, width: '100%', boxShadow: 3 }}>
+                    <Paper className="mt-10" sx={{ height: 400, width: '100%', boxShadow: 3 }}>
                         <TableVirtuoso
                             data={rows}
                             components={VirtuosoTableComponents}
                             fixedHeaderContent={fixedHeaderContent}
-                            itemContent={rowContent}
+                            itemContent={(index, row) => rowContent(index, row)} // Hilangkan TableRow di sini
                         />
                     </Paper>
                 </div>

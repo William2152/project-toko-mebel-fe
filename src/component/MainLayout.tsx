@@ -18,10 +18,18 @@ import ReportIcon from '@mui/icons-material/Assessment';
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@reduxjs/toolkit/query';
+import { AppDispatch } from '../../app/storeRedux';
+import { getItem } from '../../app/localStorageSlice';
 
 function MainLayout() {
     const role = localStorage.getItem('role');
-    const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>();
+    dispatch(getItem('token'));
+    const token = useSelector((state: RootState) => state.localStorage.value);
+    console.log(token);
+
     const [isProjectOpen, setIsProjectOpen] = useState(false);
     const [isStockOpen, setIsStockOpen] = useState(false);
     const [isReportOpen, setIsReportOpen] = useState(false);
@@ -128,7 +136,9 @@ function MainLayout() {
                         },
                     }}
                 >
-                    {role == "superadmin" ? <>
+                    {role == "superadmin" && token != null ? <>
+                        {console.log(token)}
+
                         <div className='flex justify-center'>
                             <Box
                                 className='flex justify-center items-center'
@@ -173,8 +183,8 @@ function MainLayout() {
                                     <ListItemButton component={NavLink} to="/project/product" sx={{ pl: 13 }}>
                                         <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Tambah Product" />
                                     </ListItemButton>
-                                    <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 13 }}>
-                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Add Team" />
+                                    <ListItemButton component={NavLink} to="/project/list" sx={{ pl: 13 }}>
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="List Project" />
                                     </ListItemButton>
                                 </List>
                             </Collapse>
