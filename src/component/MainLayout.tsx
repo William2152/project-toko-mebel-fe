@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
     Drawer,
@@ -26,10 +26,19 @@ import { getItem } from '../../app/localStorageSlice';
 function MainLayout() {
     const role = localStorage.getItem('role');
     const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
     dispatch(getItem('token'));
     const token = useSelector((state: RootState) => state.localStorage.value);
     console.log(token);
 
+    function Redirect() {
+        if (token == null)
+            navigate('/login');
+    }
+
+    useEffect(() => {
+        Redirect();
+    }, [token])
     const [isProjectOpen, setIsProjectOpen] = useState(false);
     const [isStockOpen, setIsStockOpen] = useState(false);
     const [isReportOpen, setIsReportOpen] = useState(false);
@@ -282,9 +291,6 @@ function MainLayout() {
                                 </ListItemButton>
                                 <ListItemButton component={NavLink} to="/user/cust" sx={{ pl: 13 }}>
                                     <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Tambah Customer / Supplier" />
-                                </ListItemButton>
-                                <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 13 }}>
-                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Input Pemakaian Bahan" />
                                 </ListItemButton>
                             </List>
                         </Collapse>
