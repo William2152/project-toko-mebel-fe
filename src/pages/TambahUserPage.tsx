@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -9,12 +9,11 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableVirtuoso, TableComponents } from 'react-virtuoso';
 import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
-import { getItem } from '../../app/localStorageSlice';
-import { AppDispatch } from '../../app/storeRedux';
 import { RootState } from '@reduxjs/toolkit/query';
+import { useSelector } from 'react-redux';
 
 interface Data {
+    id: number;
     no: number;
     nama: string;
     username: string;
@@ -23,7 +22,7 @@ interface Data {
 }
 
 interface ColumnData {
-    dataKey: keyof Data;
+    dataKey: keyof Data | "aksi";
     label: string;
     numeric?: boolean;
     width?: number;
@@ -35,6 +34,7 @@ const columns: ColumnData[] = [
     { width: 150, label: 'Username', dataKey: 'username' },
     { width: 250, label: 'Email', dataKey: 'email' },
     { width: 150, label: 'Role', dataKey: 'role' },
+    { width: 100, label: 'Aksi', dataKey: 'aksi' },
 ];
 
 const VirtuosoTableComponents: TableComponents<Data> = {
@@ -71,31 +71,101 @@ function fixedHeaderContent() {
     );
 }
 
-function rowContent(_index: number, row: Data) {
-    return (
-        <React.Fragment>
-            {columns.map((column) => (
-                <TableCell
-                    key={column.dataKey}
-                    align={column.numeric || false ? 'right' : 'left'}
-                >
-                    {row[column.dataKey]}
-                </TableCell>
-            ))}
-        </React.Fragment>
-    );
-}
+const handleUpdate = (row: Data) => {
+    console.log('Updating row with ID:', row.id);
+};
 
 function TambahUserPage() {
-    const dispatch = useDispatch<AppDispatch>();
     const token = useSelector((state: RootState) => state.localStorage.value);
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [rows, setRows] = useState<Data[]>([]);
+    const [reload, setReload] = useState(false);
+    const [error, setError] = useState(null);
     console.log(token);
 
+    function rowContent(_index: number, row: Data) {
+        return (
+            <React.Fragment>
+                {columns.map((column) => (
+                    <TableCell
+                        key={column.dataKey}
+                        align={column.numeric || false ? 'right' : 'left'}
+                    >
+                        {column.dataKey === 'aksi' ? (
+                            <div style={{ display: 'flex', justifyContent: 'space-evenly', gap: '10px' }}>
+                                <button onClick={() => handleUpdate(row)}
+                                    style={{
+                                        padding: '5px 10px',
+                                        backgroundColor: '#4CAF50',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '5px',
+                                        cursor: 'pointer',
+                                    }}>Update</button>
+                                <button onClick={() => handleDelete(row.id)}
+                                    style={{
+                                        padding: '5px 10px',
+                                        backgroundColor: '#4CAF50',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '5px',
+                                        cursor: 'pointer',
+                                    }}>Delete</button>
+                            </div>
+                        ) : (
+                            row[column.dataKey as keyof Data] !== undefined
+                                ? row[column.dataKey as keyof Data]
+                                : '-'
+                        )}
+                    </TableCell>
+                ))}
+            </React.Fragment>
+        );
+    }
+
+    const handleDelete = async (id: number) => {
+        console.log('Deleting row with ID:', id);
+        const response = await axios.delete(`http://localhost:6347/api/users/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+        console.log(response);
+    };
+
+    const onSubmit = (data: any) => {
+        try {
+            const response = axios.post("http://localhost:6347/api/users", {
+                username: data.username,
+                nama: data.name,
+                password: data.password,
+                role: data.role,
+                email: data.email
+            },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+            setReload(!reload);
+            console.log(response);
+        } catch (error) {
+            // Menangani error dan menyimpannya dalam state
+            if (error.response) {
+                // Jika backend memberikan response error
+                setError(`Error: ${error.response.data.message || 'Something went wrong'}`);
+            } else if (error.request) {
+                // Jika request berhasil dikirim tetapi tidak ada response
+                setError('No response received from the server');
+            } else {
+                // Jika ada masalah dalam pembuatan request
+                setError(`Error: ${error.message}`);
+            }
+        }
+    };
 
     useEffect(() => {
-        axios.get('http://localhost:6347/users', {
+        axios.get('http://localhost:6347/api/users', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -112,19 +182,20 @@ function TambahUserPage() {
             .catch(error => {
                 console.error('Error fetching users:', error);
             });
-    }, []);
-
-    const onSubmit = (data) => {
-        console.log(data);
-    };
+    }, [reload]);
 
     return (
         <>
             <div className='mb-12 mt-6'>
                 <h2 className='text-4xl font-bold text-[#65558f] mb-2 mx-12'>Tambah Pengguna Baru</h2>
             </div>
-            <div className='border-2 rounded-lg h-[80vh] shadow-2xl mx-12'>
+            <div className='border-2 rounded-lg h-[90vh] shadow-2xl mx-12'>
                 <div className='container mx-auto px-12 py-12'>
+                    {error && (
+                        <div style={{ color: 'red', padding: '10px', border: '1px solid red', borderRadius: '5px' }}>
+                            {error}
+                        </div>
+                    )}
                     <form onSubmit={handleSubmit(onSubmit)}>
                         {/* Tombol Submit */}
                         <div className='flex flex-col h-full'>
@@ -136,7 +207,7 @@ function TambahUserPage() {
                         {/* Role */}
                         <div className='flex gap-x-4'>
                             <label htmlFor="Role" className='w-[25%] text-xl font-bold'>Role</label>
-                            <select name="" className="border-2 border-gray-300 rounded px-2 py-2 w-full" id="">
+                            <select {...register("role")} className="border-2 border-gray-300 rounded px-2 py-2 w-full" id="">
                                 <option hidden value="">-- Pilih Role --</option>
                                 <option value="adminkantor">Admin Kantor</option>
                                 <option value="karyawankantor">Karyawan Kantor</option>
@@ -185,6 +256,20 @@ function TambahUserPage() {
                                 className="border-2 border-gray-300 rounded px-2 py-2 w-full"
                             />
                             {errors.email && <span className="text-red-500 text-sm">{errors.email.message}</span>}
+                        </div>
+                        <br />
+                        {/* Password */}
+                        <div className='flex gap-x-4'>
+                            <label htmlFor="email" className='w-[25%] text-xl font-bold'>Password</label>
+                            <input
+                                type="password"
+                                id="password"
+                                {...register("password", {
+                                    required: "Password is required",
+                                })}
+                                className="border-2 border-gray-300 rounded px-2 py-2 w-full"
+                            />
+                            {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
                         </div>
                     </form>
                     <Paper className='mt-10' sx={{ height: 200, width: '100%', boxShadow: 3 }}>
