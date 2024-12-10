@@ -1,9 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import FormHeaderStock from "../component/FormHeaderStock";
 import FormInputBarang from "../component/FormInputBarang";
+import axios from "axios";
+import { RootState } from "@reduxjs/toolkit/query";
+import { useSelector } from "react-redux";
 
 function CatatStockPage() {
+    const token = useSelector((state: RootState) => state.localStorage.value);
+    const [namaBahan, setNamaBahan] = useState([]);
+    const [satuan, setSatuan] = useState([]);
+
     const formAll = useForm();
     const { register: registerAll, handleSubmit: handleSubmitAll } = formAll;
 
@@ -16,17 +23,51 @@ function CatatStockPage() {
         { id: 3, jumlah: 15, namaBarang: "Vernish Transparan", satuan: "Liter" },
     ]);
 
+    useEffect(() => {
+        axios.get("http://localhost:6347/api/bahan", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        })
+            .then(response => {
+                console.log(response.data.data);
+                setNamaBahan(response.data.data);
+            })
+            .catch(e => {
+                console.log('Error fetching nama bahan:', e);
+
+            })
+    }, [])
+
+    useEffect(() => {
+        axios.get("http://localhost:6347/api/satuan", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        })
+            .then(response => {
+                console.log(response.data.data);
+                setSatuan(response.data.data);
+            })
+            .catch(e => {
+                console.log('Error fetching nama satuan:', e);
+
+            })
+    }, [])
+
     const handleDeleteItem = (id) => {
         const updatedItems = items.filter((item) => item.id !== id);
         setItems(updatedItems);
     };
 
     const handleAddItem = (data) => {
+        console.log(data);
+
         const newId = items.length + 1;
         const newItem = {
             id: newId,
-            jumlah: data.jumlahBarang,
-            namaBarang: data.namaBarang,
+            jumlah: data.jumlahBahan,
+            namaBarang: data.namaBahan,
             satuan: data.satuan,
         };
         setItems([...items, newItem]);
@@ -45,7 +86,7 @@ function CatatStockPage() {
             <div className="px-12 my-6">
                 {/* Form Header */}
                 <div className="mb-8">
-                    <div className="border-2 rounded-lg shadow-xl py-6">
+                    <div className=" py-6">
                         <form onSubmit={handleSubmitAll(saveItems)}>
                             <FormHeaderStock register={registerAll} />
                         </form>
@@ -56,7 +97,7 @@ function CatatStockPage() {
                 <div className="border-2 rounded-lg shadow-xl py-6 mb-8">
                     <form onSubmit={handleSubmitBarang(handleAddItem)}>
                         <div className="flex items-center gap-x-4">
-                            <FormInputBarang register={registerBarang} />
+                            <FormInputBarang register={registerBarang} namaBahan={namaBahan} satuan={satuan} />
                         </div>
                     </form>
                 </div>
@@ -65,7 +106,7 @@ function CatatStockPage() {
                 <div className="border-2 rounded-lg shadow-xl py-6">
                     <div className="flex justify-between items-center border-b pb-2 mb-4">
                         <div className="w-20 text-center font-semibold text-lg">Jumlah</div>
-                        <div className="flex-1 text-center font-semibold text-lg">Nama Barang</div>
+                        <div className="flex-1 text-center font-semibold text-lg">Nama Bahan</div>
                         <div className="w-32 text-center font-semibold text-lg">Satuan</div>
                         <div className="w-10 text-center"></div>
                     </div>
