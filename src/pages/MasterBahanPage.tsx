@@ -51,8 +51,8 @@ function MasterBahanPage() {
 
     const columnsDataBahan: ColumnDataBahan[] = [
         { width: 50, label: 'No', dataKey: 'no', numeric: true },
-        { width: 150, label: 'Nama', dataKey: 'nama' },
-        { width: 100, label: 'Aksi', dataKey: 'aksi' },
+        { width: 100, label: 'Nama', dataKey: 'nama' },
+        { width: 200, label: 'Aksi', dataKey: 'aksi' },
     ];
 
     const columnsDataSatuan: ColumnDataSatuan[] = [
@@ -301,113 +301,109 @@ function MasterBahanPage() {
                     Master Bahan
                 </h2>
             </div>
-
-            {/* Form Container */}
-            <div className="flex justify-between">
-                {/* Tambah Nama Bahan */}
-                <div className="border-2 rounded-lg w-[40%] shadow-2xl mx-12 bg-white text-[#65558f]">
-                    <div className="container mx-auto px-8 py-8">
-                        <h3 className="text-2xl font-bold mb-6">Tambah Nama Bahan</h3>
-                        <form onSubmit={handleSubmitBahan(onSubmitBahan)}>
-                            <div className="mb-4">
-                                <label
-                                    htmlFor="namaBahan"
-                                    className="block text-lg font-medium text-gray-700 mb-2"
-                                >
-                                    Nama Bahan
-                                </label>
-                                <input
-                                    type="text"
-                                    id="namaBahan"
-                                    className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                    {...registerBahan("namaBahan")}
-                                    placeholder="Masukkan nama bahan"
-                                />
-                            </div>
-                            <button
-                                type="submit"
-                                className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
+            {/* Tambah Nama Bahan */}
+            <div className="border-2 rounded-lg shadow-2xl mx-12 bg-white text-[#65558f] w-[95%]">
+                <div className="container mx-auto px-8 py-8">
+                    <h3 className="text-2xl font-bold mb-6">Tambah Nama Bahan</h3>
+                    <form onSubmit={handleSubmitBahan(onSubmitBahan)}>
+                        <div className="mb-4">
+                            <label
+                                htmlFor="namaBahan"
+                                className="block text-lg font-medium text-gray-700 mb-2"
                             >
-                                Tambah Bahan
-                            </button>
-                        </form>
-                        <Paper className='mt-10' sx={{ height: 200, width: '100%', boxShadow: 3 }}>
-                            <TableVirtuoso
-                                data={rowsBahan}
-                                components={VirtuosoTableComponents}
-                                fixedHeaderContent={fixedHeaderContentBahan}
-                                itemContent={rowContentBahan}
+                                Nama Bahan
+                            </label>
+                            <input
+                                type="text"
+                                id="namaBahan"
+                                className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                {...registerBahan("namaBahan")}
+                                placeholder="Masukkan nama bahan"
                             />
-                        </Paper>
-                    </div>
+                        </div>
+                        <button
+                            type="submit"
+                            className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
+                        >
+                            Tambah Bahan
+                        </button>
+                    </form>
+                    <Paper className='mt-10' sx={{ height: 200, width: '100%', boxShadow: 3 }}>
+                        <TableVirtuoso
+                            data={rowsBahan}
+                            components={VirtuosoTableComponents}
+                            fixedHeaderContent={fixedHeaderContentBahan}
+                            itemContent={rowContentBahan}
+                        />
+                    </Paper>
                 </div>
+            </div>
 
-                {/* Tambah Satuan Bahan */}
-                <div className="border-2 rounded-lg w-[60%] shadow-2xl mx-12 bg-white">
-                    <div className="container mx-auto px-8 py-8">
-                        <h3 className="text-2xl font-bold mb-6 text-[#65558f]">Tambah Satuan Bahan</h3>
-                        <form onSubmit={handleSubmitSatuan(onSubmitSatuan)}>
-                            <div className="mb-4">
-                                <label
-                                    htmlFor="satuanBahan"
-                                    className="block text-lg font-medium text-gray-700 mb-2"
-                                >
-                                    Satuan Bahan
-                                </label>
-                                <input
-                                    type="text"
-                                    id="satuanBahan"
-                                    className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                    placeholder="Masukkan satuan bahan"
-                                    {...registerSatuan("satuanBahan")}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label
-                                    htmlFor="satuanTerkecil"
-                                    className="block text-lg font-medium text-gray-700 mb-2"
-                                >
-                                    Satuan Terkecil Bahan
-                                </label>
-                                <input
-                                    type="text"
-                                    id="satuanTerkecil"
-                                    className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                    placeholder="Masukkan satuan terkecil bahan"
-                                    {...registerSatuan("satuanTerkecil")}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label
-                                    htmlFor="konversi"
-                                    className="block text-lg font-medium text-gray-700 mb-2"
-                                >
-                                    Satuan Bahan ke Satuan Terkecil Bahan
-                                </label>
-                                <input
-                                    type="number"
-                                    id="konversi"
-                                    className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                    placeholder="Masukkan nilai konversi"
-                                    {...registerSatuan("konversi")}
-                                />
-                            </div>
-                            <button
-                                type="submit"
-                                className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
+            {/* Tambah Satuan Bahan */}
+            <div className="border-2 rounded-lg w-[60%] shadow-2xl mx-12 bg-white w-[95%] mt-10">
+                <div className="container mx-auto px-8 py-8">
+                    <h3 className="text-2xl font-bold mb-6 text-[#65558f]">Tambah Satuan Bahan</h3>
+                    <form onSubmit={handleSubmitSatuan(onSubmitSatuan)}>
+                        <div className="mb-4">
+                            <label
+                                htmlFor="satuanBahan"
+                                className="block text-lg font-medium text-gray-700 mb-2"
                             >
-                                Tambah Satuan
-                            </button>
-                        </form>
-                        <Paper className='mt-10' sx={{ height: 200, width: '100%', boxShadow: 3 }}>
-                            <TableVirtuoso
-                                data={rowsSatuan}
-                                components={VirtuosoTableComponentsSatuan}
-                                fixedHeaderContent={fixedHeaderContentSatuan}
-                                itemContent={rowContentSatuan}
+                                Satuan Bahan
+                            </label>
+                            <input
+                                type="text"
+                                id="satuanBahan"
+                                className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                placeholder="Masukkan satuan bahan"
+                                {...registerSatuan("satuanBahan")}
                             />
-                        </Paper>
-                    </div>
+                        </div>
+                        <div className="mb-4">
+                            <label
+                                htmlFor="satuanTerkecil"
+                                className="block text-lg font-medium text-gray-700 mb-2"
+                            >
+                                Satuan Terkecil Bahan
+                            </label>
+                            <input
+                                type="text"
+                                id="satuanTerkecil"
+                                className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                placeholder="Masukkan satuan terkecil bahan"
+                                {...registerSatuan("satuanTerkecil")}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label
+                                htmlFor="konversi"
+                                className="block text-lg font-medium text-gray-700 mb-2"
+                            >
+                                Satuan Bahan ke Satuan Terkecil Bahan
+                            </label>
+                            <input
+                                type="number"
+                                id="konversi"
+                                className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                placeholder="Masukkan nilai konversi"
+                                {...registerSatuan("konversi")}
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
+                        >
+                            Tambah Satuan
+                        </button>
+                    </form>
+                    <Paper className='mt-10' sx={{ height: 200, width: '100%', boxShadow: 3 }}>
+                        <TableVirtuoso
+                            data={rowsSatuan}
+                            components={VirtuosoTableComponentsSatuan}
+                            fixedHeaderContent={fixedHeaderContentSatuan}
+                            itemContent={rowContentSatuan}
+                        />
+                    </Paper>
                 </div>
             </div>
         </>
