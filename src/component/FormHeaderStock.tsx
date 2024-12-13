@@ -24,13 +24,10 @@ function FormHeaderStock({ register }) {
                     <label htmlFor="supplier" className="text-lg font-semibold text-gray-700">
                         Supplier
                     </label>
-                    <input
-                        type="text"
-                        id="supplier"
-                        {...register("supplier", { required: "Supplier wajib diisi" })}
-                        className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        placeholder="Masukkan supplier"
-                    />
+                    <select id="supplier"{...register("supplier", { required: "Supplier wajib diisi" })}
+                        className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <option hidden value="">Masukkan Supplier</option>
+                    </select>
                 </div>
 
                 {/* No Surat Jalan */}
