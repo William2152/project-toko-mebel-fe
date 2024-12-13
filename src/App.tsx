@@ -11,6 +11,7 @@ import TambahUserPage from './pages/TambahUserPage';
 import TambahCustomerSupplierPage from './pages/TambahCustomerSupplierPage';
 import MasterBahanPage from './pages/MasterBahanPage';
 import ListProjectPage from './pages/ListProjectPage';
+import LihatStockPage from './pages/LihatStockPage';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/stock" element={<MainLayout />}>
           <Route path='master' index element={<MasterBahanPage />} />
           <Route path='catat' index element={<CatatStockPage />} />
+          <Route path='lihat' index element={<LihatStockPage />} />
           <Route path='catatsisa' index element={<CatatBahanSisaPage />} />
         </Route>
         <Route path="/project" element={<MainLayout />}>
