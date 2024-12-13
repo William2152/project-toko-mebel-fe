@@ -216,6 +216,9 @@ function MainLayout() {
                                     <ListItemButton component={NavLink} to="/stock/catat" sx={{ pl: 13 }}>
                                         <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Catat Stock Bahan" />
                                     </ListItemButton>
+                                    <ListItemButton component={NavLink} to="/stock/lihat" sx={{ pl: 13 }}>
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Lihat Stok Bahan" />
+                                    </ListItemButton>
                                     <ListItemButton component={NavLink} to="/stock/catatsisa" sx={{ pl: 13 }}>
                                         <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Catat Sisa Bahan" />
                                     </ListItemButton>

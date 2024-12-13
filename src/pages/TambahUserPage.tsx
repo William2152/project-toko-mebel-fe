@@ -30,10 +30,10 @@ interface ColumnData {
 
 const columns: ColumnData[] = [
     { width: 50, label: 'No', dataKey: 'no', numeric: true },
-    { width: 150, label: 'Nama', dataKey: 'nama' },
-    { width: 150, label: 'Username', dataKey: 'username' },
-    { width: 250, label: 'Email', dataKey: 'email' },
-    { width: 150, label: 'Role', dataKey: 'role' },
+    { width: 100, label: 'Nama', dataKey: 'nama' },
+    { width: 100, label: 'Username', dataKey: 'username' },
+    { width: 150, label: 'Email', dataKey: 'email' },
+    { width: 100, label: 'Role', dataKey: 'role' },
     { width: 100, label: 'Aksi', dataKey: 'aksi' },
 ];
 
