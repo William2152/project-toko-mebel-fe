@@ -28,6 +28,10 @@ function App() {
           <Route path='lihat' index element={<LihatStockPage />} />
           <Route path='catatsisa' index element={<CatatBahanSisaPage />} />
         </Route>
+        <Route path="/nota" element={<MainLayout />}>
+          <Route path='tambah' index element={<TambahProjectPage />} />
+          <Route path='lihat' index element={<TambahProductProjectPage />} />
+        </Route>
         <Route path="/project" element={<MainLayout />}>
           <Route path='tambah' index element={<TambahProjectPage />} />
           <Route path='product' index element={<TambahProductProjectPage />} />
