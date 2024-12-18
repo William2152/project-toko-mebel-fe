@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../app/storeRedux";
 import { setItem } from "../../app/localStorageSlice";
+import { useEffect } from "react";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -22,6 +23,8 @@ function LoginPage() {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
+    reset
   } = useForm({
     resolver: joiResolver(schema),
   });
@@ -32,16 +35,21 @@ function LoginPage() {
         username: credentials.username,
         password: credentials.password,
       });
-      console.log(response.data.accessToken);
-      console.log(response.data.role);
-      if (response.data.accessToken && response.data.role === "superadmin") {
+      if (response.data.accessToken != null) {
         dispatch(setItem({ key: "token", value: response.data.accessToken, ttl: 3600000 }));
-        // localStorage.setItem("token", response.data.accessToken);
         localStorage.setItem("role", response.data.role);
         navigate("/dashboard");
       }
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status == 401) {
+          setError("valid", {
+            type: "manual",
+            message: "Usename atau Password Salah"
+          }
+          )
+        }
+      }
     }
   }
 
@@ -70,7 +78,9 @@ function LoginPage() {
               Please enter your credentials to continue.
             </p>
           </div>
-
+          {errors.valid && (
+            <p className="text-white text-center text-sm mt-1 bg-red-300 py-2">{String(errors.valid.message)}</p>
+          )}
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             {/* Username Input */}
             <div>
@@ -84,7 +94,7 @@ function LoginPage() {
                 className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5a67d8] transition duration-200"
               />
               {errors.username && (
-                <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
+                <p className="text-red-500 text-sm mt-1">{String(errors.username.message)}</p>
               )}
             </div>
 
@@ -100,7 +110,7 @@ function LoginPage() {
                 className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5a67d8] transition duration-200"
               />
               {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                <p className="text-red-500 text-sm mt-1">{String(errors.password.message)}</p>
               )}
             </div>
 
