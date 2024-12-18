@@ -18,12 +18,12 @@ const DashboardPage: React.FC = () => {
 
   return (
     <Box sx={{ padding: 2 }}>
-      <Box className="mb-12 mt-6">
+      <Box className="mb-12">
         <Typography variant="h4" className="text-4xl font-bold" sx={{ color: '#65558f', mb: 2, mx: 3 }}>
           Dashboard
         </Typography>
       </Box>
-      <Box className="border-2 rounded-lg h-[90vh] shadow-2xl mx-3" sx={{ padding: 2 }}>
+      <Box className="border-2 rounded-lg h-[80vh] shadow-2xl mx-3" sx={{ padding: 2 }}>
         {/* Stat Cards */}
         <Grid container spacing={3} sx={{ marginBottom: 2 }}>
           <Grid item xs={12} sm={6} md={3}>
@@ -69,16 +69,6 @@ const DashboardPage: React.FC = () => {
             <DataGrid rows={rows} columns={columns} pageSize={5} rowsPerPageOptions={[5]} checkboxSelection />
           </div>
         </Paper>
-
-        {/* Action Buttons */}
-        <Box sx={{ marginTop: 2, textAlign: 'right' }}>
-          <Button variant="contained" color="primary" sx={{ marginRight: 1 }}>
-            Add Project
-          </Button>
-          <Button variant="outlined" color="secondary">
-            View Reports
-          </Button>
-        </Box>
       </Box>
     </Box>
   );

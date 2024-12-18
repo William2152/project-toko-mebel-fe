@@ -1,5 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import helperSlice from "./helperSlice";
 import localStorageReducer from "./localStorageSlice";
 
 export const storeRedux = configureStore({
