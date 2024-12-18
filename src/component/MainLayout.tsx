@@ -18,15 +18,18 @@ import ReportIcon from '@mui/icons-material/Assessment';
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@reduxjs/toolkit/query';
-import { AppDispatch } from '../../app/storeRedux';
+import { AppDispatch, RootState } from '../../app/storeRedux';
 import { getItem } from '../../app/localStorageSlice';
 
 function MainLayout() {
     const role = localStorage.getItem('role');
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+    const ukIcon = 28;
+    const ukTitle = 20;
+    const ukSubTitle = 16;
     dispatch(getItem('token'));
     const token = useSelector((state: RootState) => state.localStorage.value);
     console.log(token);
@@ -146,7 +149,6 @@ function MainLayout() {
                     }}
                 >
                     {role == "superadmin" && token != null ? <>
-                        {console.log(token)}
 
                         <div className='flex justify-center'>
                             <Box
@@ -162,38 +164,38 @@ function MainLayout() {
                                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx5TZn5gGOAn3J9Wv9yTaLzAuCf15S7HrBPg&s"
                             />
                         </div>
-                        <List sx={{ pt: 3 }}>
+                        <List sx={{ pt: 2 }}>
                             {/* Dashboard */}
                             <ListItem disablePadding>
                                 <ListItemButton component={NavLink} to="/dashboard"
                                     sx={{ alignItems: "center" }}>
-                                    <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: '32px' }}>
-                                        <DashboardIcon style={{ fontSize: '32px' }} />
+                                    <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: ukIcon }}>
+                                        <DashboardIcon style={{ fontSize: ukIcon }} />
                                     </ListItemIcon>
-                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "24px" } }} sx={{ pl: 2 }} primary="Dashboard" />
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: ukTitle } }} sx={{ pl: 2 }} primary="Dashboard" />
                                 </ListItemButton>
                             </ListItem>
 
                             {/* Project with Submenu */}
                             <ListItem disablePadding>
                                 <ListItemButton onClick={toggleProjectMenu}>
-                                    <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: '32px' }}>
-                                        <FolderIcon sx={{ fontSize: '32px' }} />
+                                    <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: ukIcon }}>
+                                        <FolderIcon sx={{ fontSize: ukIcon }} />
                                     </ListItemIcon>
-                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "24px" } }} sx={{ pl: 2 }} primary="Project" />
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: ukTitle } }} sx={{ pl: 2 }} primary="Project" />
                                     {isProjectOpen ? <ExpandLess /> : <ExpandMore />}
                                 </ListItemButton>
                             </ListItem>
                             <Collapse in={isProjectOpen} timeout="auto" unmountOnExit>
                                 <List component="div" disablePadding>
                                     <ListItemButton component={NavLink} to="/project/tambah" sx={{ pl: 13 }}>
-                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Tambah Project" />
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Tambah Project" />
                                     </ListItemButton>
                                     <ListItemButton component={NavLink} to="/project/product" sx={{ pl: 13 }}>
-                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Tambah Product" />
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Tambah Product" />
                                     </ListItemButton>
                                     <ListItemButton component={NavLink} to="/project/list" sx={{ pl: 13 }}>
-                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="List Project" />
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="List Project" />
                                     </ListItemButton>
                                 </List>
                             </Collapse>
@@ -201,29 +203,29 @@ function MainLayout() {
                             {/* Stock */}
                             <ListItem disablePadding>
                                 <ListItemButton onClick={toggleStockMenu}>
-                                    <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: '32px' }}>
-                                        <InventoryIcon sx={{ fontSize: '32px' }} style={{ boxSizing: 'border-box' }} />
+                                    <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: ukIcon }}>
+                                        <InventoryIcon sx={{ fontSize: ukIcon }} style={{ boxSizing: 'border-box' }} />
                                     </ListItemIcon>
-                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "24px" } }} sx={{ pl: 2 }} primary="Stock" />
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: ukTitle } }} sx={{ pl: 2 }} primary="Stock" />
                                     {isStockOpen ? <ExpandLess /> : <ExpandMore />}
                                 </ListItemButton>
                             </ListItem>
                             <Collapse in={isStockOpen} timeout="auto" unmountOnExit>
                                 <List component="div" disablePadding>
                                     <ListItemButton component={NavLink} to="/stock/master" sx={{ pl: 13 }}>
-                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Master Bahan" />
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Master Bahan" />
                                     </ListItemButton>
                                     <ListItemButton component={NavLink} to="/stock/catat" sx={{ pl: 13 }}>
-                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Catat Stock Bahan" />
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Catat Stock Bahan" />
                                     </ListItemButton>
                                     <ListItemButton component={NavLink} to="/stock/lihat" sx={{ pl: 13 }}>
-                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Lihat Stok Bahan" />
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Lihat Stok Bahan" />
                                     </ListItemButton>
                                     <ListItemButton component={NavLink} to="/stock/catatsisa" sx={{ pl: 13 }}>
-                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Catat Sisa Bahan" />
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Catat Sisa Bahan" />
                                     </ListItemButton>
                                     <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 13 }}>
-                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Input Pemakaian Bahan" />
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Input Pemakaian Bahan" />
                                     </ListItemButton>
                                 </List>
                             </Collapse>
@@ -231,10 +233,10 @@ function MainLayout() {
                             {/* Report */}
                             <ListItem disablePadding>
                                 <ListItemButton onClick={toggleReportMenu}>
-                                    <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: '32px' }}>
-                                        <ReportIcon sx={{ fontSize: '32px' }} />
+                                    <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: ukIcon }}>
+                                        <ReportIcon sx={{ fontSize: ukIcon }} />
                                     </ListItemIcon>
-                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "24px" } }} sx={{ pl: 2 }} primary="Report" />
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: ukTitle } }} sx={{ pl: 2 }} primary="Report" />
                                     {isReportOpen ? <ExpandLess /> : <ExpandMore />}
                                 </ListItemButton>
                             </ListItem>
@@ -242,13 +244,13 @@ function MainLayout() {
                         <Collapse in={isReportOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
                                 <ListItemButton component={NavLink} to="/project/overview" sx={{ pl: 13 }}>
-                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Catat Stock Bahan" />
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Catat Stock Bahan" />
                                 </ListItemButton>
                                 <ListItemButton component={NavLink} to="/project/details" sx={{ pl: 13 }}>
-                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Lihat Stock" />
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Lihat Stock" />
                                 </ListItemButton>
                                 <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 13 }}>
-                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Input Pemakaian Bahan" />
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Input Pemakaian Bahan" />
                                 </ListItemButton>
                             </List>
                         </Collapse>
@@ -256,23 +258,20 @@ function MainLayout() {
                         {/* Nota */}
                         <ListItem disablePadding>
                             <ListItemButton onClick={toggleNotaMenu}>
-                                <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: '32px' }}>
-                                    <SummarizeIcon sx={{ fontSize: '32px' }} />
+                                <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: ukIcon }}>
+                                    <SummarizeIcon sx={{ fontSize: ukIcon }} />
                                 </ListItemIcon>
-                                <ListItemText primaryTypographyProps={{ sx: { fontSize: "24px" } }} sx={{ pl: 2 }} primary="Nota" />
+                                <ListItemText primaryTypographyProps={{ sx: { fontSize: ukTitle } }} sx={{ pl: 2 }} primary="Nota" />
                                 {isNotaOpen ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton>
                         </ListItem>
                         <Collapse in={isNotaOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
-                                <ListItemButton component={NavLink} to="/user/tambah" sx={{ pl: 13 }}>
-                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Tambah User" />
+                                <ListItemButton component={NavLink} to="/nota/tambah" sx={{ pl: 13 }}>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Masukkan Nota" />
                                 </ListItemButton>
-                                <ListItemButton component={NavLink} to="/user/cust" sx={{ pl: 13 }}>
-                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Tambah Customer / Supplier" />
-                                </ListItemButton>
-                                <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 13 }}>
-                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Input Pemakaian Bahan" />
+                                <ListItemButton component={NavLink} to="/nota/lihat" sx={{ pl: 13 }}>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Lihat Nota" />
                                 </ListItemButton>
                             </List>
                         </Collapse>
@@ -280,32 +279,43 @@ function MainLayout() {
                         {/* User */}
                         <ListItem disablePadding>
                             <ListItemButton onClick={toggleUserMenu}>
-                                <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: '32px' }}>
-                                    <AccountCircleIcon sx={{ fontSize: '32px' }} />
+                                <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: ukIcon }}>
+                                    <PersonIcon sx={{ fontSize: ukIcon }} />
                                 </ListItemIcon>
-                                <ListItemText primaryTypographyProps={{ sx: { fontSize: "24px" } }} sx={{ pl: 2 }} primary="User" />
+                                <ListItemText primaryTypographyProps={{ sx: { fontSize: ukTitle } }} sx={{ pl: 2 }} primary="User" />
                                 {isUserOpen ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton>
                         </ListItem>
                         <Collapse in={isUserOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
                                 <ListItemButton component={NavLink} to="/user/tambah" sx={{ pl: 13 }}>
-                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Tambah User" />
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Tambah User" />
                                 </ListItemButton>
                                 <ListItemButton component={NavLink} to="/user/cust" sx={{ pl: 13 }}>
-                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: "20px" } }} primary="Tambah Customer / Supplier" />
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Tambah Customer / Supplier" />
                                 </ListItemButton>
                             </List>
                         </Collapse>
+
+                        {/* Profile */}
+                        <ListItem disablePadding>
+                            <ListItemButton component={NavLink} onClick={() => localStorage.clear()} to="/login"
+                                sx={{ alignItems: "center" }}>
+                                <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: ukIcon }}>
+                                    <AccountCircleIcon style={{ fontSize: ukIcon }} />
+                                </ListItemIcon>
+                                <ListItemText primaryTypographyProps={{ sx: { fontSize: ukTitle } }} sx={{ pl: 2 }} primary="Profile" />
+                            </ListItemButton>
+                        </ListItem>
 
                         {/* Logout */}
                         <ListItem disablePadding>
                             <ListItemButton component={NavLink} onClick={() => localStorage.clear()} to="/login"
                                 sx={{ alignItems: "center" }}>
-                                <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: '32px' }}>
-                                    <LogoutIcon style={{ fontSize: '32px' }} />
+                                <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: ukIcon }}>
+                                    <LogoutIcon style={{ fontSize: ukIcon }} />
                                 </ListItemIcon>
-                                <ListItemText primaryTypographyProps={{ sx: { fontSize: "24px" } }} sx={{ pl: 2 }} primary="Logout" />
+                                <ListItemText primaryTypographyProps={{ sx: { fontSize: ukTitle } }} sx={{ pl: 2 }} primary="Logout" />
                             </ListItemButton>
                         </ListItem>
                     </> : <>

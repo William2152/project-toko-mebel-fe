@@ -8,9 +8,12 @@ import {
     TableRow,
     TablePagination,
     Paper,
+    TextField,
     CircularProgress,
 } from "@mui/material";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/storeRedux";
 
 // Define the structure of your data
 interface StockData {
@@ -23,10 +26,12 @@ interface StockData {
 
 const PaginatedTable: React.FC = () => {
     // State for table data and pagination
+    const token = useSelector((state: RootState) => state.localStorage.value);
     const [data, setData] = useState<StockData[]>([]); // Specify the type of data
     const [page, setPage] = useState<number>(0);
     const [rowsPerPage, setRowsPerPage] = useState<number>(10);
     const [totalPages, setTotalPages] = useState<number>(0);
+    const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState<boolean>(false);
 
     // Fetch data from the backend
@@ -34,8 +39,12 @@ const PaginatedTable: React.FC = () => {
         setLoading(true);
         try {
             const response = await axios.get(
-                `http://localhost:6347/api/history-bahan-masuk/stok?page=${page + 1}&per_page=${rowsPerPage}`
-            );
+                `http://localhost:6347/api/history-bahan-masuk/stok?page=${page + 1}&per_page=${rowsPerPage}&search=${searchTerm}`
+                , {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
             const result = await response.data;
             console.log(result);
             setData(result.data);
@@ -46,11 +55,6 @@ const PaginatedTable: React.FC = () => {
             setLoading(false);
         }
     };
-
-    // Load data on page load and when pagination changes
-    useEffect(() => {
-        fetchData(page, rowsPerPage);
-    }, [page, rowsPerPage]);
 
     // Handle page change
     const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -63,6 +67,18 @@ const PaginatedTable: React.FC = () => {
         setPage(0); // Reset to the first page
     };
 
+    // Load data on page load and when pagination changes
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            fetchData(page, rowsPerPage);
+        }, 400);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [page, rowsPerPage, searchTerm]);
+
+
     return (
         <>
             <div className="mb-12 mt-6">
@@ -71,6 +87,18 @@ const PaginatedTable: React.FC = () => {
             <div className="border-2 rounded-lg h-[80vh] shadow-2xl mx-12">
                 <div className="container mx-auto px-12 py-12">
                     <Paper sx={{ width: "100%", overflow: "hidden" }}>
+                        {/* Search Bar */}
+                        <div className="px-4 py-2 flex justify-between items-center">
+                            <TextField
+                                label="Cari Barang"
+                                variant="outlined"
+                                size="small"
+                                fullWidth
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+
                         <TableContainer sx={{ maxHeight: 440 }}>
                             <Table stickyHeader>
                                 <TableHead>
@@ -88,7 +116,7 @@ const PaginatedTable: React.FC = () => {
                                                 <CircularProgress />
                                             </TableCell>
                                         </TableRow>
-                                    ) : (
+                                    ) : data.length > 0 ? (
                                         data.map((row, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>{new Date(row.tgl_nota).toLocaleDateString()}</TableCell>
@@ -97,6 +125,12 @@ const PaginatedTable: React.FC = () => {
                                                 <TableCell>{row.qty}</TableCell>
                                             </TableRow>
                                         ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={5} align="center">
+                                                Tidak ada data yang sesuai
+                                            </TableCell>
+                                        </TableRow>
                                     )}
                                 </TableBody>
                             </Table>
@@ -108,7 +142,7 @@ const PaginatedTable: React.FC = () => {
                             <TablePagination
                                 rowsPerPageOptions={[10, 20, 50]}
                                 component="div"
-                                count={totalPages * rowsPerPage} // Total items (calculated from total pages and rows per page)
+                                count={totalPages * rowsPerPage}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onPageChange={handleChangePage}
