@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { set, useForm } from 'react-hook-form';
+import React, { Fragment, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -9,8 +9,13 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableVirtuoso, TableComponents } from 'react-virtuoso';
 import axios from 'axios';
-import { RootState } from '@reduxjs/toolkit/query';
+import { RootState } from '../../app/storeRedux';
 import { useSelector } from 'react-redux';
+import Joi from 'joi';
+import { joiResolver } from '@hookform/resolvers/joi';
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface Data {
     id: number;
@@ -19,6 +24,14 @@ interface Data {
     username: string;
     email: string;
     role: string;
+}
+
+interface UserFormData {
+    username: string;
+    name: string;
+    password: string;
+    role: string;
+    email: string;
 }
 
 interface ColumnData {
@@ -75,12 +88,79 @@ const handleUpdate = (row: Data) => {
     console.log('Updating row with ID:', row.id);
 };
 
+const isUsernameDuplicate = async (username: string) => {
+    try {
+        const response = await axios.get(`http://localhost:6347/api/users?username=${username}`);
+        return response.data.length > 0;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return false;
+    }
+};
+
+const isEmailDuplicate = async (email: string) => {
+    try {
+        const response = await axios.get(`http://localhost:6347/api/users?email=${email}`);
+        return response.data.length > 0;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return false;
+    }
+};
+
 function TambahUserPage() {
     const token = useSelector((state: RootState) => state.localStorage.value);
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const schema = Joi.object({
+        username: Joi.string()
+            .required()
+            .external(async (value) => {
+                const isDuplicate = await isUsernameDuplicate(value);
+                if (isDuplicate) {
+                    throw new Error('Username already exists');
+                }
+            })
+            .messages({
+                'string.empty': 'Username is required',
+            }),
+        name: Joi.string().required().messages({
+            'string.empty': 'Name is required',
+        }),
+        password: Joi.string()
+            .min(10)
+            .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])'))
+            .required()
+            .messages({
+                'string.empty': 'Password is required',
+                'string.min': 'Password must be at least 10 characters long',
+                'string.pattern.base': 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character',
+            }),
+        role: Joi.string()
+            .valid('adminkantor', 'karyawankantor', 'adminworkshop', 'karyawanworkshop')
+            .required()
+            .messages({
+                'string.empty': 'Role is required',
+                'any.only': 'Invalid role selection',
+            }),
+        email: Joi.string()
+            .email({ tlds: { allow: false } }) // Memastikan email memiliki format yang valid
+            .required()
+            .external(async (value) => {
+                // Asumsikan Anda memiliki fungsi `isEmailDuplicate` untuk mengecek email di database
+                const isDuplicate = await isEmailDuplicate(value);
+                if (isDuplicate) {
+                    throw new Error('Email already exists');
+                }
+            })
+            .messages({
+                'string.empty': 'Email is required',
+                'string.email': 'Invalid email format',
+            }),
+    });
+
+    const { register, handleSubmit, formState: { errors } } = useForm<UserFormData>({ resolver: joiResolver(schema) });
     const [rows, setRows] = useState<Data[]>([]);
     const [reload, setReload] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState("");
     console.log(token);
 
     function rowContent(_index: number, row: Data) {
@@ -133,9 +213,9 @@ function TambahUserPage() {
         console.log(response);
     };
 
-    const onSubmit = (data: any) => {
+    const onSubmit = async (data: UserFormData) => {
         try {
-            const response = axios.post("http://localhost:6347/api/users", {
+            const response = await axios.post("http://localhost:6347/api/users", {
                 username: data.username,
                 nama: data.name,
                 password: data.password,
@@ -150,16 +230,25 @@ function TambahUserPage() {
             setReload(!reload);
             console.log(response);
         } catch (error) {
-            // Menangani error dan menyimpannya dalam state
-            if (error.response) {
-                // Jika backend memberikan response error
-                setError(`Error: ${error.response.data.message || 'Something went wrong'}`);
-            } else if (error.request) {
-                // Jika request berhasil dikirim tetapi tidak ada response
-                setError('No response received from the server');
-            } else {
-                // Jika ada masalah dalam pembuatan request
-                setError(`Error: ${error.message}`);
+            if (axios.isAxiosError(error)) {
+                // Menangani error dan menyimpannya dalam state
+                if (error.response) {
+                    // Jika backend memberikan response error
+                    // setError(`Error: ${error.response.data.message || 'Something went wrong'}`);
+                    setError(String(error.response.data.message));
+                    // console.log(error.response.data.message);
+
+                } else if (error.request) {
+                    // Jika request berhasil dikirim tetapi tidak ada response
+                    setError('No response received from the server');
+                    console.log(error.request);
+
+                } else {
+                    // Jika ada masalah dalam pembuatan request
+                    // setError(`Error: ${error.message}`);
+                    console.log(error);
+
+                }
             }
         }
     };
@@ -186,16 +275,31 @@ function TambahUserPage() {
 
     return (
         <>
+            <div>
+                <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
+                    onClose={() => setError("")}
+                    message={error}
+                    action={
+                        <Fragment>
+                            <IconButton
+                                size="small"
+                                aria-label="close"
+                                color="inherit"
+                                onClick={() => setError("")}
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </Fragment>
+                    }
+                />
+            </div>
             <div className='mb-12 mt-6'>
                 <h2 className='text-4xl font-bold text-[#65558f] mb-2 mx-12'>Tambah Pengguna Baru</h2>
             </div>
             <div className='border-2 rounded-lg h-[90vh] shadow-2xl mx-12'>
                 <div className='container mx-auto px-12 py-12'>
-                    {error && (
-                        <div style={{ color: 'red', padding: '10px', border: '1px solid red', borderRadius: '5px' }}>
-                            {error}
-                        </div>
-                    )}
                     <form onSubmit={handleSubmit(onSubmit)}>
                         {/* Tombol Submit */}
                         <div className='flex flex-col h-full'>
@@ -214,7 +318,7 @@ function TambahUserPage() {
                                 <option value="adminworkshop">Admin Workshop</option>
                                 <option value="karyawanworkshop">Karyawan Workshop</option>
                             </select>
-                            {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
+                            {errors.role && <span className="text-red-500 text-sm">{String(errors.role?.message)}</span>}
                         </div>
                         <br />
                         {/* Nama Lengkap */}
@@ -226,7 +330,7 @@ function TambahUserPage() {
                                 {...register("name", { required: "Nama Lengkap is required" })}
                                 className="border-2 border-gray-300 rounded px-2 py-2 w-full"
                             />
-                            {errors.name && <span className="text-red-500 text-sm">{errors.name.message}</span>}
+                            {errors.name && <span className="text-red-500 text-sm">{String(errors.name.message)}</span>}
                         </div>
                         <br />
 
@@ -239,7 +343,7 @@ function TambahUserPage() {
                                 {...register("username", { required: "Username is required" })}
                                 className="border-2 border-gray-300 rounded px-2 py-2 w-full"
                             />
-                            {errors.username && <span className="text-red-500 text-sm">{errors.username.message}</span>}
+                            {errors.username && <span className="text-red-500 text-sm">{String(errors.username.message)}</span>}
                         </div>
                         <br />
 
@@ -255,7 +359,7 @@ function TambahUserPage() {
                                 })}
                                 className="border-2 border-gray-300 rounded px-2 py-2 w-full"
                             />
-                            {errors.email && <span className="text-red-500 text-sm">{errors.email.message}</span>}
+                            {errors.email && <span className="text-red-500 text-sm">{String(errors.email.message)}</span>}
                         </div>
                         <br />
                         {/* Password */}
@@ -269,7 +373,7 @@ function TambahUserPage() {
                                 })}
                                 className="border-2 border-gray-300 rounded px-2 py-2 w-full"
                             />
-                            {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
+                            {errors.password && <span className="text-red-500 text-sm">{String(errors.password.message)}</span>}
                         </div>
                     </form>
                     <Paper className='mt-10' sx={{ height: 200, width: '100%', boxShadow: 3 }}>
