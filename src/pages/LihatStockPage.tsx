@@ -99,7 +99,7 @@ const PaginatedTable: React.FC = () => {
                             />
                         </div>
 
-                        <TableContainer sx={{ maxHeight: 440 }}>
+                        <TableContainer sx={{ maxHeight: 1000 }}>
                             <Table stickyHeader>
                                 <TableHead>
                                     <TableRow>
@@ -119,7 +119,11 @@ const PaginatedTable: React.FC = () => {
                                     ) : data.length > 0 ? (
                                         data.map((row, index) => (
                                             <TableRow key={index}>
-                                                <TableCell>{new Date(row.tgl_nota).toLocaleDateString()}</TableCell>
+                                                <TableCell>{new Date(row.tgl_nota).toLocaleDateString("en-GB", {
+                                                    day: "2-digit",
+                                                    month: "2-digit",
+                                                    year: "numeric",
+                                                })}</TableCell>
                                                 <TableCell>{row.nama_bahan}</TableCell>
                                                 <TableCell>{row.nama_satuan}</TableCell>
                                                 <TableCell>{row.qty}</TableCell>
