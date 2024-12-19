@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { set, useForm } from 'react-hook-form';
+import React, { Fragment, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -12,7 +12,10 @@ import axios from 'axios';
 import Joi from 'joi';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { useSelector } from 'react-redux';
-import { RootState } from '@reduxjs/toolkit/query';
+import { RootState } from '../../app/storeRedux';
+import { Snackbar } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface Data {
     id: number
@@ -22,6 +25,14 @@ interface Data {
     nama_bank?: string;
     no_telepon: number;
     alamat: string;
+}
+
+interface DataFormSubmit {
+    nama: string;
+    noTelepon: number;
+    alamat: string;
+    noRekening?: number;
+    namaBank?: string;
 }
 
 interface ColumnData {
@@ -83,19 +94,20 @@ function TambahCustomerSupplierPage() {
         namaBank: Joi.string().required().messages({
             'string.empty': 'Nama Bank is required',
         }),
-        noTelepon: Joi.string().min(10).required().messages({
+        noTelepon: Joi.string().min(10).pattern(/^\d+$/, 'no numbers allowed').required().messages({
             'string.empty': 'No Telepon is required',
+            'string.pattern.name': 'Hanya boleh berisi angka',
             'string.min': 'No Telepon must be at least 10 digits',
         }),
         alamat: Joi.string().required().messages({
             'string.empty': 'Alamat is required',
         }),
     });
-    const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm({
+    const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<DataFormSubmit>({
         resolver: joiResolver(schema),
     });
     const [role, setRole] = useState("");
-    const [error, setError] = useState(null);
+    const [error, setError] = useState("");
 
     const visibleColumns = columns.filter((column) => {
         if (role === 'Customer') {
@@ -213,8 +225,7 @@ function TambahCustomerSupplierPage() {
         }
     };
 
-
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: DataFormSubmit) => {
         if (update) {
             const id = updateId;
             if (role === "Customer") {
@@ -228,6 +239,7 @@ function TambahCustomerSupplierPage() {
                             Authorization: `Bearer ${token}`,
                         }
                     })
+                console.log(response);
                 setUpdate(false);
                 reset();
                 setReload(!reload);
@@ -244,23 +256,41 @@ function TambahCustomerSupplierPage() {
                             Authorization: `Bearer ${token}`,
                         }
                     })
+                console.log(response);
                 setUpdate(false);
                 reset();
                 setReload(!reload);
             }
         } else {
             if (role === "Customer") {
-                const response = await axios.post("http://localhost:6347/api/customer", {
-                    nama: data.nama,
-                    no_telepon: data.noTelepon,
-                    alamat: data.alamat
-                },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    })
-                console.log(response);
+                try {
+                    const response = await axios.post("http://localhost:6347/api/customer", {
+                        nama: data.nama,
+                        no_telepon: data.noTelepon,
+                        alamat: data.alamat
+                    },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                        })
+                    console.log(response);
+                } catch (error) {
+                    if (axios.isAxiosError(error)) {
+                        // Menangani error dan menyimpannya dalam state
+                        if (error.response) {
+                            // Jika backend memberikan response error
+                            setError(`Error: ${error.response.data.message || 'Something went wrong'}`);
+                        } else if (error.request) {
+                            // Jika request berhasil dikirim tetapi tidak ada response
+                            setError('No response received from the server');
+                        } else {
+                            // Jika ada masalah dalam pembuatan request
+                            setError(`Error: ${error.message}`);
+                        }
+                    }
+                }
+
             } else if (role === "Supplier") {
                 try {
                     const response = await axios.post("http://localhost:6347/api/supplier", {
@@ -274,19 +304,22 @@ function TambahCustomerSupplierPage() {
                             Authorization: `Bearer ${token}`,
                         },
                     });
+                    console.log(response);
                     reset();
-                    setError(null);
+                    setError("");
                 } catch (error) {
-                    // Menangani error dan menyimpannya dalam state
-                    if (error.response) {
-                        // Jika backend memberikan response error
-                        setError(`Error: ${error.response.data.message || 'Something went wrong'}`);
-                    } else if (error.request) {
-                        // Jika request berhasil dikirim tetapi tidak ada response
-                        setError('No response received from the server');
-                    } else {
-                        // Jika ada masalah dalam pembuatan request
-                        setError(`Error: ${error.message}`);
+                    if (axios.isAxiosError(error)) {
+                        // Menangani error dan menyimpannya dalam state
+                        if (error.response) {
+                            // Jika backend memberikan response error
+                            setError(`Error: ${error.response.data.message || 'Something went wrong'}`);
+                        } else if (error.request) {
+                            // Jika request berhasil dikirim tetapi tidak ada response
+                            setError('No response received from the server');
+                        } else {
+                            // Jika ada masalah dalam pembuatan request
+                            setError(`Error: ${error.message}`);
+                        }
                     }
                 }
             }
@@ -294,7 +327,7 @@ function TambahCustomerSupplierPage() {
     };
 
     useEffect(() => {
-        if (role === 'Supplier' && token) {
+        if (role === 'Supplier') {
             axios.get('http://localhost:6347/api/supplier', {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -313,7 +346,7 @@ function TambahCustomerSupplierPage() {
                 .catch(error => {
                     console.error('Error fetching users:', error);
                 });
-        } else if (role === 'Customer' && token) {
+        } else if (role === 'Customer') {
             axios.get('http://localhost:6347/api/customer', {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -337,6 +370,26 @@ function TambahCustomerSupplierPage() {
 
     return (
         <>
+            <div>
+                <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
+                    onClose={() => setError("")}
+                    message={error}
+                    action={
+                        <Fragment>
+                            <IconButton
+                                size="small"
+                                aria-label="close"
+                                color="inherit"
+                                onClick={() => setError("")}
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </Fragment>
+                    }
+                />
+            </div>
             {/* Header */}
             <div className="mb-12 mt-6">
                 <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">
@@ -370,7 +423,6 @@ function TambahCustomerSupplierPage() {
                                 <option value="Customer">Customer</option>
                                 <option value="Supplier">Supplier</option>
                             </select>
-                            {errors.role && <span className="text-red-500 text-sm">{errors.role.message}</span>}
                         </div>
 
                         <div className="flex items-center gap-x-4">
@@ -381,7 +433,7 @@ function TambahCustomerSupplierPage() {
                                 {...register("nama")}
                                 className="border-2 border-gray-300 rounded px-4 py-2 w-full"
                             />
-                            {errors.nama && <span className="text-red-500 text-sm">{errors.nama.message}</span>}
+                            {errors.nama && <span className="text-red-500 text-sm">{String(errors.nama.message)}</span>}
                         </div>
 
                         {role === "Supplier" && (
@@ -394,7 +446,7 @@ function TambahCustomerSupplierPage() {
                                         {...register("noRekening")}
                                         className="border-2 border-gray-300 rounded px-4 py-2 w-full"
                                     />
-                                    {errors.noRekening && <span className="text-red-500 text-sm">{errors.noRekening.message}</span>}
+                                    {errors.noRekening && <span className="text-red-500 text-sm">{String(errors.noRekening.message)}</span>}
                                 </div>
 
                                 <div className="flex items-center gap-x-4">
@@ -405,7 +457,7 @@ function TambahCustomerSupplierPage() {
                                         {...register("namaBank")}
                                         className="border-2 border-gray-300 rounded px-4 py-2 w-full"
                                     />
-                                    {errors.namaBank && <span className="text-red-500 text-sm">{errors.namaBank.message}</span>}
+                                    {errors.namaBank && <span className="text-red-500 text-sm">{String(errors.namaBank.message)}</span>}
                                 </div>
                             </>
                         )}
@@ -418,7 +470,7 @@ function TambahCustomerSupplierPage() {
                                 {...register("noTelepon")}
                                 className="border-2 border-gray-300 rounded px-4 py-2 w-full"
                             />
-                            {errors.noTelepon && <span className="text-red-500 text-sm">{errors.noTelepon.message}</span>}
+                            {errors.noTelepon && <span className="text-red-500 text-sm">{String(errors.noTelepon.message)}</span>}
                         </div>
 
                         <div className="flex items-center gap-x-4">
@@ -427,19 +479,21 @@ function TambahCustomerSupplierPage() {
                                 id="alamat"
                                 {...register("alamat")}
                                 className="border-2 border-gray-300 rounded px-4 py-2 w-full"
-                                rows="4"
+                                rows={4}
                             ></textarea>
-                            {errors.alamat && <span className="text-red-500 text-sm">{errors.alamat.message}</span>}
+                            {errors.alamat && <span className="text-red-500 text-sm">{String(errors.alamat.message)}</span>}
                         </div>
                     </form>
-                    <Paper className="mt-10" sx={{ height: 400, width: '100%', boxShadow: 3 }}>
-                        <TableVirtuoso
-                            data={rows}
-                            components={VirtuosoTableComponents}
-                            fixedHeaderContent={fixedHeaderContent}
-                            itemContent={(index, row) => rowContent(index, row)} // Hilangkan TableRow di sini
-                        />
-                    </Paper>
+                    {rows.length == 0 ? "Belum ada data" : <>
+                        <Paper className="mt-10" sx={{ height: 400, width: '100%', boxShadow: 3 }}>
+                            <TableVirtuoso
+                                data={rows}
+                                components={VirtuosoTableComponents}
+                                fixedHeaderContent={fixedHeaderContent}
+                                itemContent={(index, row) => rowContent(index, row)} // Hilangkan TableRow di sini
+                            />
+                        </Paper>
+                    </>}
                 </div>
             </div>
         </>
