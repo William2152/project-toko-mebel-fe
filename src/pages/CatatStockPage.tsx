@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import FormHeaderStock from "../component/FormHeaderStock";
-import FormInputBarang from "../component/FormInputBarang";
 import axios from "axios";
-import { RootState } from "@reduxjs/toolkit/query";
 import { useSelector } from "react-redux";
+import { RootState } from "../../app/storeRedux";
 
 function CatatStockPage() {
     const token = useSelector((state: RootState) => state.localStorage.value);
@@ -222,7 +220,7 @@ function CatatStockPage() {
                     <form onSubmit={handleSubmitBarang(handleAddItem)}>
                         <div className="flex items-center gap-x-4">
                             {/* Tambah Bahan */}
-                            <div className="flex justify-start gap-x-8 items-center p-4">
+                            <div className="flex justify-start gap-x-44 items-center p-8">
                                 {/* Nama Bahan */}
                                 <div className="flex flex-col items-start p-4 rounded">
                                     <label htmlFor="">Nama Bahan</label>
