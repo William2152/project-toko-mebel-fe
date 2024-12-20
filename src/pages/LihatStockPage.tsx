@@ -24,10 +24,10 @@ interface StockData {
     created_at: string;
 }
 
-const PaginatedTable: React.FC = () => {
+function LihatStockPage() {
     // State for table data and pagination
     const token = useSelector((state: RootState) => state.localStorage.value);
-    const [data, setData] = useState<StockData[]>([]); // Specify the type of data
+    const [data, setData] = useState<StockData[]>([]);
     const [page, setPage] = useState<number>(0);
     const [rowsPerPage, setRowsPerPage] = useState<number>(10);
     const [totalPages, setTotalPages] = useState<number>(0);
@@ -84,7 +84,7 @@ const PaginatedTable: React.FC = () => {
             <div className="mb-12 mt-6">
                 <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">Lihat Stock</h2>
             </div>
-            <div className="border-2 rounded-lg h-[80vh] shadow-2xl mx-12">
+            <div className="border-2 rounded-lg shadow-2xl mx-12">
                 <div className="container mx-auto px-12 py-12">
                     <Paper sx={{ width: "100%", overflow: "hidden" }}>
                         {/* Search Bar */}
@@ -99,7 +99,7 @@ const PaginatedTable: React.FC = () => {
                             />
                         </div>
 
-                        <TableContainer sx={{ maxHeight: 1000 }}>
+                        <TableContainer sx={{ maxHeight: 400 }}>
                             <Table stickyHeader>
                                 <TableHead>
                                     <TableRow>
@@ -160,4 +160,4 @@ const PaginatedTable: React.FC = () => {
     );
 };
 
-export default PaginatedTable;
+export default LihatStockPage;
