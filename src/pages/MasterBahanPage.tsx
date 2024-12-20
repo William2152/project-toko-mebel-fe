@@ -1,4 +1,3 @@
-import { RootState } from "@reduxjs/toolkit/query";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
@@ -9,127 +8,72 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { TableVirtuoso, TableComponents } from 'react-virtuoso';
 import React, { useEffect, useState } from "react";
+import { CircularProgress, TablePagination, TextField } from "@mui/material";
+import { RootState } from "../../app/storeRedux";
+import Joi from "joi";
+import { joiResolver } from "@hookform/resolvers/joi";
 
 function MasterBahanPage() {
-    const token = useSelector((state: RootState) => state.localStorage.value);
-    const formBahan = useForm();
-    const { register: registerBahan, handleSubmit: handleSubmitBahan } = formBahan;
-    const formSatuan = useForm();
-    const { register: registerSatuan, handleSubmit: handleSubmitSatuan } = formSatuan;
-    const [rowsBahan, setRowsBahan] = useState();
-    const [rowsSatuan, setRowsSatuan] = useState();
-
     interface DataBahan {
         id: number;
-        no: number;
         nama: string;
     }
 
     interface DataSatuan {
         id: number;
-        no: number;
         nama: string;
         satuan_terkecil: string;
         konversi: number;
     }
 
-    interface ColumnDataBahan {
-        dataKey: keyof DataBahan | "aksi";
-        label: string;
-        numeric?: boolean;
-        width?: number;
-    }
+    const schemaBahan = Joi.object({
+        nama: Joi.string().required(),
+    });
+    const schemaSatuan = Joi.object({
+        nama: Joi.string().required(),
+        satuan_terkecil: Joi.string().required(),
+        konversi: Joi.number().required(),
+    });
 
-    interface ColumnDataSatuan {
-        dataKey: keyof DataSatuan | "aksi";
-        label: string;
-        numeric?: boolean;
-        width?: number;
-    }
+    const token = useSelector((state: RootState) => state.localStorage.value);
+    const formBahan = useForm({ resolver: joiResolver(schemaBahan) });
+    const { register: registerBahan, handleSubmit: handleSubmitBahan, formState: { errors: errorsBahan } } = formBahan;
+    const formSatuan = useForm({ resolver: joiResolver(schemaSatuan) });
+    const { register: registerSatuan, handleSubmit: handleSubmitSatuan, formState: { errors: errorsSatuan } } = formSatuan;
+    const [searchTermBahan, setSearchTermBahan] = useState("");
+    const [searchTermSatuan, setSearchTermSatuan] = useState("");
+    const [loading, setLoading] = useState<boolean>(false);
+    const [dataBahan, setDataBahan] = useState<DataBahan[]>([]);
+    const [dataSatuan, setDataSatuan] = useState<DataSatuan[]>([]);
+    const [pageBahan, setPageBahan] = useState<number>(0);
+    const [pageSatuan, setPageSatuan] = useState<number>(0);
+    const [rowsPerPageBahan, setRowsPerPageBahan] = useState<number>(10);
+    const [rowsPerPageSatuan, setRowsPerPageSatuan] = useState<number>(10);
+    const [totalPagesBahan, setTotalPagesBahan] = useState<number>(0);
+    const [totalPagesSatuan, setTotalPagesSatuan] = useState<number>(0);
 
-    const columnsDataBahan: ColumnDataBahan[] = [
-        { width: 50, label: 'No', dataKey: 'no', numeric: true },
-        { width: 100, label: 'Nama', dataKey: 'nama' },
-        { width: 200, label: 'Aksi', dataKey: 'aksi' },
-    ];
-
-    const columnsDataSatuan: ColumnDataSatuan[] = [
-        { width: 50, label: 'No', dataKey: 'no', numeric: true },
-        { width: 150, label: 'Nama', dataKey: 'nama' },
-        { width: 150, label: 'Satuan Terkecil', dataKey: 'satuan_terkecil' },
-        { width: 150, label: 'Konversi', dataKey: 'konversi' },
-        { width: 100, label: 'Aksi', dataKey: 'aksi' },
-    ];
-
-    const VirtuosoTableComponents: TableComponents<DataBahan> = {
-        Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
-            <TableContainer component={Paper} {...props} ref={ref} />
-        )),
-        Table: (props) => (
-            <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }} />
-        ),
-        TableHead: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-            <TableHead {...props} ref={ref} />
-        )),
-        TableRow,
-        TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-            <TableBody {...props} ref={ref} />
-        )),
+    // Handle page change
+    const handleChangePageBahan = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+        setPageBahan(newPage);
     };
 
-    const VirtuosoTableComponentsSatuan: TableComponents<DataSatuan> = {
-        Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
-            <TableContainer component={Paper} {...props} ref={ref} />
-        )),
-        Table: (props) => (
-            <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }} />
-        ),
-        TableHead: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-            <TableHead {...props} ref={ref} />
-        )),
-        TableRow,
-        TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-            <TableBody {...props} ref={ref} />
-        )),
+    // Handle page change
+    const handleChangePageSatuan = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+        setPageSatuan(newPage);
     };
 
-    function fixedHeaderContentBahan() {
-        return (
-            <TableRow>
-                {columnsDataBahan.map((column) => (
-                    <TableCell
-                        key={column.dataKey}
-                        variant="head"
-                        align={column.numeric || false ? 'right' : 'left'}
-                        style={{ width: column.width }}
-                        sx={{ backgroundColor: 'background.paper' }}
-                    >
-                        {column.label}
-                    </TableCell>
-                ))}
-            </TableRow>
-        );
-    }
+    // Handle rows per page change
+    const handleChangeRowsPerPageBahan = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPageBahan(parseInt(event.target.value, 10));
+        setPageBahan(0); // Reset to the first page
+    };
 
-    function fixedHeaderContentSatuan() {
-        return (
-            <TableRow>
-                {columnsDataSatuan.map((column) => (
-                    <TableCell
-                        key={column.dataKey}
-                        variant="head"
-                        align={column.numeric || false ? 'right' : 'left'}
-                        style={{ width: column.width }}
-                        sx={{ backgroundColor: 'background.paper' }}
-                    >
-                        {column.label}
-                    </TableCell>
-                ))}
-            </TableRow>
-        );
-    }
+    // Handle rows per page change
+    const handleChangeRowsPerPageSatuan = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPageSatuan(parseInt(event.target.value, 10));
+        setPageSatuan(0); // Reset to the first page
+    };
 
     const handleUpdateBahan = (row: Data) => {
         console.log('Updating row with ID:', row.id);
@@ -145,88 +89,11 @@ function MasterBahanPage() {
         console.log('Deleting row with ID:', id);
     };
 
-    function rowContentBahan(_index: number, row: DataBahan) {
-        return (
-            <React.Fragment>
-                {columnsDataBahan.map((column) => (
-                    <TableCell
-                        key={column.dataKey}
-                        align={column.numeric || false ? 'right' : 'left'}
-                    >
-                        {column.dataKey === 'aksi' ? (
-                            <div style={{ display: 'flex', justifyContent: 'space-evenly', gap: '10px' }}>
-                                <button onClick={() => handleUpdateBahan(row)}
-                                    style={{
-                                        padding: '5px 10px',
-                                        backgroundColor: '#4CAF50',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '5px',
-                                        cursor: 'pointer',
-                                    }}>Update</button>
-                                <button onClick={() => handleDeleteBahan(row.id)}
-                                    style={{
-                                        padding: '5px 10px',
-                                        backgroundColor: '#4CAF50',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '5px',
-                                        cursor: 'pointer',
-                                    }}>Delete</button>
-                            </div>
-                        ) : (
-                            row[column.dataKey as keyof DataBahan] !== undefined
-                                ? row[column.dataKey as keyof DataBahan]
-                                : '-'
-                        )}
-                    </TableCell>
-                ))}
-            </React.Fragment>
-        );
-    }
-
-    function rowContentSatuan(_index: number, row: DataBahan) {
-        return (
-            <React.Fragment>
-                {columnsDataSatuan.map((column) => (
-                    <TableCell
-                        key={column.dataKey}
-                        align={column.numeric || false ? 'right' : 'left'}
-                    >
-                        {column.dataKey === 'aksi' ? (
-                            <div style={{ display: 'flex', justifyContent: 'space-evenly', gap: '10px' }}>
-                                <button onClick={() => handleUpdateSatuan(row)}
-                                    style={{
-                                        padding: '5px 10px',
-                                        backgroundColor: '#4CAF50',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '5px',
-                                        cursor: 'pointer',
-                                    }}>Update</button>
-                                <button onClick={() => handleDeleteSatuan(row.id)}
-                                    style={{
-                                        padding: '5px 10px',
-                                        backgroundColor: '#4CAF50',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '5px',
-                                        cursor: 'pointer',
-                                    }}>Delete</button>
-                            </div>
-                        ) : (
-                            row[column.dataKey as keyof DataSatuan] !== undefined
-                                ? row[column.dataKey as keyof DataSatuan]
-                                : '-'
-                        )}
-                    </TableCell>
-                ))}
-            </React.Fragment>
-        );
-    }
-
     useEffect(() => {
-        axios.get('http://localhost:6347/api/bahan', {
+        console.log('searchTermBahan:', searchTermBahan);
+        console.log('rowsPerPageBahan:', rowsPerPageBahan);
+        console.log('pageBahan:', pageBahan + 1);
+        axios.get(`http://localhost:6347/api/bahan?search=${searchTermBahan}&page=${pageBahan + 1}&per_page=${rowsPerPageBahan}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -238,15 +105,16 @@ function MasterBahanPage() {
                     ...item,
                     no: index + 1,
                 }));
-                setRowsBahan(dataWithNo);
+                setDataBahan(dataWithNo);
+                setTotalPagesBahan(response.data.total_page);
             })
             .catch(error => {
                 console.error('Error fetching users:', error);
             });
-    }, []);
+    }, [searchTermBahan, rowsPerPageBahan, pageBahan]);
 
     useEffect(() => {
-        axios.get('http://localhost:6347/api/satuan', {
+        axios.get(`http://localhost:6347/api/satuan?search=${searchTermSatuan}&page=${pageSatuan + 1}&per_page=${rowsPerPageSatuan}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -258,12 +126,13 @@ function MasterBahanPage() {
                     ...item,
                     no: index + 1,
                 }));
-                setRowsSatuan(dataWithNo);
+                setDataSatuan(dataWithNo);
+                setTotalPagesSatuan(response.data.total_page);
             })
             .catch(error => {
                 console.error('Error fetching users:', error);
             });
-    }, []);
+    }, [searchTermSatuan, rowsPerPageSatuan, pageSatuan]);
 
     const onSubmitBahan = async (data: any) => {
         const response = await axios.post("http://localhost:6347/api/bahan", {
@@ -320,21 +189,97 @@ function MasterBahanPage() {
                                 {...registerBahan("namaBahan")}
                                 placeholder="Masukkan nama bahan"
                             />
+                            {errorsBahan.namaBahan && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {String(errorsBahan.namaBahan.message)}
+                                </p>
+                            )}
                         </div>
                         <button
                             type="submit"
-                            className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
+                            className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition mb-5"
                         >
                             Tambah Bahan
                         </button>
                     </form>
-                    <Paper className='mt-10' sx={{ height: 200, width: '100%', boxShadow: 3 }}>
-                        <TableVirtuoso
-                            data={rowsBahan}
-                            components={VirtuosoTableComponents}
-                            fixedHeaderContent={fixedHeaderContentBahan}
-                            itemContent={rowContentBahan}
-                        />
+                    <Paper sx={{ width: "100%", overflow: "hidden" }}>
+                        {/* Search Bar */}
+                        <div className="px-4 py-2 flex justify-between items-center">
+                            <TextField
+                                label="Cari Bahan"
+                                variant="outlined"
+                                size="small"
+                                fullWidth
+                                value={searchTermBahan}
+                                onChange={(e) => setSearchTermBahan(e.target.value)}
+                            />
+                        </div>
+
+                        <TableContainer sx={{ maxHeight: 1000 }}>
+                            <Table stickyHeader>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>No</TableCell>
+                                        <TableCell>Nama Bahan</TableCell>
+                                        <TableCell>Aksi</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {loading ? (
+                                        <TableRow>
+                                            <TableCell colSpan={5} align="center">
+                                                <CircularProgress />
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : dataBahan.length > 0 ? (
+                                        dataBahan.map((row, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>{index + 1}</TableCell>
+                                                <TableCell>{row.nama}</TableCell>
+                                                <TableCell><button onClick={() => handleUpdateBahan(row)}
+                                                    style={{
+                                                        padding: '5px 10px',
+                                                        marginRight: '10px',
+                                                        backgroundColor: '#4CAF50',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '5px',
+                                                        cursor: 'pointer',
+                                                    }}>Update</button><button onClick={() => handleDeleteBahan(row.id)}
+                                                        style={{
+                                                            padding: '5px 10px',
+                                                            backgroundColor: '#4CAF50',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '5px',
+                                                            cursor: 'pointer',
+                                                        }}>Delete</button></TableCell>
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={5} align="center">
+                                                Tidak ada data yang sesuai
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                        <div className="flex items-center justify-between px-4 py-2">
+                            <span className="text-sm text-gray-600">
+                                Page {pageBahan + 1} of {totalPagesBahan}
+                            </span>
+                            <TablePagination
+                                rowsPerPageOptions={[10, 20, 50]}
+                                component="div"
+                                count={totalPagesBahan * rowsPerPageBahan}
+                                rowsPerPage={rowsPerPageBahan}
+                                page={pageBahan}
+                                onPageChange={handleChangePageBahan}
+                                onRowsPerPageChange={handleChangeRowsPerPageBahan}
+                            />
+                        </div>
                     </Paper>
                 </div>
             </div>
@@ -391,18 +336,93 @@ function MasterBahanPage() {
                         </div>
                         <button
                             type="submit"
-                            className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
+                            className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition mb-5"
                         >
                             Tambah Satuan
                         </button>
                     </form>
-                    <Paper className='mt-10' sx={{ height: 200, width: '100%', boxShadow: 3 }}>
-                        <TableVirtuoso
-                            data={rowsSatuan}
-                            components={VirtuosoTableComponentsSatuan}
-                            fixedHeaderContent={fixedHeaderContentSatuan}
-                            itemContent={rowContentSatuan}
-                        />
+                    <Paper sx={{ width: "100%", overflow: "hidden" }}>
+                        {/* Search Bar */}
+                        <div className="px-4 py-2 flex justify-between items-center">
+                            <TextField
+                                label="Cari Bahan"
+                                variant="outlined"
+                                size="small"
+                                fullWidth
+                                value={searchTermSatuan}
+                                onChange={(e) => setSearchTermSatuan(e.target.value)}
+                            />
+                        </div>
+
+                        <TableContainer sx={{ maxHeight: 1000 }}>
+                            <Table stickyHeader>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>No</TableCell>
+                                        <TableCell>Satuan</TableCell>
+                                        <TableCell>Satuan Terkecil</TableCell>
+                                        <TableCell>Konversi</TableCell>
+                                        <TableCell>Aksi</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {loading ? (
+                                        <TableRow>
+                                            <TableCell colSpan={5} align="center">
+                                                <CircularProgress />
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : dataSatuan.length > 0 ? (
+                                        dataSatuan.map((row, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>{index + 1}</TableCell>
+                                                <TableCell>{row.nama}</TableCell>
+                                                <TableCell>{row.satuan_terkecil}</TableCell>
+                                                <TableCell>{row.konversi}</TableCell>
+                                                <TableCell><button onClick={() => handleUpdateSatuan(row)}
+                                                    style={{
+                                                        padding: '5px 10px',
+                                                        marginRight: '10px',
+                                                        backgroundColor: '#4CAF50',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '5px',
+                                                        cursor: 'pointer',
+                                                    }}>Update</button><button onClick={() => handleDeleteSatuan(row.id)}
+                                                        style={{
+                                                            padding: '5px 10px',
+                                                            backgroundColor: '#4CAF50',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '5px',
+                                                            cursor: 'pointer',
+                                                        }}>Delete</button></TableCell>
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={5} align="center">
+                                                Tidak ada data yang sesuai
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                        <div className="flex items-center justify-between px-4 py-2">
+                            <span className="text-sm text-gray-600">
+                                Page {pageSatuan + 1} of {totalPagesSatuan}
+                            </span>
+                            <TablePagination
+                                rowsPerPageOptions={[10, 20, 50]}
+                                component="div"
+                                count={totalPagesSatuan * rowsPerPageSatuan}
+                                rowsPerPage={rowsPerPageSatuan}
+                                page={pageSatuan}
+                                onPageChange={handleChangePageSatuan}
+                                onRowsPerPageChange={handleChangeRowsPerPageSatuan}
+                            />
+                        </div>
                     </Paper>
                 </div>
             </div>
