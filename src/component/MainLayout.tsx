@@ -27,9 +27,9 @@ function MainLayout() {
     const role = localStorage.getItem('role');
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const ukIcon = 28;
-    const ukTitle = 20;
-    const ukSubTitle = 16;
+    const ukIcon = 26;
+    const ukTitle = 18;
+    const ukSubTitle = 14;
     dispatch(getItem('token'));
     const token = useSelector((state: RootState) => state.localStorage.value);
     console.log(token);
@@ -155,16 +155,16 @@ function MainLayout() {
                                 className='flex justify-center items-center'
                                 component="img"
                                 sx={{
-                                    height: 150,
-                                    width: 150,
-                                    mt: 5,
+                                    height: 130,
+                                    width: 130,
+                                    mt: 2,
                                     borderRadius: "50%"
                                 }}
                                 alt="The house from the offer."
                                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx5TZn5gGOAn3J9Wv9yTaLzAuCf15S7HrBPg&s"
                             />
                         </div>
-                        <List sx={{ pt: 2 }}>
+                        <List>
                             {/* Dashboard */}
                             <ListItem disablePadding>
                                 <ListItemButton component={NavLink} to="/dashboard"
@@ -293,6 +293,9 @@ function MainLayout() {
                                 </ListItemButton>
                                 <ListItemButton component={NavLink} to="/user/cust" sx={{ pl: 13 }}>
                                     <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Tambah Customer / Supplier" />
+                                </ListItemButton>
+                                <ListItemButton component={NavLink} to="/user/karyawan" sx={{ pl: 13 }}>
+                                    <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Tambah Karyawan" />
                                 </ListItemButton>
                             </List>
                         </Collapse>
