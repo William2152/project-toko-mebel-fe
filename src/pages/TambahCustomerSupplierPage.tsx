@@ -87,12 +87,20 @@ function TambahCustomerSupplierPage() {
         nama: Joi.string().required().messages({
             'string.empty': 'Nama is required',
         }),
-        noRekening: Joi.string().min(10).required().messages({
-            'string.empty': 'No Rekening is required',
-            'string.min': 'No Rekening must be at least 10 digits',
+        noRekening: Joi.when('$role', {
+            is: 'Supplier',
+            then: Joi.string().min(10).required().messages({
+                'string.empty': 'No Rekening is required',
+                'string.min': 'No Rekening must be at least 10 digits',
+            }),
+            otherwise: Joi.optional()
         }),
-        namaBank: Joi.string().required().messages({
-            'string.empty': 'Nama Bank is required',
+        namaBank: Joi.when('$role', {
+            is: 'Supplier',
+            then: Joi.string().required().messages({
+                'string.empty': 'Nama Bank is required',
+            }),
+            otherwise: Joi.optional()
         }),
         noTelepon: Joi.string().min(10).pattern(/^\d+$/, 'no numbers allowed').required().messages({
             'string.empty': 'No Telepon is required',
@@ -226,7 +234,8 @@ function TambahCustomerSupplierPage() {
     };
 
     const onSubmit = async (data: DataFormSubmit) => {
-        if (update) {
+        console.log(update);
+        if (update == true) {
             const id = updateId;
             if (role === "Customer") {
                 const response = await axios.put(`http://localhost:6347/api/customer/${id}`, {
@@ -262,6 +271,8 @@ function TambahCustomerSupplierPage() {
                 setReload(!reload);
             }
         } else {
+            console.log("Aa");
+
             if (role === "Customer") {
                 try {
                     const response = await axios.post("http://localhost:6347/api/customer", {
@@ -275,6 +286,8 @@ function TambahCustomerSupplierPage() {
                             },
                         })
                     console.log(response);
+                    setReload(!reload);
+                    reset();
                 } catch (error) {
                     if (axios.isAxiosError(error)) {
                         // Menangani error dan menyimpannya dalam state
@@ -307,6 +320,7 @@ function TambahCustomerSupplierPage() {
                     console.log(response);
                     reset();
                     setError("");
+                    setReload(!reload);
                 } catch (error) {
                     if (axios.isAxiosError(error)) {
                         // Menangani error dan menyimpannya dalam state
@@ -400,11 +414,6 @@ function TambahCustomerSupplierPage() {
             {/* Form Container */}
             <div className="border-2 rounded-lg shadow-2xl mx-12">
                 <div className="container mx-auto px-12 py-12">
-                    {error && (
-                        <div style={{ color: 'red', padding: '10px', border: '1px solid red', borderRadius: '5px' }}>
-                            {error}
-                        </div>
-                    )}
                     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-6">
                         <div className="flex justify-end mt-4">
                             <button type="submit" className="bg-[#65558f] hover:bg-[#56437b] text-white px-6 py-3 rounded-lg font-bold text-xl">
