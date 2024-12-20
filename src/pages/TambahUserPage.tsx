@@ -7,7 +7,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { TableVirtuoso, TableComponents } from 'react-virtuoso';
 import axios from 'axios';
 import { RootState } from '../../app/storeRedux';
 import { useSelector } from 'react-redux';
@@ -16,6 +15,12 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { Button, CircularProgress, TablePagination, TextField } from '@mui/material';
 
 interface Data {
     id: number;
@@ -24,69 +29,8 @@ interface Data {
     username: string;
     email: string;
     role: string;
-}
-
-interface UserFormData {
-    username: string;
-    name: string;
     password: string;
-    role: string;
-    email: string;
 }
-
-interface ColumnData {
-    dataKey: keyof Data | "aksi";
-    label: string;
-    numeric?: boolean;
-    width?: number;
-}
-
-const columns: ColumnData[] = [
-    { width: 50, label: 'No', dataKey: 'no', numeric: true },
-    { width: 100, label: 'Nama', dataKey: 'nama' },
-    { width: 100, label: 'Username', dataKey: 'username' },
-    { width: 150, label: 'Email', dataKey: 'email' },
-    { width: 100, label: 'Role', dataKey: 'role' },
-    { width: 100, label: 'Aksi', dataKey: 'aksi' },
-];
-
-const VirtuosoTableComponents: TableComponents<Data> = {
-    Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
-        <TableContainer component={Paper} {...props} ref={ref} />
-    )),
-    Table: (props) => (
-        <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }} />
-    ),
-    TableHead: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-        <TableHead {...props} ref={ref} />
-    )),
-    TableRow,
-    TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-        <TableBody {...props} ref={ref} />
-    )),
-};
-
-function fixedHeaderContent() {
-    return (
-        <TableRow>
-            {columns.map((column) => (
-                <TableCell
-                    key={column.dataKey}
-                    variant="head"
-                    align={column.numeric || false ? 'right' : 'left'}
-                    style={{ width: column.width }}
-                    sx={{ backgroundColor: 'background.paper' }}
-                >
-                    {column.label}
-                </TableCell>
-            ))}
-        </TableRow>
-    );
-}
-
-const handleUpdate = (row: Data) => {
-    console.log('Updating row with ID:', row.id);
-};
 
 const isUsernameDuplicate = async (username: string) => {
     try {
@@ -122,7 +66,7 @@ function TambahUserPage() {
             .messages({
                 'string.empty': 'Username is required',
             }),
-        name: Joi.string().required().messages({
+        nama: Joi.string().required().messages({
             'string.empty': 'Name is required',
         }),
         password: Joi.string()
@@ -157,51 +101,50 @@ function TambahUserPage() {
             }),
     });
 
-    const { register, handleSubmit, formState: { errors } } = useForm<UserFormData>({ resolver: joiResolver(schema) });
-    const [rows, setRows] = useState<Data[]>([]);
+    const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm<Data>({ resolver: joiResolver(schema) });
     const [reload, setReload] = useState(false);
     const [error, setError] = useState("");
+    const [update, setUpdate] = useState(false);
+    const [updateId, setUpdateId] = useState(0);
+    const [open, setOpen] = useState(false);
+    const [deleteId, setDeleteId] = useState<number>(0);
+    const [loading, setLoading] = useState(false);
+    const [data, setData] = useState<Data[]>([]);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [totalPages, setTotalPages] = useState(0);
+    const [searchTerm, setSearchTerm] = useState("");
     console.log(token);
 
-    function rowContent(_index: number, row: Data) {
-        return (
-            <React.Fragment>
-                {columns.map((column) => (
-                    <TableCell
-                        key={column.dataKey}
-                        align={column.numeric || false ? 'right' : 'left'}
-                    >
-                        {column.dataKey === 'aksi' ? (
-                            <div style={{ display: 'flex', justifyContent: 'space-evenly', gap: '10px' }}>
-                                <button onClick={() => handleUpdate(row)}
-                                    style={{
-                                        padding: '5px 10px',
-                                        backgroundColor: '#4CAF50',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '5px',
-                                        cursor: 'pointer',
-                                    }}>Update</button>
-                                <button onClick={() => handleDelete(row.id)}
-                                    style={{
-                                        padding: '5px 10px',
-                                        backgroundColor: '#4CAF50',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '5px',
-                                        cursor: 'pointer',
-                                    }}>Delete</button>
-                            </div>
-                        ) : (
-                            row[column.dataKey as keyof Data] !== undefined
-                                ? row[column.dataKey as keyof Data]
-                                : '-'
-                        )}
-                    </TableCell>
-                ))}
-            </React.Fragment>
-        );
-    }
+    const handleUpdate = (row: Data) => {
+        console.log('Updating row with ID:', row.id);
+        try {
+            setValue('username', row.username);
+            setValue('nama', row.nama);
+            setValue('password', row.password);
+            setValue('role', row.role);
+            setValue('email', row.email);
+            setUpdateId(row.id);
+            setUpdate(true);
+        } catch (error) {
+            console.error('Error updating row:', error);
+        }
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    // Handle page change
+    const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+        setPage(newPage);
+    };
+
+    // Handle rows per page change
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0); // Reset to the first page
+    };
 
     const handleDelete = async (id: number) => {
         console.log('Deleting row with ID:', id);
@@ -211,24 +154,41 @@ function TambahUserPage() {
             },
         })
         console.log(response);
+        setReload(!reload);
     };
 
-    const onSubmit = async (data: UserFormData) => {
+    const onSubmit = async (data: Data) => {
         try {
-            const response = await axios.post("http://localhost:6347/api/users", {
-                username: data.username,
-                nama: data.name,
-                password: data.password,
-                role: data.role,
-                email: data.email
-            },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-            setReload(!reload);
-            console.log(response);
+            let response;
+            if (update) {
+                response = await axios.put(`http://localhost:6347/api/users/${updateId}/role`, {
+                    role: data.role,
+                },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    })
+                setReload(!reload);
+                console.log(response);
+                setUpdate(false);
+                reset();
+            } else {
+                response = await axios.post("http://localhost:6347/api/users", {
+                    username: data.username,
+                    nama: data.nama,
+                    password: data.password,
+                    role: data.role,
+                    email: data.email
+                },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    })
+                setReload(!reload);
+                console.log(response);
+            }
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 // Menangani error dan menyimpannya dalam state
@@ -251,9 +211,11 @@ function TambahUserPage() {
                 }
             }
         }
+
     };
 
     useEffect(() => {
+        setLoading(true);
         axios.get('http://localhost:6347/api/users', {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -266,15 +228,39 @@ function TambahUserPage() {
                     ...item,
                     no: index + 1,
                 }));
-                setRows(dataWithNo);
+                setData(dataWithNo);
+                setTotalPages(response.data.total_page);
+                setLoading(false);
             })
             .catch(error => {
                 console.error('Error fetching users:', error);
+                setLoading(false);
             });
     }, [reload]);
 
     return (
         <>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Hapus User"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Apakah Anda yakin ingin menghapus user ini?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => { handleDelete(deleteId); handleClose() }}>Ya</Button>
+                    <Button onClick={handleClose} autoFocus>
+                        Tidak
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <div>
                 <Snackbar
                     open={!!error}
@@ -298,14 +284,17 @@ function TambahUserPage() {
             <div className='mb-12 mt-6'>
                 <h2 className='text-4xl font-bold text-[#65558f] mb-2 mx-12'>Tambah Pengguna Baru</h2>
             </div>
-            <div className='border-2 rounded-lg h-[90vh] shadow-2xl mx-12'>
+            <div className='border-2 rounded-lg shadow-2xl mx-12'>
                 <div className='container mx-auto px-12 py-12'>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         {/* Tombol Submit */}
                         <div className='flex flex-col h-full'>
-                            <button type="submit" className="self-end bg-[#65558f] text-white px-4 py-3 rounded mt-4 font-bold text-xl rounded-lg">
-                                Tambah User
+                            {update ? <><button type="submit" className="self-end bg-[#65558f] text-white px-4 py-3 rounded mt-4 font-bold text-xl rounded-lg">
+                                Update User
                             </button>
+                            </> : <><button type="submit" className="self-end bg-[#65558f] text-white px-4 py-3 rounded mt-4 font-bold text-xl rounded-lg">
+                                Tambah User
+                            </button></>}
                         </div>
                         <br />
                         {/* Role */}
@@ -327,10 +316,10 @@ function TambahUserPage() {
                             <input
                                 type="text"
                                 id="name"
-                                {...register("name", { required: "Nama Lengkap is required" })}
+                                {...register("nama", { required: "Nama Lengkap is required" })}
                                 className="border-2 border-gray-300 rounded px-2 py-2 w-full"
                             />
-                            {errors.name && <span className="text-red-500 text-sm">{String(errors.name.message)}</span>}
+                            {errors.nama && <span className="text-red-500 text-sm">{String(errors.nama.message)}</span>}
                         </div>
                         <br />
 
@@ -363,7 +352,7 @@ function TambahUserPage() {
                         </div>
                         <br />
                         {/* Password */}
-                        <div className='flex gap-x-4'>
+                        {update ? <></> : <><div className='flex gap-x-4'>
                             <label htmlFor="email" className='w-[25%] text-xl font-bold'>Password</label>
                             <input
                                 type="password"
@@ -371,18 +360,99 @@ function TambahUserPage() {
                                 {...register("password", {
                                     required: "Password is required",
                                 })}
-                                className="border-2 border-gray-300 rounded px-2 py-2 w-full"
+                                className="border-2 border-gray-300 rounded px-2 py-2 w-full mb-5"
                             />
                             {errors.password && <span className="text-red-500 text-sm">{String(errors.password.message)}</span>}
-                        </div>
+                        </div></>}
+
                     </form>
-                    <Paper className='mt-10' sx={{ height: 200, width: '100%', boxShadow: 3 }}>
-                        <TableVirtuoso
-                            data={rows}
-                            components={VirtuosoTableComponents}
-                            fixedHeaderContent={fixedHeaderContent}
-                            itemContent={rowContent}
-                        />
+                    <Paper sx={{ width: "100%", overflow: "hidden" }}>
+                        {/* Search Bar */}
+                        <div className="px-4 py-2 flex justify-between items-center">
+                            <TextField
+                                label="Cari User"
+                                variant="outlined"
+                                size="small"
+                                fullWidth
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+
+                        <TableContainer sx={{ maxHeight: 300 }}>
+                            <Table stickyHeader>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>No</TableCell>
+                                        <TableCell>Nama</TableCell>
+                                        <TableCell>Username</TableCell>
+                                        <TableCell>Email</TableCell>
+                                        <TableCell>Role</TableCell>
+                                        <TableCell>Aksi</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {loading ? (
+                                        <TableRow>
+                                            <TableCell colSpan={5} align="center">
+                                                <CircularProgress />
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : data.length > 0 ? (
+                                        data.map((row, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>{index + 1}</TableCell>
+                                                <TableCell>{row.nama}</TableCell>
+                                                <TableCell>{row.username}</TableCell>
+                                                <TableCell>{row.email}</TableCell>
+                                                <TableCell>{row.role}</TableCell>
+                                                <TableCell>
+                                                    <button onClick={() => handleUpdate(row)}
+                                                        style={{
+                                                            padding: '5px 10px',
+                                                            marginRight: '10px',
+                                                            backgroundColor: '#4CAF50',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '5px',
+                                                            cursor: 'pointer',
+                                                        }}>Update</button>
+                                                    <button onClick={() => { setDeleteId(row.id); setOpen(true) }}
+                                                        style={{
+                                                            padding: '5px 10px',
+                                                            backgroundColor: '#4CAF50',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '5px',
+                                                            cursor: 'pointer',
+                                                        }}>Delete</button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={5} align="center">
+                                                Tidak ada data yang sesuai
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                        <div className="flex items-center justify-between px-4 py-2">
+                            <span className="text-sm text-gray-600">
+                                Page {page + 1} of {totalPages}
+                            </span>
+                            <TablePagination
+                                rowsPerPageOptions={[10, 20, 50]}
+                                component="div"
+                                count={totalPages * rowsPerPage}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                            />
+                        </div>
                     </Paper>
                 </div>
             </div>
