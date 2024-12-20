@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
-import FormHeaderStock from '../component/FormHeaderStock';
-import FormInputBarang from '../component/FormInputBarang';
+
 
 function CatatBahanSisaPage() {
     { /* FormHandle untuk keseluruhan */ }
@@ -37,11 +36,10 @@ function CatatBahanSisaPage() {
     return (
         <>
             <form onSubmit={handleSubmitAll(saveItems)}>
-                <FormHeaderStock register={registerAll} />
             </form>
             {/* Form Tambah Barang */}
             <form className="flex gap-x-4 items-center" onSubmit={handleSubmitBarang(handleAddItem)}>
-                <FormInputBarang register={registerBarang} />
+
             </form>
             <div className="p-4">
                 {/* Header Tabel */}

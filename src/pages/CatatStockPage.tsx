@@ -103,7 +103,7 @@ function CatatStockPage() {
 
     const onSubmitStok = async (data) => {
         const response = axios.post("http://localhost:6347/api/history-bahan-masuk", {
-            kode_nota: data.noSuratJalan,
+            kode_nota: data.noNota,
             tgl_nota: data.tanggalNota,
             id_supplier: data.supplier,
             no_spb: data.noSpb,
@@ -118,7 +118,7 @@ function CatatStockPage() {
             },
         })
         console.log({
-            kode_nota: data.noSuratJalan,
+            kode_nota: data.noNota,
             tgl_nota: data.tanggalNota,
             id_supplier: data.supplier,
             no_spb: data.noSpb,
@@ -174,13 +174,13 @@ function CatatStockPage() {
 
                                     {/* No Surat Jalan */}
                                     <div className="flex flex-col gap-y-2">
-                                        <label htmlFor="noSuratJalan" className="text-lg font-semibold text-gray-700">
+                                        <label htmlFor="noNota" className="text-lg font-semibold text-gray-700">
                                             No Surat Jalan
                                         </label>
                                         <input
                                             type="text"
-                                            id="noSuratJalan"
-                                            {...registerAll("noSuratJalan", { required: "No Surat Jalan wajib diisi" })}
+                                            id="noNota"
+                                            {...registerAll("noNota", { required: "No Surat Jalan wajib diisi" })}
                                             className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                             placeholder="Masukkan no surat jalan"
                                         />
@@ -220,7 +220,7 @@ function CatatStockPage() {
                     <form onSubmit={handleSubmitBarang(handleAddItem)}>
                         <div className="flex items-center gap-x-4">
                             {/* Tambah Bahan */}
-                            <div className="flex justify-start gap-x-44 items-center p-8">
+                            <div className="flex justify-start gap-x-6 items-center p-8">
                                 {/* Nama Bahan */}
                                 <div className="flex flex-col items-start p-4 rounded">
                                     <label htmlFor="">Nama Bahan</label>
