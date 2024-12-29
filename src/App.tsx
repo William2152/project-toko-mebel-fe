@@ -4,17 +4,19 @@ import MainLayout from './component/MainLayout';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import CatatStockPage from './pages/CatatStockPage';
-import TambahProjectPage from './pages/TambahProjectPage';
-import TambahProductProjectPage from './pages/TambahProductProjectPage';
+import TambahProjectPage from './pages/Project/TambahProjectPage';
+import TambahProductProjectPage from './pages/Project/TambahProductProjectPage';
 import CatatBahanSisaPage from './pages/CatatBahanSisaPage';
 import TambahUserPage from './pages/TambahUserPage';
 import TambahCustomerSupplierPage from './pages/TambahCustomerSupplierPage';
 import MasterBahanPage from './pages/MasterBahanPage';
-import ListProjectPage from './pages/ListProjectPage';
+import ListProjectPage from './pages/Project/ListProjectPage';
 import LihatStockPage from './pages/LihatStockPage';
 import TambahNotaPage from './pages/TambahNotaPage';
 import LihatNotaPage from './pages/LihatNotaPage';
-import TambahKaryawanPage from './pages/TambahKaryawanPage';
+import TambahKaryawanPage from './pages/User/TambahKaryawanPage';
+import ProjectDetailPage from './pages/Project/ProjectDetailPage';
+import ProdukDetailPage from './pages/Project/ProdukDetailPage';
 
 function App() {
   return (
@@ -39,6 +41,8 @@ function App() {
           <Route path='tambah' index element={<TambahProjectPage />} />
           <Route path='product' index element={<TambahProductProjectPage />} />
           <Route path='list' index element={<ListProjectPage />} />
+          <Route path='detail/:id' index element={<ProjectDetailPage />} />
+          <Route path='product/detail/:id' index element={<ProdukDetailPage />} />
         </Route>
         <Route path="/user" element={<MainLayout />} >
           <Route path='tambah' index element={<TambahUserPage />} />
