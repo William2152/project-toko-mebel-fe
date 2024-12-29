@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../app/storeRedux";
 import { setItem } from "../../app/localStorageSlice";
-import { useEffect } from "react";
+import { CredentialsLogin } from "../interface";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -25,11 +25,11 @@ function LoginPage() {
     formState: { errors },
     setError,
     reset
-  } = useForm({
+  } = useForm<CredentialsLogin>({
     resolver: joiResolver(schema),
   });
 
-  async function loginUser(credentials) {
+  async function loginUser(credentials: CredentialsLogin) {
     try {
       const response = await axios.post("http://localhost:6347/auth/login", {
         username: credentials.username,
@@ -39,6 +39,7 @@ function LoginPage() {
         dispatch(setItem({ key: "token", value: response.data.accessToken, ttl: 3600000 }));
         localStorage.setItem("role", response.data.role);
         navigate("/dashboard");
+        reset();
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -53,7 +54,7 @@ function LoginPage() {
     }
   }
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: CredentialsLogin) => {
     console.log(data);
     loginUser(data);
   };
