@@ -1,17 +1,80 @@
-import React from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
+import { CustomerData, ProjectData } from '../../interface';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../app/storeRedux';
+import { IconButton, Snackbar } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 function TambahProjectPage() {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const token = useSelector((state: RootState) => state.localStorage.value);
+    const { register, handleSubmit, formState: { errors } } = useForm<ProjectData>();
+    const [error, setError] = useState('');
+    const [customer, setCustomer] = useState([]);
 
-    const onSubmit = (data) => {
+    const onSubmit = async (data: ProjectData) => {
         console.log(data);
+        try {
+            await axios.post('http://localhost:6347/api/proyek', {
+                nama: data.nama,
+                id_customer: data.id_customer,
+                start: data.start,
+                deadline: data.deadline,
+                alamat_pengiriman: data.alamat_pengiriman
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setError(error.response?.data.message);
+            }
+        }
     }
+
+    const fetchCustomer = async () => {
+        try {
+            const response = await axios.get('http://localhost:6347/api/customer', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setCustomer(response.data.data);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setError(error.response?.data.message);
+            }
+        }
+    }
+
+    useEffect(() => {
+        fetchCustomer();
+    }, [])
 
     return (
         <>
+            <div>
+                <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
+                    onClose={() => setError("")}
+                    message={error}
+                    action={
+                        <Fragment>
+                            <IconButton
+                                size="small"
+                                aria-label="close"
+                                color="inherit"
+                                onClick={() => setError("")}
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </Fragment>
+                    }
+                />
+            </div>
             <div className='mb-12 mt-6'>
                 <h2 className='text-4xl font-bold text-[#65558f] mb-2 mx-12'>Tambah Project Baru</h2>
             </div>
@@ -27,22 +90,16 @@ function TambahProjectPage() {
                         </div>
                         <br />
 
-                        {/* <Autocomplete
-                            disablePortal
-                            options={["Option 1", "Option 2", "Option 3"]}
-                            sx={{ width: 300 }}
-                            renderInput={(params) => <TextField {...params} />}
-                        /> */}
                         {/* Nama Project */}
                         <div className='flex gap-x-4'>
                             <label htmlFor="namaProject" className='w-[25%] text-2xl font-bold'>Nama Project</label>
                             <input
                                 type="text"
                                 id="namaProject"
-                                {...register("namaProject", { required: "Nama Project is required" })}
+                                {...register("nama")}
                                 className="border-2 border-gray-300 rounded px-2 py-2 w-full"
                             />
-                            {errors.namaProject && <span className="text-red-500 text-sm">{errors.namaProject.message}</span>}
+                            {errors.nama && <span className="text-red-500 text-sm">{String(errors.nama.message)}</span>}
                         </div>
                         <br />
 
@@ -51,12 +108,15 @@ function TambahProjectPage() {
                             <label htmlFor="customer" className='w-[25%] text-2xl font-bold'>Customer</label>
                             <select
                                 id="customer"
-                                {...register("customer", { required: "Customer is required" })}
+                                {...register("id_customer")}
                                 className="border-2 border-gray-300 rounded px-2 py-2 w-full"
                             >
-                                <option value="">Pilih Customer</option>
+                                <option hidden value="">Pilih Customer</option>
+                                {customer.map((customer: CustomerData) => (
+                                    <option key={customer.id} value={customer.id}>{customer.nama}</option>
+                                ))}
                             </select>
-                            {errors.customer && <span className="text-red-500 text-sm">{errors.customer.message}</span>}
+                            {errors.id_customer && <span className="text-red-500 text-sm">{errors.id_customer.message}</span>}
                         </div>
                         <br />
 
@@ -66,10 +126,10 @@ function TambahProjectPage() {
                             <input
                                 type="date"
                                 id="tanggalMulai"
-                                {...register("tanggalMulai", { required: "Tanggal Mulai is required" })}
+                                {...register("start")}
                                 className="border-2 border-gray-300 rounded px-2 py-2 w-full"
                             />
-                            {errors.tanggalMulai && <span className="text-red-500 text-sm">{errors.tanggalMulai.message}</span>}
+                            {errors.start && <span className="text-red-500 text-sm">{errors.start.message}</span>}
                         </div>
                         <br />
 
@@ -79,7 +139,7 @@ function TambahProjectPage() {
                             <input
                                 type="date"
                                 id="deadline"
-                                {...register("deadline", { required: "Deadline is required" })}
+                                {...register("deadline")}
                                 className="border-2 border-gray-300 rounded px-2 py-2 w-full"
                             />
                             {errors.deadline && <span className="text-red-500 text-sm">{errors.deadline.message}</span>}
@@ -92,10 +152,10 @@ function TambahProjectPage() {
                             <input
                                 type="text"
                                 id="alamatPengiriman"
-                                {...register("alamatPengiriman", { required: "Alamat Pengiriman is required" })}
+                                {...register("alamat_pengiriman")}
                                 className="border-2 border-gray-300 rounded px-2 py-2 w-full"
                             />
-                            {errors.alamatPengiriman && <span className="text-red-500 text-sm">{errors.alamatPengiriman.message}</span>}
+                            {errors.alamat_pengiriman && <span className="text-red-500 text-sm">{errors.alamat_pengiriman.message}</span>}
                         </div>
                     </form>
                 </div>
