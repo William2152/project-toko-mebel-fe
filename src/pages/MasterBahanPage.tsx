@@ -28,11 +28,11 @@ function MasterBahanPage() {
     }
 
     const schemaBahan = Joi.object({
-        nama: Joi.string().required(),
+        namaBahan: Joi.string().required(),
     });
     const schemaSatuan = Joi.object({
-        nama: Joi.string().required(),
-        satuan_terkecil: Joi.string().required(),
+        satuanBahan: Joi.string().required(),
+        satuanTerkecil: Joi.string().required(),
         konversi: Joi.number().required(),
     });
 
