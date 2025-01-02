@@ -93,12 +93,14 @@ function MasterBahanPage() {
         console.log('searchTermBahan:', searchTermBahan);
         console.log('rowsPerPageBahan:', rowsPerPageBahan);
         console.log('pageBahan:', pageBahan + 1);
+        setLoading(true);
         axios.get(`http://localhost:6347/api/bahan?search=${searchTermBahan}&page=${pageBahan + 1}&per_page=${rowsPerPageBahan}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         })
             .then(response => {
+                setLoading(false);
                 console.log(response.data);
 
                 const dataWithNo = response.data.data.map((item: Omit<DataBahan, 'no'>, index: number) => ({
@@ -303,6 +305,11 @@ function MasterBahanPage() {
                                 placeholder="Masukkan satuan bahan"
                                 {...registerSatuan("satuanBahan")}
                             />
+                            {errorsSatuan.satuanBahan && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {String(errorsSatuan.satuanBahan.message)}
+                                </p>
+                            )}
                         </div>
                         <div className="mb-4">
                             <label
@@ -318,6 +325,11 @@ function MasterBahanPage() {
                                 placeholder="Masukkan satuan terkecil bahan"
                                 {...registerSatuan("satuanTerkecil")}
                             />
+                            {errorsSatuan.satuanTerkecil && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {String(errorsSatuan.satuanTerkecil.message)}
+                                </p>
+                            )}
                         </div>
                         <div className="mb-4">
                             <label
@@ -333,6 +345,11 @@ function MasterBahanPage() {
                                 placeholder="Masukkan nilai konversi"
                                 {...registerSatuan("konversi")}
                             />
+                            {errorsSatuan.konversi && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {String(errorsSatuan.konversi.message)}
+                                </p>
+                            )}
                         </div>
                         <button
                             type="submit"
