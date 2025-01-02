@@ -1,20 +1,38 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/storeRedux";
+import Joi from "joi";
+import { joiResolver } from "@hookform/resolvers/joi";
+import { IconButton, Snackbar } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 function CatatStockPage() {
     const token = useSelector((state: RootState) => state.localStorage.value);
     const [namaBahan, setNamaBahan] = useState([]);
     const [satuan, setSatuan] = useState([]);
     const [supplier, setSupplier] = useState([]);
+    const [error, setError] = useState('');
 
-    const formAll = useForm();
-    const { register: registerAll, handleSubmit: handleSubmitAll } = formAll;
+    const schemaAll = Joi.object({
+        noNota: Joi.string().required(),
+        supplier: Joi.string().required(),
+        tanggalNota: Joi.string().required(),
+        noSpb: Joi.string().required(),
+    })
+    const formAll = useForm({ resolver: joiResolver(schemaAll) });
+    const { register: registerAll, handleSubmit: handleSubmitAll, formState: { errors: errorsAll }, reset: resetAll } = formAll;
 
-    const formBarang = useForm();
-    const { register: registerBarang, handleSubmit: handleSubmitBarang, reset: resetBarang } = formBarang;
+    const schemaBarang = Joi.object({
+        namaBahan: Joi.string().required(),
+        satuan: Joi.string().required(),
+        jumlahBahan: Joi.number().greater(0).messages({
+            'number.greater': 'Jumlah Bahan harus lebih besar dari 0',
+        }),
+    })
+    const formBarang = useForm({ resolver: joiResolver(schemaBarang) });
+    const { register: registerBarang, handleSubmit: handleSubmitBarang, reset: resetBarang, formState: { errors: errorsBarang } } = formBarang;
 
     const [items, setItems] = useState([
     ]);
@@ -102,37 +120,70 @@ function CatatStockPage() {
     };
 
     const onSubmitStok = async (data) => {
-        const response = axios.post("http://localhost:6347/api/history-bahan-masuk", {
-            kode_nota: data.noNota,
-            tgl_nota: data.tanggalNota,
-            id_supplier: data.supplier,
-            no_spb: data.noSpb,
-            detail: items.map((item: any) => ({
-                id_bahan: parseInt(item.idBahan),
-                id_satuan: parseInt(item.idSatuan),
-                qty: parseInt(item.jumlah)
-            }))
-        }, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        })
-        console.log({
-            kode_nota: data.noNota,
-            tgl_nota: data.tanggalNota,
-            id_supplier: data.supplier,
-            no_spb: data.noSpb,
-            detail: items.map((item: any) => ({
-                id_bahan: item.idBahan,
-                id_satuan: item.idSatuan,
-                qty: item.jumlah
-            }))
-        });
-
+        if (items.length === 0) {
+            setError('Data barang tidak boleh kosong');
+        } else {
+            try {
+                await axios.post("http://localhost:6347/api/history-bahan-masuk", {
+                    kode_nota: data.noNota,
+                    tgl_nota: data.tanggalNota,
+                    id_supplier: data.supplier,
+                    no_spb: data.noSpb,
+                    detail: items.map((item: any) => ({
+                        id_bahan: parseInt(item.idBahan),
+                        id_satuan: parseInt(item.idSatuan),
+                        qty: parseInt(item.jumlah)
+                    }))
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                setItems([]);
+                resetAll();
+                setError('Data berhasil disimpan');
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    setError(error.response?.data.message);
+                }
+            }
+            // console.log(response);
+            // console.log({
+            //     kode_nota: data.noNota,
+            //     tgl_nota: data.tanggalNota,
+            //     id_supplier: data.supplier,
+            //     no_spb: data.noSpb,
+            //     detail: items.map((item: any) => ({
+            //         id_bahan: item.idBahan,
+            //         id_satuan: item.idSatuan,
+            //         qty: item.jumlah
+            //     }))
+            // });
+        }
     };
 
     return (
         <>
+            <div>
+                <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
+                    onClose={() => setError("")}
+                    message={error}
+                    action={
+                        <Fragment>
+                            <IconButton
+                                size="small"
+                                aria-label="close"
+                                color="inherit"
+                                onClick={() => setError("")}
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </Fragment>
+                    }
+                />
+            </div>
             <div className='mb-12 mt-6'>
                 <h2 className='text-4xl font-bold text-[#65558f] mb-2 px-12'>Catat Stock Bahan</h2>
             </div>
@@ -156,6 +207,7 @@ function CatatStockPage() {
                                             className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                             placeholder="Masukkan tanggal nota"
                                         />
+                                        {errorsAll.tanggalNota && <p className="text-red-500">{String(errorsAll.tanggalNota.message)}</p>}
                                     </div>
 
                                     {/* Supplier */}
@@ -170,6 +222,7 @@ function CatatStockPage() {
                                                 <option key={item.id} value={item.id}>{item.nama}</option>
                                             ))}
                                         </select>
+                                        {errorsAll.supplier && <p className="text-red-500">{String(errorsAll.supplier.message)}</p>}
                                     </div>
 
                                     {/* No Surat Jalan */}
@@ -184,6 +237,7 @@ function CatatStockPage() {
                                             className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                             placeholder="Masukkan no surat jalan"
                                         />
+                                        {errorsAll.noNota && <p className="text-red-500">{String(errorsAll.noNota.message)}</p>}
                                     </div>
 
                                     {/* No SPB */}
@@ -198,6 +252,7 @@ function CatatStockPage() {
                                             className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                             placeholder="Masukkan no SPB"
                                         />
+                                        {errorsAll.noSpb && <p className="text-red-500">{String(errorsAll.noSpb.message)}</p>}
                                     </div>
                                 </div>
 
@@ -233,11 +288,13 @@ function CatatStockPage() {
                                             )
                                         })}
                                     </select>
+                                    {errorsBarang.namaBahan && <p className="text-red-500">{String(errorsBarang.namaBahan.message)}</p>}
                                 </div>
                                 {/* Jumlah Barang */}
                                 <div className="flex flex-col items-start p-4 rounded">
                                     <label htmlFor="">Jumlah Bahan</label>
-                                    <input type="number" className='mt-1 border border-gray-300 w-[250px] rounded px-2 py-1' {...registerBarang("jumlahBahan")} min={0} name="jumlahBahan" />
+                                    <input type="number" className='mt-1 border border-gray-300 w-[250px] rounded px-2 py-1' {...registerBarang("jumlahBahan")} min={0} name="jumlahBahan" step="0.01" />
+                                    {errorsBarang.jumlahBahan && <p className="text-red-500">{String(errorsBarang.jumlahBahan.message)}</p>}
                                 </div>
                                 {/* Satuan */}
                                 <div className="flex flex-col items-start p-4 rounded">
@@ -253,6 +310,7 @@ function CatatStockPage() {
                                             )
                                         })}
                                     </select>
+                                    {errorsBarang.satuan && <p className="text-red-500">{String(errorsBarang.satuan.message)}</p>}
                                 </div>
                                 {/* Tambah Barang Button */}
                                 <button type='submit' className="bg-[#65558f] text-white mt-4 px-6 py-2 rounded-full hover:bg-purple-700">
