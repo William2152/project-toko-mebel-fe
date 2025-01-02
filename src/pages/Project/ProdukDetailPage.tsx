@@ -173,6 +173,7 @@ function ProdukDetailPage() {
                     keterangan: data.keterangan
                 }
             ]);
+            reset();
         }
         console.log(dataBahanDetail);
     };
@@ -259,6 +260,7 @@ function ProdukDetailPage() {
                                 <label htmlFor="quantity" className="block text-xl font-bold text-[#65558f]">Quantity</label>
                                 <input
                                     type="number"
+                                    step="0.01"
                                     id="quantity"
                                     {...register('qty')}
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#65558f]"
