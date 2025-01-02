@@ -1,9 +1,10 @@
-import { CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { CircularProgress, IconButton, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from '@mui/material';
+import React, { Fragment, useEffect, useState } from 'react';
 import { ProjectData } from '../../interface';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/storeRedux';
+import CloseIcon from '@mui/icons-material/Close';
 
 function ListProjectPage() {
     const token = useSelector((state: RootState) => state.localStorage.value);
@@ -32,6 +33,7 @@ function ListProjectPage() {
     };
 
     const fetchProyek = async () => {
+        setLoading(true);
         try {
             const response = await axios.get(`http://localhost:6347/api/proyek?page=${page + 1}&per_page=${rowsPerPage}&search=${searchTerm}`, {
                 headers: {
@@ -40,9 +42,11 @@ function ListProjectPage() {
             });
             setData(response.data.data);
             setTotalPages(response.data.total_page);
+            setLoading(false);
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 setError(error.response?.data.message);
+                setLoading(false);
             }
         }
     };
@@ -85,10 +89,30 @@ function ListProjectPage() {
 
     return (
         <>
+            <div>
+                <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
+                    onClose={() => setError("")}
+                    message={error}
+                    action={
+                        <Fragment>
+                            <IconButton
+                                size="small"
+                                aria-label="close"
+                                color="inherit"
+                                onClick={() => setError("")}
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </Fragment>
+                    }
+                />
+            </div>
             <div className="mb-12 mt-6">
                 <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">List Project</h2>
             </div>
-            <div className="border-2 rounded-lg shadow-2xl mx-12 bg-white">
+            <div className="border-2 h-[80vh] rounded-lg shadow-2xl mx-12 bg-white">
                 <div className="container mx-auto px-8 py-8">
                     <Paper sx={{ width: "100%", overflow: "hidden" }}>
                         {/* Search Bar */}
@@ -103,7 +127,7 @@ function ListProjectPage() {
                             />
                         </div>
 
-                        <TableContainer sx={{ maxHeight: 300 }}>
+                        <TableContainer sx={{ maxHeight: 600 }}>
                             <Table stickyHeader>
                                 <TableHead>
                                     <TableRow>
