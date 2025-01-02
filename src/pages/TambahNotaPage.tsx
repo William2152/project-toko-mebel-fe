@@ -1,20 +1,41 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/storeRedux";
+import Joi from "joi";
+import { joiResolver } from "@hookform/resolvers/joi";
+import { IconButton, Snackbar } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 function TambahNotaPage() {
     const token = useSelector((state: RootState) => state.localStorage.value);
     const [namaBahan, setNamaBahan] = useState([]);
     const [satuan, setSatuan] = useState([]);
     const [supplier, setSupplier] = useState([]);
+    const [error, setError] = useState('');
 
-    const formAll = useForm();
-    const { register: registerAll, handleSubmit: handleSubmitAll } = formAll;
+    const schemaAll = Joi.object({
+        kodeNota: Joi.string().required(),
+        supplier: Joi.string().required(),
+        tanggalNota: Joi.string().required(),
+        totalPajak: Joi.number().required(),
+        totalDiscount: Joi.number().required(),
+    })
+    const formAll = useForm({ resolver: joiResolver(schemaAll) });
+    const { register: registerAll, handleSubmit: handleSubmitAll, formState: { errors: errorsAll }, reset: resetAll } = formAll;
 
-    const formBarang = useForm();
-    const { register: registerBarang, handleSubmit: handleSubmitBarang, reset: resetBarang } = formBarang;
+    const schemaBarang = Joi.object({
+        namaBahan: Joi.string().required(),
+        satuan: Joi.string().required(),
+        jumlahBahan: Joi.number().greater(0).messages({
+            'number.greater': 'Jumlah Bahan harus lebih besar dari 0',
+        }),
+        hargaSatuan: Joi.number().required(),
+        diskonAkhir: Joi.number().required(),
+    })
+    const formBarang = useForm({ resolver: joiResolver(schemaBarang) });
+    const { register: registerBarang, handleSubmit: handleSubmitBarang, reset: resetBarang, formState: { errors: errorsBarang } } = formBarang;
 
     const [items, setItems] = useState([
     ]);
@@ -63,7 +84,6 @@ function TambahNotaPage() {
             })
             .catch(e => {
                 console.log('Error fetching nama satuan:', e);
-
             })
     }, [])
 
@@ -104,27 +124,56 @@ function TambahNotaPage() {
     };
 
     const onSubmitNota = async (data) => {
-        const response = await axios.post("http://localhost:6347/api/nota", {
-            kode_nota: data.kodeNota,
-            tgl_nota: data.tanggalNota,
-            id_supplier: data.supplier,
-            total_pajak: data.totalPajak,
-            diskon_akhir: data.totalDiscount,
-            detail: items.map((item: any) => ({
-                id_bahan: parseInt(item.idBahan),
-                id_satuan: parseInt(item.idSatuan),
-                qty: parseInt(item.jumlah),
-                harga_satuan: parseInt(item.hargaSatuan),
-                diskon: parseInt(item.diskonAkhir)
-            }))
-        }, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        })
+        try {
+            await axios.post("http://localhost:6347/api/nota", {
+                kode_nota: data.kodeNota,
+                tgl_nota: data.tanggalNota,
+                id_supplier: data.supplier,
+                total_pajak: data.totalPajak,
+                diskon_akhir: data.totalDiscount,
+                detail: items.map((item: any) => ({
+                    id_bahan: parseInt(item.idBahan),
+                    id_satuan: parseInt(item.idSatuan),
+                    qty: parseInt(item.jumlah),
+                    harga_satuan: parseInt(item.hargaSatuan),
+                    diskon: parseInt(item.diskonAkhir)
+                }))
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            resetAll();
+            setItems([]);
+            setError("Berhasil Menambahkan Nota");
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setError(error.response?.data.message);
+            }
+        }
     };
     return (
         <>
+            <div>
+                <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
+                    onClose={() => setError("")}
+                    message={error}
+                    action={
+                        <Fragment>
+                            <IconButton
+                                size="small"
+                                aria-label="close"
+                                color="inherit"
+                                onClick={() => setError("")}
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </Fragment>
+                    }
+                />
+            </div>
             <div className='mb-12 mt-6'>
                 <h2 className='text-4xl font-bold text-[#65558f] mb-2 px-12'>Tambah Nota</h2>
             </div>
@@ -144,10 +193,11 @@ function TambahNotaPage() {
                                         <input
                                             type="date"
                                             id="tanggalNota"
-                                            {...registerAll("tanggalNota", { required: "Tanggal Nota wajib diisi" })}
+                                            {...registerAll("tanggalNota")}
                                             className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                             placeholder="Masukkan tanggal nota"
                                         />
+                                        {errorsAll.tanggalNota && <p className="text-red-500">{String(errorsAll.tanggalNota.message)}</p>}
                                     </div>
 
                                     {/* Supplier */}
@@ -162,6 +212,7 @@ function TambahNotaPage() {
                                                 <option key={item.id} value={item.id}>{item.nama}</option>
                                             ))}
                                         </select>
+                                        {errorsAll.supplier && <p className="text-red-500">{String(errorsAll.supplier.message)}</p>}
                                     </div>
 
                                     {/* Kode Nota */}
@@ -176,6 +227,7 @@ function TambahNotaPage() {
                                             className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                             placeholder="Masukkan kode Nota"
                                         />
+                                        {errorsAll.kodeNota && <p className="text-red-500">{String(errorsAll.kodeNota.message)}</p>}
                                     </div>
 
                                     {/* Total Pajak */}
@@ -190,6 +242,7 @@ function TambahNotaPage() {
                                             className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                             placeholder="Masukkan total pajak"
                                         />
+                                        {errorsAll.totalPajak && <p className="text-red-500">{String(errorsAll.totalPajak.message)}</p>}
                                     </div>
 
                                     {/* Total Discount */}
@@ -204,6 +257,7 @@ function TambahNotaPage() {
                                             className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                             placeholder="Masukkan total discount"
                                         />
+                                        {errorsAll.totalDiscount && <p className="text-red-500">{String(errorsAll.totalDiscount.message)}</p>}
                                     </div>
                                 </div>
 
@@ -226,7 +280,7 @@ function TambahNotaPage() {
                     <form onSubmit={handleSubmitBarang(handleAddItem)}>
                         <div className="flex items-center gap-x-4">
                             {/* Tambah Bahan */}
-                            <div className="flex justify-start gap-x-1 items-center p-8">
+                            <div className="flex justify-start gap-x-16 items-center p-8">
                                 {/* Nama Bahan */}
                                 <div className="flex flex-col items-start p-4 rounded">
                                     <label htmlFor="">Nama Bahan</label>
@@ -239,11 +293,13 @@ function TambahNotaPage() {
                                             )
                                         })}
                                     </select>
+                                    {errorsBarang.namaBahan && <p className="text-red-500">{String(errorsBarang.namaBahan.message)}</p>}
                                 </div>
                                 {/* Jumlah Bahan */}
                                 <div className="flex flex-col items-start p-4 rounded">
                                     <label htmlFor="">Jumlah Bahan</label>
-                                    <input type="number" className='mt-1 border border-gray-300 w-[50px] rounded px-2 py-1' {...registerBarang("jumlahBahan")} min={0} name="jumlahBahan" />
+                                    <input type="number" className='mt-1 border border-gray-300 w-[70px] rounded px-2 py-1' {...registerBarang("jumlahBahan")} min={0} name="jumlahBahan" step="0.1" />
+                                    {errorsBarang.jumlahBahan && <p className="text-red-500">{String(errorsBarang.jumlahBahan.message)}</p>}
                                 </div>
                                 {/* Satuan */}
                                 <div className="flex flex-col items-start p-4 rounded">
@@ -259,6 +315,7 @@ function TambahNotaPage() {
                                             )
                                         })}
                                     </select>
+                                    {errorsBarang.satuan && <p className="text-red-500">{String(errorsBarang.satuan.message)}</p>}
                                 </div>
                                 {/* Harga Satuan */}
                                 <div className="flex flex-col items-start p-4 rounded">
@@ -270,6 +327,7 @@ function TambahNotaPage() {
                                         name="hargaSatuan"
                                         min={0}
                                     />
+                                    {errorsBarang.hargaSatuan && <p className="text-red-500">{String(errorsBarang.hargaSatuan.message)}</p>}
                                 </div>
                                 {/* Diskon Akhir */}
                                 <div className="flex flex-col items-start p-4 rounded">
@@ -283,6 +341,7 @@ function TambahNotaPage() {
                                             min={0}
                                         />
                                         <span className="ml-2 mt-1">%</span>
+                                        {errorsBarang.diskonAkhir && <p className="text-red-500">{String(errorsBarang.diskonAkhir.message)}</p>}
                                     </div>
                                 </div>
                                 {/* Tambah Barang Button */}
