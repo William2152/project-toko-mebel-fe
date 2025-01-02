@@ -17,6 +17,7 @@ import LihatNotaPage from './pages/LihatNotaPage';
 import TambahKaryawanPage from './pages/User/TambahKaryawanPage';
 import ProjectDetailPage from './pages/Project/ProjectDetailPage';
 import ProdukDetailPage from './pages/Project/ProdukDetailPage';
+import ProfilePage from './pages/Profile/ProfilePage';
 
 function App() {
   return (
@@ -24,6 +25,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/profile" element={<MainLayout />}>
+          <Route index element={<ProfilePage />} />
+        </Route>
         <Route path="/dashboard" element={<MainLayout />}>
           <Route index element={<DashboardPage />} />
         </Route>

@@ -75,3 +75,14 @@ export interface SatuanData {
   konversi: number;
   satuan_terkecil: string;
 }
+
+export interface ProfileData {
+  name: string;
+  position: string;
+  email: string;
+}
+
+export interface PasswordFormData {
+  oldPassword: string;
+  newPassword: string;
+}

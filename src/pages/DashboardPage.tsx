@@ -1,10 +1,30 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Paper, Typography, Card, CardContent } from '@mui/material';
 import { Grid2 as Grid } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../app/storeRedux';
+import { ProjectData } from '../interface';
+import axios from 'axios';
 
 const DashboardPage: React.FC = () => {
-  // Contoh data dummy untuk tabel
+  const token = useSelector((state: RootState) => state.localStorage.value);
+  const [projectData, setProjectData] = useState<ProjectData[]>([]);
+
+  const fetchProjectData = async () => {
+    try {
+      const response = await axios.get('http://localhost:6347/api/proyek', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      })
+      setProjectData(response.data.data);
+      console.log(response.data.data);
+
+    } catch (error) {
+      console.error('Error fetching project data:', error);
+    }
+  };
   const rows = [
     { id: 1, name: 'Project A', quantity: 120, location: 'Warehouse 1' },
     { id: 2, name: 'Project B', quantity: 80, location: 'Warehouse 2' },
@@ -15,6 +35,10 @@ const DashboardPage: React.FC = () => {
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'name', headerName: 'Project Name', width: 200 },
   ];
+
+  useEffect(() => {
+    fetchProjectData();
+  }, []);
 
   return (
     <Box sx={{ padding: 2 }}>
@@ -30,7 +54,7 @@ const DashboardPage: React.FC = () => {
             <Card>
               <CardContent>
                 <Typography variant="h6">Total Project</Typography>
-                <Typography variant="h4">450</Typography>
+                <Typography variant="h4">{projectData.length}</Typography>
               </CardContent>
             </Card>
           </Grid>

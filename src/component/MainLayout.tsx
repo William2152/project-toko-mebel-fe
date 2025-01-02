@@ -302,7 +302,7 @@ function MainLayout() {
 
                         {/* Profile */}
                         <ListItem disablePadding>
-                            <ListItemButton component={NavLink} onClick={() => localStorage.clear()} to="/login"
+                            <ListItemButton component={NavLink} to="/profile"
                                 sx={{ alignItems: "center" }}>
                                 <ListItemIcon sx={{ pl: 5, color: 'white', fontSize: ukIcon }}>
                                     <AccountCircleIcon style={{ fontSize: ukIcon }} />
