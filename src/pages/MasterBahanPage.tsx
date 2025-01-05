@@ -13,6 +13,8 @@ import { CircularProgress, TablePagination, TextField } from "@mui/material";
 import { RootState } from "../../app/storeRedux";
 import Joi from "joi";
 import { joiResolver } from "@hookform/resolvers/joi";
+import { set } from "date-fns";
+import { Update } from "@mui/icons-material";
 
 function MasterBahanPage() {
     interface DataBahan {
@@ -38,9 +40,9 @@ function MasterBahanPage() {
 
     const token = useSelector((state: RootState) => state.localStorage.value);
     const formBahan = useForm({ resolver: joiResolver(schemaBahan) });
-    const { register: registerBahan, handleSubmit: handleSubmitBahan, formState: { errors: errorsBahan } } = formBahan;
+    const { register: registerBahan, handleSubmit: handleSubmitBahan, formState: { errors: errorsBahan }, reset: resetBahan, setValue: setBahan } = formBahan;
     const formSatuan = useForm({ resolver: joiResolver(schemaSatuan) });
-    const { register: registerSatuan, handleSubmit: handleSubmitSatuan, formState: { errors: errorsSatuan } } = formSatuan;
+    const { register: registerSatuan, handleSubmit: handleSubmitSatuan, formState: { errors: errorsSatuan }, reset: resetSatuan, setValue: setSatuan } = formSatuan;
     const [searchTermBahan, setSearchTermBahan] = useState("");
     const [searchTermSatuan, setSearchTermSatuan] = useState("");
     const [loading, setLoading] = useState<boolean>(false);
@@ -52,6 +54,11 @@ function MasterBahanPage() {
     const [rowsPerPageSatuan, setRowsPerPageSatuan] = useState<number>(10);
     const [totalPagesBahan, setTotalPagesBahan] = useState<number>(0);
     const [totalPagesSatuan, setTotalPagesSatuan] = useState<number>(0);
+    const [reload, setReload] = useState<boolean>(false);
+    const [updateIdBahan, setUpdateIdBahan] = useState<number>(0);
+    const [updateIdSatuan, setUpdateIdSatuan] = useState<number>(0);
+    const [updateSatuan, setUpdateSatuan] = useState<boolean>(false);
+    const [updateBahan, setUpdateBahan] = useState<boolean>(false);
 
     // Handle page change
     const handleChangePageBahan = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -77,16 +84,37 @@ function MasterBahanPage() {
 
     const handleUpdateBahan = (row: Data) => {
         console.log('Updating row with ID:', row.id);
+        setBahan('namaBahan', row.nama);
+        setUpdateIdBahan(row.id);
+        setUpdateBahan(true);
     };
 
     const handleUpdateSatuan = (row: Data) => {
         console.log('Updating row with ID:', row.id);
+        setSatuan('satuanBahan', row.nama);
+        setSatuan('satuanTerkecil', row.satuan_terkecil);
+        setSatuan('konversi', row.konversi);
+        setUpdateIdSatuan(row.id);
+        setUpdateSatuan(true);
     };
+
     const handleDeleteBahan = async (id: number) => {
         console.log('Deleting row with ID:', id);
+        await axios.delete(`http://localhost:6347/api/bahan/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+        setReload(!reload);
     };
     const handleDeleteSatuan = async (id: number) => {
         console.log('Deleting row with ID:', id);
+        await axios.delete(`http://localhost:6347/api/satuan/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+        setReload(!reload);
     };
 
     useEffect(() => {
@@ -113,7 +141,7 @@ function MasterBahanPage() {
             .catch(error => {
                 console.error('Error fetching users:', error);
             });
-    }, [searchTermBahan, rowsPerPageBahan, pageBahan]);
+    }, [searchTermBahan, rowsPerPageBahan, pageBahan, reload]);
 
     useEffect(() => {
         axios.get(`http://localhost:6347/api/satuan?search=${searchTermSatuan}&page=${pageSatuan + 1}&per_page=${rowsPerPageSatuan}`, {
@@ -134,34 +162,72 @@ function MasterBahanPage() {
             .catch(error => {
                 console.error('Error fetching users:', error);
             });
-    }, [searchTermSatuan, rowsPerPageSatuan, pageSatuan]);
+    }, [searchTermSatuan, rowsPerPageSatuan, pageSatuan, reload]);
 
     const onSubmitBahan = async (data: any) => {
-        const response = await axios.post("http://localhost:6347/api/bahan", {
-            nama: data.namaBahan,
-        },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        )
-        console.log(response);
+        if (updateBahan) {
+            const response = await axios.put(`http://localhost:6347/api/bahan/${updateIdBahan}`, {
+                nama: data.namaBahan,
+            },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            )
+            setReload(!reload);
+            resetBahan();
+            console.log(response);
+            setUpdateBahan(false);
+        } else {
+            const response = await axios.post("http://localhost:6347/api/bahan", {
+                nama: data.namaBahan,
+            },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            )
+            setReload(!reload);
+            resetBahan();
+            console.log(response);
+        }
     }
 
     const onSubmitSatuan = async (data: any) => {
-        const response = await axios.post("http://localhost:6347/api/satuan", {
-            nama: data.satuanBahan,
-            satuan_terkecil: data.satuanTerkecil,
-            konversi: data.konversi
-        },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        )
-        console.log(response);
+        if (updateSatuan) {
+            const response = await axios.put(`http://localhost:6347/api/satuan/${updateIdSatuan}`, {
+                nama: data.satuanBahan,
+                satuan_terkecil: data.satuanTerkecil,
+                konversi: data.konversi
+            },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            )
+            setReload(!reload);
+            resetSatuan();
+            console.log(response);
+            setUpdateSatuan(false);
+        } else {
+            const response = await axios.post("http://localhost:6347/api/satuan", {
+                nama: data.satuanBahan,
+                satuan_terkecil: data.satuanTerkecil,
+                konversi: data.konversi
+            },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            )
+            setReload(!reload);
+            resetSatuan();
+            console.log(response);
+        }
     }
 
     return (
@@ -197,12 +263,24 @@ function MasterBahanPage() {
                                 </p>
                             )}
                         </div>
-                        <button
-                            type="submit"
-                            className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition mb-5"
-                        >
-                            Tambah Bahan
-                        </button>
+                        {updateBahan ?
+                            <>
+                                <button
+                                    type="submit"
+                                    className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition mb-5"
+                                >
+                                    Update Bahan
+                                </button>
+                            </>
+                            :
+                            <>
+                                <button
+                                    type="submit"
+                                    className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition mb-5"
+                                >
+                                    Tambah Bahan
+                                </button>
+                            </>}
                     </form>
                     <Paper sx={{ width: "100%", overflow: "hidden" }}>
                         {/* Search Bar */}
@@ -351,12 +429,25 @@ function MasterBahanPage() {
                                 </p>
                             )}
                         </div>
-                        <button
-                            type="submit"
-                            className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition mb-5"
-                        >
-                            Tambah Satuan
-                        </button>
+                        {updateSatuan ?
+                            <>
+                                <button
+                                    type="submit"
+                                    className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition mb-5"
+                                >
+                                    Update Satuan
+                                </button>
+                            </>
+                            :
+                            <>
+                                <button
+                                    type="submit"
+                                    className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition mb-5"
+                                >
+                                    Tambah Satuan
+                                </button>
+                            </>
+                        }
                     </form>
                     <Paper sx={{ width: "100%", overflow: "hidden" }}>
                         {/* Search Bar */}
