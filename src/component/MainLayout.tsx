@@ -224,8 +224,11 @@ function MainLayout() {
                                     <ListItemButton component={NavLink} to="/stock/catatsisa" sx={{ pl: 13 }}>
                                         <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Catat Sisa Bahan" />
                                     </ListItemButton>
-                                    <ListItemButton component={NavLink} to="/project/settings" sx={{ pl: 13 }}>
+                                    <ListItemButton component={NavLink} to="/stock/pemakaian" sx={{ pl: 13 }}>
                                         <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Input Pemakaian Bahan" />
+                                    </ListItemButton>
+                                    <ListItemButton component={NavLink} to="/stock/history" sx={{ pl: 13 }}>
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="List Pemakaian Bahan" />
                                     </ListItemButton>
                                 </List>
                             </Collapse>

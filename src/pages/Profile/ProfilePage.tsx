@@ -1,23 +1,74 @@
-import React from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { PasswordFormData, ProfileData } from '../../interface';
 import { useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../app/storeRedux';
+import axios from 'axios';
+import { IconButton, Snackbar } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 
 function ProfilePage() {
-    const { register, handleSubmit, formState: { errors } } = useForm<PasswordFormData>();
-    const onSubmit = (data: PasswordFormData) => {
-        console.log("Password update submitted:", data);
-        alert("Password updated successfully!");
+    const token = useSelector((state: RootState) => state.localStorage.value);
+    const role = localStorage.getItem('role');
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<PasswordFormData>();
+    const [profileData, setProfileData] = useState<ProfileData>();
+    const [error, setError] = useState("");
+
+    const onSubmitPassword = async (data: PasswordFormData) => {
+        try {
+            await axios.put('http://localhost:6347/api/users/profile/password', { old_password: data.oldPassword, new_password: data.newPassword }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            reset();
+        } catch (error) {
+            console.error('Error updating password:', error);
+            setError(error.response.data.message);
+        }
     };
 
-    const profileData: ProfileData = {
-        name: "John Doe",
-        position: "Software Engineer",
-        email: "john.doe@example.com",
-    };
+    useEffect(() => {
+        const fetchProfileData = async () => {
+            try {
+                const response = await axios.get('http://localhost:6347/api/users/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                setProfileData(response.data);
+            } catch (error) {
+                console.error('Error fetching profile data:', error);
+                setError(error.response.data.message);
+            }
+        };
+
+        fetchProfileData();
+    }, [token]);
 
     return (
         <>
+            <div>
+                <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
+                    onClose={() => setError("")}
+                    message={error}
+                    action={
+                        <Fragment>
+                            <IconButton
+                                size="small"
+                                aria-label="close"
+                                color="inherit"
+                                onClick={() => setError("")}
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </Fragment>
+                    }
+                />
+            </div>
             <div>
                 {/* Header Halaman */}
                 <div className="mb-12 mt-6">
@@ -34,16 +85,20 @@ function ProfilePage() {
                         {/* Informasi Profil */}
                         <div className="mb-8">
                             <div className="flex gap-x-4 mb-4">
-                                <label className="w-[25%] text-2xl font-bold">Name</label>
-                                <span className="text-xl font-medium text-gray-700">John Doe</span>
+                                <label className="w-[25%] text-2xl font-bold">Username</label>
+                                <span className="text-xl font-medium text-gray-700">{profileData?.username}</span>
                             </div>
                             <div className="flex gap-x-4 mb-4">
-                                <label className="w-[25%] text-2xl font-bold">Position</label>
-                                <span className="text-xl font-medium text-gray-700">Software Engineer</span>
+                                <label className="w-[25%] text-2xl font-bold">Nama</label>
+                                <span className="text-xl font-medium text-gray-700">{profileData?.nama}</span>
+                            </div>
+                            <div className="flex gap-x-4 mb-4">
+                                <label className="w-[25%] text-2xl font-bold">Role</label>
+                                <span className="text-xl font-medium text-gray-700">{profileData?.role}</span>
                             </div>
                             <div className="flex gap-x-4 mb-4">
                                 <label className="w-[25%] text-2xl font-bold">Email</label>
-                                <span className="text-xl font-medium text-gray-700">john.doe@example.com</span>
+                                <span className="text-xl font-medium text-gray-700">{profileData?.email}</span>
                             </div>
                         </div>
 
@@ -53,7 +108,7 @@ function ProfilePage() {
                         </div>
 
                         {/* Formulir Ganti Password */}
-                        <form onSubmit={handleSubmit(onSubmit)}>
+                        <form onSubmit={handleSubmit(onSubmitPassword)}>
                             {/* Password Lama */}
                             <div className="flex gap-x-4 mb-4">
                                 <label htmlFor="oldPassword" className="w-[25%] text-2xl font-bold">Old Password</label>
