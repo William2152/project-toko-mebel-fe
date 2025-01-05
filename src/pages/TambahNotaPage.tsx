@@ -134,9 +134,9 @@ function TambahNotaPage() {
                 detail: items.map((item: any) => ({
                     id_bahan: parseInt(item.idBahan),
                     id_satuan: parseInt(item.idSatuan),
-                    qty: parseInt(item.jumlah),
+                    qty: parseFloat(item.jumlah),
                     harga_satuan: parseInt(item.hargaSatuan),
-                    diskon: parseInt(item.diskonAkhir)
+                    diskon: parseFloat(item.diskonAkhir)
                 }))
             }, {
                 headers: {
@@ -356,24 +356,26 @@ function TambahNotaPage() {
                 {/* Tabel Barang */}
                 <div className="border-2 rounded-lg shadow-xl py-6">
                     <div className="flex justify-between items-center border-b pb-2 mb-4">
-                        <div className="w-20 text-center font-semibold text-lg">Jumlah</div>
+                        <div className="w-20 text-center font-semibold text-lg">No</div>
                         <div className="flex-1 text-center font-semibold text-lg">Nama Bahan</div>
+                        <div className="w-20 text-center font-semibold text-lg">Jumlah</div>
                         <div className="w-32 text-center font-semibold text-lg">Satuan</div>
                         <div className="w-32 text-center font-semibold text-lg">Harga Satuan</div>
                         <div className="w-32 text-center font-semibold text-lg">Diskon Akhir</div>
                         <div className="w-10 text-center"></div>
                     </div>
 
-                    {items.map((item: any) => (
+                    {items.map((item: any, index) => (
                         <div
                             key={item.id}
                             className="flex justify-between items-center border-b py-2"
                         >
-                            <div className="w-20 text-center text-md">{item.jumlah}</div>
+                            <div className="w-20 text-center text-md">{index + 1}</div>
                             <div className="flex-1 text-center text-md">{item.namaBarang}</div>
+                            <div className="w-20 text-center text-md">{item.jumlah}</div>
                             <div className="w-32 text-center text-md">{item.satuan}</div>
-                            <div className="w-32 text-center text-md">{item.hargaSatuan}</div>
-                            <div className="w-32 text-center text-md">{item.diskonAkhir}</div>
+                            <div className="w-32 text-center text-md">{item.hargaSatuan?.toLocaleString("id-ID")}</div>
+                            <div className="w-32 text-center text-md">{item.diskonAkhir} %</div>
                             <div className="w-10 text-center">
                                 <button
                                     type="button"
