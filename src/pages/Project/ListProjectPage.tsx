@@ -1,4 +1,4 @@
-import { CircularProgress, IconButton, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from '@mui/material';
+import { CircularProgress, IconButton, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Select, MenuItem } from '@mui/material';
 import React, { Fragment, useEffect, useState } from 'react';
 import { ProjectData } from '../../interface';
 import axios from 'axios';
@@ -11,11 +11,13 @@ function ListProjectPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<ProjectData[]>([]);
+    const [filteredData, setFilteredData] = useState<ProjectData[]>([]);
     const [page, setPage] = useState<number>(0);
     const [rowsPerPage, setRowsPerPage] = useState<number>(10);
     const [totalPages, setTotalPages] = useState<number>(0);
     const [error, setError] = useState('');
     const [customerNames, setCustomerNames] = useState({});
+    const [filter, setFilter] = useState<string>('all'); // Filter state: all, completed, pending
 
     // Handle page change
     const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -51,7 +53,6 @@ function ListProjectPage() {
         }
     };
 
-
     const getCustomerName = async (id: number) => {
         try {
             const response = await axios.get(`http://localhost:6347/api/customer/${id}`, {
@@ -66,7 +67,7 @@ function ListProjectPage() {
                 setError(error.response?.data.message);
             }
         }
-    }
+    };
 
     useEffect(() => {
         // Ambil semua nama pelanggan berdasarkan id_customer
@@ -87,13 +88,24 @@ function ListProjectPage() {
         fetchProyek();
     }, [searchTerm, page, rowsPerPage]);
 
+    useEffect(() => {
+        // Apply filter to data
+        if (filter === 'all') {
+            setFilteredData(data);
+        } else if (filter === 'completed') {
+            setFilteredData(data.filter((project) => project.status === 'completed'));
+        } else if (filter === 'pending') {
+            setFilteredData(data.filter((project) => project.status === 'pending'));
+        }
+    }, [filter, data]);
+
     return (
         <>
             <div>
                 <Snackbar
                     open={!!error}
                     autoHideDuration={6000}
-                    onClose={() => setError("")}
+                    onClose={() => setError('')}
                     message={error}
                     action={
                         <Fragment>
@@ -101,7 +113,7 @@ function ListProjectPage() {
                                 size="small"
                                 aria-label="close"
                                 color="inherit"
-                                onClick={() => setError("")}
+                                onClick={() => setError('')}
                             >
                                 <CloseIcon fontSize="small" />
                             </IconButton>
@@ -114,8 +126,8 @@ function ListProjectPage() {
             </div>
             <div className="border-2 h-[80vh] rounded-lg shadow-2xl mx-12 bg-white">
                 <div className="container mx-auto px-8 py-8">
-                    <Paper sx={{ width: "100%", overflow: "hidden" }}>
-                        {/* Search Bar */}
+                    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                        {/* Search Bar and Filter */}
                         <div className="px-4 py-2 flex justify-between items-center">
                             <TextField
                                 label="Cari Proyek"
@@ -125,6 +137,17 @@ function ListProjectPage() {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
+                            <Select
+                                value={filter}
+                                onChange={(e) => setFilter(e.target.value)}
+                                displayEmpty
+                                size="small"
+                                sx={{ minWidth: 150, marginLeft: 2 }}
+                            >
+                                <MenuItem value="all">Semua Proyek</MenuItem>
+                                <MenuItem value="completed">Proyek Selesai</MenuItem>
+                                <MenuItem value="pending">Proyek Belum Selesai</MenuItem>
+                            </Select>
                         </div>
 
                         <TableContainer sx={{ maxHeight: 600 }}>
@@ -136,6 +159,7 @@ function ListProjectPage() {
                                         <TableCell>Customer</TableCell>
                                         <TableCell>Start</TableCell>
                                         <TableCell>Deadline</TableCell>
+                                        <TableCell>Status</TableCell>
                                         <TableCell>Detail</TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -146,16 +170,18 @@ function ListProjectPage() {
                                                 <CircularProgress />
                                             </TableCell>
                                         </TableRow>
-                                    ) : data.length > 0 ? (
-                                        data.map((row, index) => (
+                                    ) : filteredData.length > 0 ? (
+                                        filteredData.map((row, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>{index + 1}</TableCell>
                                                 <TableCell>{row.nama}</TableCell>
                                                 <TableCell>{customerNames[row.id_customer] || 'Loading...'}</TableCell>
                                                 <TableCell>{new Date(row.start).toLocaleDateString('en-GB')}</TableCell>
                                                 <TableCell>{new Date(row.deadline).toLocaleDateString('en-GB')}</TableCell>
+                                                <TableCell>{"status"}</TableCell>
                                                 <TableCell>
-                                                    <button onClick={() => handleDetail(row.id)}
+                                                    <button
+                                                        onClick={() => handleDetail(row.id)}
                                                         style={{
                                                             padding: '5px 10px',
                                                             marginRight: '10px',
@@ -164,7 +190,10 @@ function ListProjectPage() {
                                                             border: 'none',
                                                             borderRadius: '5px',
                                                             cursor: 'pointer',
-                                                        }}>Detail</button>
+                                                        }}
+                                                    >
+                                                        Detail
+                                                    </button>
                                                 </TableCell>
                                             </TableRow>
                                         ))

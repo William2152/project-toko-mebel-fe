@@ -24,6 +24,7 @@ function ProjectDetailPage() {
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [dataProduk, setDataProduk] = useState<ProyekProdukData[]>([]);
+    const [openJasa, setOpenJasa] = useState(false);
 
     // Handle page change
     const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -133,6 +134,14 @@ function ProjectDetailPage() {
                     <h2 className="text-5xl font-bold text-[#65558f] mb-6 mx-12">Detail Proyek</h2>
                 </div>
                 <div className="border-2 rounded-lg shadow-2xl mx-12">
+                    <div className="flex justify-end">
+                        <button
+                            onClick={handleUpdate}
+                            className="px-8 py-3 me-5 mt-5 bg-[#65558f] text-white rounded-lg text-lg shadow-md hover:shadow-lg hover:from-blue-600 hover:to-indigo-700 transition-transform transform hover:scale-105 focus:outline-none"
+                        >
+                            Selesai
+                        </button>
+                    </div>
                     <div className="flex flex-row px-12 py-12">
                         {/* Bagian Kiri */}
                         <div className="flex-1 pr-8">
