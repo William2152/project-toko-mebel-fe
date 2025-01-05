@@ -18,6 +18,9 @@ import TambahKaryawanPage from './pages/User/TambahKaryawanPage';
 import ProjectDetailPage from './pages/Project/ProjectDetailPage';
 import ProdukDetailPage from './pages/Project/ProdukDetailPage';
 import ProfilePage from './pages/Profile/ProfilePage';
+import InputPemakaianBahan from './pages/Stock/InputPemakaianBahan';
+import HistoryPemakaianBahan from './pages/Stock/HistoryPemakaianBahan';
+import ListPemakaianBahanDetailPage from './pages/Stock/ListPemakaianBahanDetailPage';
 
 function App() {
   return (
@@ -36,6 +39,9 @@ function App() {
           <Route path='catat' index element={<CatatStockPage />} />
           <Route path='lihat' index element={<LihatStockPage />} />
           <Route path='catatsisa' index element={<CatatBahanSisaPage />} />
+          <Route path='pemakaian' index element={<InputPemakaianBahan />} />
+          <Route path='history' index element={<HistoryPemakaianBahan />} />
+          <Route path='detail/pemakaian/:id' index element={<ListPemakaianBahanDetailPage />} />
         </Route>
         <Route path="/nota" element={<MainLayout />}>
           <Route path='tambah' index element={<TambahNotaPage />} />

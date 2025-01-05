@@ -77,8 +77,9 @@ export interface SatuanData {
 }
 
 export interface ProfileData {
-  name: string;
-  position: string;
+  username: string;
+  nama: string;
+  role: string;
   email: string;
 }
 

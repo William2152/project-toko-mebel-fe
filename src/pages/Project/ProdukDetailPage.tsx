@@ -2,9 +2,9 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { RootState } from '../../../app/storeRedux';
-import { CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from '@mui/material';
+import { Autocomplete, Box, Button, CircularProgress, Modal, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from '@mui/material';
 import { BahanData, BahanProdukData, DetailBahanProdukData, SatuanData } from '../../interface';
 
 function ProdukDetailPage() {
@@ -15,6 +15,7 @@ function ProdukDetailPage() {
     const [dataNamaBahan, setDataNamaBahan] = useState<BahanData[]>([])
     const [dataSatuan, setDataSatuan] = useState<SatuanData[]>([])
     const { register, handleSubmit, reset, setValue } = useForm<DetailBahanProdukData>();
+    const { register: registerJasa, handleSubmit: handleSubmitJasa, reset: resetJasa, control } = useForm();
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -24,6 +25,20 @@ function ProdukDetailPage() {
     const [update, setUpdate] = useState(false);
     const [updateId, setUpdateId] = useState(0);
     const [reload, setReload] = useState(false);
+    const [openJasa, setOpenJasa] = useState(false);
+    const [openDaftarJasa, setOpenDaftarJasa] = useState(false);
+    const [satuanOptions, setSatuanOptions] = useState<SatuanData[]>([]);
+    const [dataJasa, setDataJasa] = useState([]);
+    const [reloadTableJasa, setReloadTableJasa] = useState(false);
+
+    const handleCloseJasa = () => {
+        setOpenJasa(false); // Tutup modal
+        resetJasa();
+    };
+
+    const handleCloseDaftarJasa = () => {
+        setOpenDaftarJasa(false); // Tutup modal
+    };
 
     // Handle page change
     const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -147,6 +162,15 @@ function ProdukDetailPage() {
         }
     }
 
+    const handleDeleteJasa = async (id: number) => {
+        await axios.delete(`http://localhost:6347/api/produk-jasa/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        })
+        setReloadTableJasa(!reloadTableJasa);
+    }
+
     const onSubmit = async (data: DetailBahanProdukData) => {
         console.log(data);
         if (update) {
@@ -178,6 +202,29 @@ function ProdukDetailPage() {
         console.log(dataBahanDetail);
     };
 
+    const onSubmitJasa = async (data: any) => {
+        console.log("tes: " + data.nama);
+        try {
+            const response = await axios.post('http://localhost:6347/api/produk-jasa', {
+                id_produk: id,
+                id_satuan: data.satuan.id,
+                nama: data.nama,
+                qty: data.quantity,
+                harga_satuan: data.harga_satuan,
+                keterangan: data.keterangan
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            })
+            console.log(response);
+            setOpenJasa(false);
+            resetJasa();
+        } catch (error) {
+            console.error('Error fetching bahan:', error);
+        }
+    }
+
     useEffect(() => {
         fetchBahan();
         fetchProduk();
@@ -197,13 +244,58 @@ function ProdukDetailPage() {
         setValue('id_bahan', updateId);
     }, [reload]);
 
+    useEffect(() => {
+        const fetchSatuan = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.get(`http://localhost:6347/api/master/satuan`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setSatuanOptions(response.data.data);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching produk:', error);
+                setLoading(false);
+            }
+        };
+        fetchSatuan();
+    }, []);
+
+    useEffect(() => {
+        const fetchJasa = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.get(`http://localhost:6347/api/produk-jasa?id_produk=${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setDataJasa(response.data.data);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching produk:', error);
+                setLoading(false);
+            }
+        }
+        fetchJasa();
+    }, [openDaftarJasa, reloadTableJasa]);
     return (
         <>
             <div className="mb-12 mt-6">
                 <h2 className="text-5xl font-bold text-[#65558f] mb-6 mx-12">Detail Produk</h2>
             </div>
             <div className="border-2 rounded-lg shadow-2xl mx-12">
-                <div className='container mx-auto px-12 py-12'>
+                <div className="flex justify-end">
+                    <button
+                        onClick={handleUpdate}
+                        className="px-8 py-3 me-5 mt-5 bg-[#65558f] text-white rounded-lg text-lg shadow-md hover:shadow-lg hover:from-blue-600 hover:to-indigo-700 transition-transform transform hover:scale-105 focus:outline-none"
+                    >
+                        Selesai
+                    </button>
+                </div>
+                <div className='container mx-auto py-12'>
                     <div className="flex justify-end">
                         <button
                             onClick={() => handleSave()}
@@ -294,12 +386,26 @@ function ProdukDetailPage() {
                                 </button>
                             </>
                             :
-                            <button
+                            <> <button
                                 type="submit"
                                 className="px-6 py-2 text-white bg-[#65558f] rounded-lg hover:bg-[#534474] me-5"
                             >
                                 Tambah
                             </button>
+                                <button
+                                    onClick={() => setOpenJasa(true)}
+                                    className="px-6 py-2 me-5 bg-[#65558f] text-white rounded-lg shadow hover:bg-red-600 focus:outline-none"
+                                >
+                                    Tambah Biaya Jasa
+                                </button>
+                                <button
+                                    onClick={() => setOpenDaftarJasa(true)}
+                                    className="px-6 py-2 bg-[#65558f] text-white rounded-lg shadow hover:bg-red-600 focus:outline-none"
+                                >
+                                    Daftar Biaya Jasa
+                                </button>
+                            </>
+
                         }
 
                     </form>
@@ -394,6 +500,194 @@ function ProdukDetailPage() {
                     </Paper>
                 </div>
             </div>
+            {/* Modal Biaya Jasa */}
+            <Modal open={openJasa} onClose={handleCloseJasa}>
+                <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 400,
+                    bgcolor: 'background.paper',
+                    boxShadow: 24,
+                    p: 4,
+                    borderRadius: 2
+                }}>
+                    <h2 className="text-2xl font-bold mb-4">Tambah Biaya Jasa</h2>
+                    <form onSubmit={handleSubmitJasa(onSubmitJasa)} className="space-y-4">
+                        {/* Input Nama */}
+                        <Controller
+                            name="nama"
+                            control={control}
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    fullWidth
+                                    label="Nama"
+                                    variant="outlined"
+                                />
+                            )}
+                        />
+                        {/* Input Quantity */}
+                        <Controller
+                            name="quantity"
+                            control={control}
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    fullWidth
+                                    label="Quantity"
+                                    type="number"
+                                    inputProps={{ min: 0 }}
+                                    variant="outlined"
+                                />
+                            )}
+                        />
+                        {/* Searchable Combobox Satuan */}
+                        <div className="flex-1 mr-4">
+                            <Controller
+                                name="satuan"
+                                control={control}
+                                render={({ field }) => (
+                                    <Autocomplete
+                                        {...field}
+                                        value={field.value || null} // Default nilai untuk menghindari undefined
+                                        options={satuanOptions} // Pilihan satuan
+                                        getOptionLabel={(option) => option.nama} // Label untuk opsi
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Pilih Satuan"
+                                                variant="outlined"
+                                            />
+                                        )}
+                                        onChange={(_, data) => field.onChange(data)} // Set nilai ke form
+                                        isOptionEqualToValue={(option, value) => option.id === value.id} // Bandingkan berdasarkan ID unik
+                                        renderOption={(props, option) => (
+                                            <li {...props} key={option.id}> {/* Gunakan ID sebagai key */}
+                                                {option.nama}
+                                            </li>
+                                        )}
+                                    />
+                                )}
+                            />
+                        </div>
+                        {/* Input Harga Satuan */}
+                        <Controller
+                            name="harga_satuan"
+                            control={control}
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    fullWidth
+                                    label="Harga Satuan"
+                                    type="number"
+                                    inputProps={{ min: 0, step: "0.01" }}
+                                    variant="outlined"
+                                />
+                            )}
+                        />
+                        {/* Input Keterangan */}
+                        <Controller
+                            name="keterangan"
+                            control={control}
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    fullWidth
+                                    label="Keterangan"
+                                    multiline
+                                    rows={3}
+                                    variant="outlined"
+                                />
+                            )}
+                        />
+                        <div className="flex justify-end space-x-4 mt-4">
+                            <Button type="submit" variant="contained" color="primary">
+                                Tambah
+                            </Button>
+                            <Button variant="outlined" color="secondary" onClick={() => { handleCloseJasa(); }}>
+                                Batal
+                            </Button>
+                        </div>
+                    </form>
+                </Box>
+            </Modal>
+
+            {/* Modal Daftar Biaya Jasa */}
+            <Modal open={openDaftarJasa} onClose={handleCloseDaftarJasa}>
+                <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 1000,
+                    bgcolor: 'background.paper',
+                    boxShadow: 24,
+                    p: 4,
+                    borderRadius: 2
+                }}>
+                    <Paper sx={{ width: "100%", overflow: "hidden" }}>
+                        <TableContainer sx={{ maxHeight: 300 }}>
+                            <Table stickyHeader>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>No</TableCell>
+                                        <TableCell>Nama Produk</TableCell>
+                                        <TableCell>Nama Jasa</TableCell>
+                                        <TableCell>Quantity</TableCell>
+                                        <TableCell>Satuan</TableCell>
+                                        <TableCell>Harga Satuan</TableCell>
+                                        <TableCell>Subtotal</TableCell>
+                                        <TableCell>Keterangan</TableCell>
+                                        <TableCell>Aksi</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {loading ? (
+                                        <TableRow>
+                                            <TableCell colSpan={5} align="center">
+                                                <CircularProgress />
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : dataJasa.length > 0 ? (
+                                        dataJasa.map((row, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>{index + 1}</TableCell>
+                                                <TableCell>{row.nama_produk}</TableCell>
+                                                <TableCell>{row.nama}</TableCell>
+                                                <TableCell>{row.qty}</TableCell>
+                                                <TableCell>{row.nama_satuan}</TableCell>
+                                                <TableCell>{row.harga_satuan}</TableCell>
+                                                <TableCell>{row.subtotal}</TableCell>
+                                                <TableCell>{row.keterangan}</TableCell>
+                                                <TableCell>
+                                                    <button onClick={() => handleDeleteJasa(row.id)}
+                                                        style={{
+                                                            padding: '5px 10px',
+                                                            marginRight: '10px',
+                                                            backgroundColor: '#4CAF50',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '5px',
+                                                            cursor: 'pointer',
+                                                        }}>Delete</button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={5} align="center">
+                                                Tidak ada data yang sesuai
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Paper>
+                </Box>
+            </Modal>
         </>
     );
 }
