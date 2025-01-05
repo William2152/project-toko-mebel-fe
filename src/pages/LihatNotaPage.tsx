@@ -161,7 +161,7 @@ function LihatNotaPage() {
                                                 })}</TableCell>
                                                 <TableCell>{row.kode_nota}</TableCell>
                                                 <TableCell>{getSupplierName(row.id_supplier)}</TableCell>
-                                                <TableCell>{row.total_pajak} %</TableCell>
+                                                <TableCell>{row.total_pajak}</TableCell>
                                                 <TableCell>{row.diskon_akhir} %</TableCell>
                                                 <TableCell>Rp. {row.total_harga}</TableCell>
                                                 <TableCell><button onClick={() => { }}
