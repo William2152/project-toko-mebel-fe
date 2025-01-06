@@ -1,10 +1,11 @@
-import { CircularProgress, IconButton, MenuItem, Paper, Select, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from '@mui/material';
+import { Autocomplete, Box, Button, CircularProgress, IconButton, MenuItem, Modal, Paper, Select, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from '@mui/material';
 import React, { Fragment, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import CloseIcon from '@mui/icons-material/Close';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/storeRedux';
 import axios from 'axios';
+import { Controller, useForm } from 'react-hook-form';
 
 function ListPemakaianBahanDetailPage() {
     const { id } = useParams();
@@ -13,6 +14,60 @@ function ListPemakaianBahanDetailPage() {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
     const [headerData, setHeaderData] = useState([]);
+    const { control, handleSubmit, reset } = useForm();
+    const [open, setOpen] = useState(false);
+    const [satuanOptions, setSatuanOptions] = useState([]);
+    const [satuan_terkecil, setSatuanTerkecil] = useState('');
+    const [historyId, setHistoryId] = useState(0);
+
+    const handleClose = () => {
+        setOpen(false);
+        reset();
+    }
+
+    const onSubmit = async (data: any) => {
+        console.log(data);
+        try {
+            await axios.post(`http://localhost:6347/api/bahan-sisa`, {
+                id_history_bahan_keluar_detail: historyId,
+                id_satuan: data.satuan.id,
+                qty: data.quantity
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            })
+            handleClose();
+        } catch (error) {
+            setError(error.response.data.message);
+        }
+
+    }
+
+
+
+    const handleBahanSisa = (satuan: string, id: number) => {
+        setOpen(true);
+        setSatuanTerkecil(satuan);
+        setHistoryId(id);
+    }
+
+    useEffect(() => {
+        console.log(satuan_terkecil);
+
+        const fetchSatuan = async () => {
+            const satuanResponse = await axios.get(`http://localhost:6347/api/master/satuan?satuan_terkecil=${satuan_terkecil}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            })
+            console.log(satuanResponse.data.data);
+            setSatuanOptions(await satuanResponse.data.data);
+        }
+        if (satuan_terkecil) {
+            fetchSatuan();
+        }
+    }, [satuan_terkecil]);
 
     useEffect(() => {
         const fetchHistoryPemakaianBahan = async () => {
@@ -95,6 +150,7 @@ function ListPemakaianBahanDetailPage() {
                                         <TableCell>Nama Bahan</TableCell>
                                         <TableCell>Satuan</TableCell>
                                         <TableCell>Quantity</TableCell>
+                                        <TableCell>Aksi</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -111,6 +167,19 @@ function ListPemakaianBahanDetailPage() {
                                                 <TableCell>{row.nama_bahan}</TableCell>
                                                 <TableCell>{row.nama_satuan}</TableCell>
                                                 <TableCell>{row.qty}</TableCell>
+                                                <TableCell><button
+                                                    onClick={() => handleBahanSisa(row.satuan_terkecil, row.id)}
+                                                    style={{
+                                                        padding: '5px 10px',
+                                                        backgroundColor: '#4CAF50',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '5px',
+                                                        cursor: 'pointer',
+                                                    }}
+                                                >
+                                                    Add Bahan Sisa
+                                                </button></TableCell>
                                             </TableRow>
                                         ))
                                     ) : (
@@ -126,6 +195,78 @@ function ListPemakaianBahanDetailPage() {
                     </Paper>
                 </div>
             </div>
+            <Modal open={open} onClose={handleClose}>
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: 400,
+                        bgcolor: "background.paper",
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: 2,
+                    }}
+                >
+                    <h2 className="text-2xl font-bold mb-4">Input Quantity and Unit</h2>
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                        {/* Searchable Combobox Satuan */}
+                        <Controller
+                            name="satuan"
+                            control={control}
+                            render={({ field }) => (
+                                <Autocomplete
+                                    {...field}
+                                    value={field.value || null} // Default value untuk menghindari undefined
+                                    options={satuanOptions}
+                                    getOptionLabel={(option) => option.nama} // Label opsi
+                                    onChange={(_, data) => field.onChange(data)} // Handle change
+                                    isOptionEqualToValue={(option, value) =>
+                                        option.id === value?.id
+                                    } // Bandingkan berdasarkan ID unik
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="Pilih Satuan"
+                                            variant="outlined"
+                                            fullWidth
+                                        />
+                                    )}
+                                    renderOption={(props, option) => (
+                                        <li {...props} key={option.id}>
+                                            {option.nama}
+                                        </li>
+                                    )}
+                                />
+                            )}
+                        />
+                        {/* Input Number Quantity */}
+                        <Controller
+                            name="quantity"
+                            control={control}
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    label="Masukkan Quantity"
+                                    type="number"
+                                    inputProps={{ step: "0.1" }} // Dua desimal
+                                    fullWidth
+                                    variant="outlined"
+                                />
+                            )}
+                        />
+                        <div className="flex justify-end space-x-4 mt-4">
+                            <Button type="submit" variant="contained" color="primary">
+                                Simpan
+                            </Button>
+                            <Button variant="outlined" color="secondary" onClick={handleClose}>
+                                Batal
+                            </Button>
+                        </div>
+                    </form>
+                </Box>
+            </Modal>
         </>
 
     )
