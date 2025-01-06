@@ -221,14 +221,20 @@ function MainLayout() {
                                     <ListItemButton component={NavLink} to="/stock/lihat" sx={{ pl: 13 }}>
                                         <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Lihat Stok Bahan" />
                                     </ListItemButton>
-                                    <ListItemButton component={NavLink} to="/stock/catatsisa" sx={{ pl: 13 }}>
-                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Catat Sisa Bahan" />
-                                    </ListItemButton>
                                     <ListItemButton component={NavLink} to="/stock/pemakaian" sx={{ pl: 13 }}>
                                         <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Input Pemakaian Bahan" />
                                     </ListItemButton>
                                     <ListItemButton component={NavLink} to="/stock/history" sx={{ pl: 13 }}>
                                         <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="List Pemakaian Bahan" />
+                                    </ListItemButton>
+                                    <ListItemButton component={NavLink} to="/stock/history/pemasukkan" sx={{ pl: 13 }}>
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="History Bahan Masuk" />
+                                    </ListItemButton>
+                                    <ListItemButton component={NavLink} to="/stock/history/keluar" sx={{ pl: 13 }}>
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="History Bahan Keluar" />
+                                    </ListItemButton>
+                                    <ListItemButton component={NavLink} to="/stock/bahansisa" sx={{ pl: 13 }}>
+                                        <ListItemText primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }} primary="Bahan Sisa" />
                                     </ListItemButton>
                                 </List>
                             </Collapse>

@@ -1,20 +1,19 @@
-import { CircularProgress, IconButton, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import React, { Fragment, useEffect, useState } from 'react'
-import CloseIcon from '@mui/icons-material/Close'
-import { useSelector } from 'react-redux'
-import { RootState } from '../../../app/storeRedux'
-import axios from 'axios'
-import { useParams } from 'react-router-dom'
-import { get } from 'react-hook-form'
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { RootState } from '../../../app/storeRedux';
+import { CircularProgress, IconButton, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import axios from 'axios';
 
-function DetailNotaPage() {
-    const token = useSelector((state: RootState) => state.localStorage.value)
-    const { id } = useParams()
-    const [error, setError] = useState('')
-    const [loading, setLoading] = useState(true)
-    const [data, setData] = useState([])
-    const [headerData, setHeaderData] = useState([])
-    const [supplier, setSupplier] = useState('')
+function HistoryAllBahanMasukDetailPage() {
+    const { id } = useParams();
+    const token = useSelector((state: RootState) => state.localStorage.value);
+    const [error, setError] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
+    const [headerData, setHeaderData] = useState([]);
+    const [data, setData] = useState([]);
+    const [supplier, setSupplier] = useState("");
 
     const getNamaSupplier = async (id: number) => {
         const response = await axios.get(`http://localhost:6347/api/supplier/${id}`, {
@@ -22,30 +21,30 @@ function DetailNotaPage() {
                 Authorization: `Bearer ${token}`
             }
         })
-        return response.data.nama
+        setSupplier(response.data.nama)
     }
 
     useEffect(() => {
-        const fetchDetailNota = async () => {
+        const fetchHistoryPemakaianBahan = async () => {
+            setLoading(true);
             try {
                 const response = await axios.get(`http://localhost:6347/api/history-bahan-masuk/${id}`, {
                     headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                })
-                setHeaderData(response.data)
-                setData(response.data.detail)
-                await getNamaSupplier(response.data.id_supplier).then((result) => {
-                    setSupplier(result)
-                })
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setHeaderData(response.data);
+                setData(response.data.detail);
+                await getNamaSupplier(response.data.id_supplier)
             } catch (error: any) {
-                console.error('Error fetching detail nota:', error);
+                console.error('Error fetching history pemakaian bahan:', error);
                 setError(error.message);
             } finally {
                 setLoading(false);
             }
         };
-        fetchDetailNota();
+
+        fetchHistoryPemakaianBahan();
     }, [])
 
     return (
@@ -72,12 +71,20 @@ function DetailNotaPage() {
             </div>
             <div className="mb-12 mt-6">
                 <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">
-                    List Detail Pemakaian Bahan
+                    Detail History Pemasukkan Bahan
                 </h2>
             </div>
             {/* Informasi Proyek, Produk, dan Karyawan */}
             <div className="border-2 rounded-lg shadow-md bg-gray-100 mx-12 px-8 py-6 mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <p className="text-lg font-semibold">Tanggal Nota:</p>
+                        <p className="text-base">{new Date(headerData.tgl_nota).toLocaleDateString('id-ID', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                        }) || 'Tidak tersedia'}</p>
+                    </div>
                     <div>
                         <p className="text-lg font-semibold">Kode Nota:</p>
                         <p className="text-base">{headerData.kode_nota || 'Tidak tersedia'}</p>
@@ -87,7 +94,7 @@ function DetailNotaPage() {
                         <p className="text-base">{headerData.no_spb || 'Tidak tersedia'}</p>
                     </div>
                     <div>
-                        <p className="text-lg font-semibold">Nama Supplier:</p>
+                        <p className="text-lg font-semibold">Supplier :</p>
                         <p className="text-base">{supplier || 'Tidak tersedia'}</p>
                     </div>
                 </div>
@@ -101,8 +108,8 @@ function DetailNotaPage() {
                                     <TableRow>
                                         <TableCell>No</TableCell>
                                         <TableCell>Nama Bahan</TableCell>
-                                        <TableCell>Satuan</TableCell>
                                         <TableCell>Quantity</TableCell>
+                                        <TableCell>Satuan</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -117,8 +124,8 @@ function DetailNotaPage() {
                                             <TableRow key={index}>
                                                 <TableCell>{index + 1}</TableCell>
                                                 <TableCell>{row.nama_bahan}</TableCell>
-                                                <TableCell>{row.nama_satuan}</TableCell>
                                                 <TableCell>{row.qty}</TableCell>
+                                                <TableCell>{row.nama_satuan}</TableCell>
                                             </TableRow>
                                         ))
                                     ) : (
@@ -138,4 +145,4 @@ function DetailNotaPage() {
     )
 }
 
-export default DetailNotaPage
+export default HistoryAllBahanMasukDetailPage

@@ -77,6 +77,10 @@ function LihatNotaPage() {
         }
     };
 
+    const handleDetail = (id: number) => {
+        window.location.href = `/nota/detail/${id}`;
+    };
+
     // Handle page change
     const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
         setPage(newPage);
@@ -164,7 +168,7 @@ function LihatNotaPage() {
                                                 <TableCell>{row.total_pajak}</TableCell>
                                                 <TableCell>{row.diskon_akhir} %</TableCell>
                                                 <TableCell>Rp. {row.total_harga}</TableCell>
-                                                <TableCell><button onClick={() => { }}
+                                                <TableCell><button onClick={() => { handleDetail(row.id) }}
                                                     style={{
                                                         padding: '5px 10px',
                                                         backgroundColor: '#4CAF50',
