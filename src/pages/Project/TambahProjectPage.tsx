@@ -6,10 +6,31 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/storeRedux';
 import { IconButton, Snackbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import Joi from 'joi';
+import { joiResolver } from '@hookform/resolvers/joi';
 
 function TambahProjectPage() {
     const token = useSelector((state: RootState) => state.localStorage.value);
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<ProjectData>();
+    const schema = Joi.object({
+        nama: Joi.string().required().messages({
+            'string.empty': 'Nama Project Harus Diisi',
+        }),
+        id_customer: Joi.string().required().messages({
+            'string.empty': 'Customer Harus Diisi',
+        }),
+        start: Joi.string().required().messages({
+            'string.empty': 'Tanggal Mulai Harus Diisi',
+        }),
+        deadline: Joi.string().required().messages({
+            'string.empty': 'Tanggal Deadline Harus Diisi',
+        }),
+        alamat_pengiriman: Joi.string().required().messages({
+            'string.empty': 'Alamat Pengiriman Harus Diisi',
+        }),
+    })
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<ProjectData>({
+        resolver: joiResolver(schema)
+    });
     const [error, setError] = useState('');
     const [customer, setCustomer] = useState([]);
 
