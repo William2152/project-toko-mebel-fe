@@ -37,11 +37,13 @@ function ListProjectPage() {
     const fetchProyek = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:6347/api/proyek?page=${page + 1}&per_page=${rowsPerPage}&search=${searchTerm}`, {
+            const response = await axios.get(`http://localhost:6347/api/proyek?page=${page + 1}&per_page=${rowsPerPage}&search=${searchTerm}&status=${filter}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
+            console.log(response.data.data);
+
             setData(response.data.data);
             setTotalPages(response.data.total_page);
             setLoading(false);
@@ -86,18 +88,7 @@ function ListProjectPage() {
 
     useEffect(() => {
         fetchProyek();
-    }, [searchTerm, page, rowsPerPage]);
-
-    useEffect(() => {
-        // Apply filter to data
-        if (filter === 'all') {
-            setFilteredData(data);
-        } else if (filter === 'completed') {
-            setFilteredData(data.filter((project) => project.status === 'completed'));
-        } else if (filter === 'pending') {
-            setFilteredData(data.filter((project) => project.status === 'pending'));
-        }
-    }, [filter, data]);
+    }, [searchTerm, page, rowsPerPage, filter]);
 
     return (
         <>
@@ -124,7 +115,7 @@ function ListProjectPage() {
             <div className="mb-12 mt-6">
                 <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">List Project</h2>
             </div>
-            <div className="border-2 h-[80vh] rounded-lg shadow-2xl mx-12 bg-white">
+            <div className="border-2 rounded-lg shadow-2xl mx-12 bg-white">
                 <div className="container mx-auto px-8 py-8">
                     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                         {/* Search Bar and Filter */}
@@ -145,8 +136,8 @@ function ListProjectPage() {
                                 sx={{ minWidth: 150, marginLeft: 2 }}
                             >
                                 <MenuItem value="all">Semua Proyek</MenuItem>
-                                <MenuItem value="completed">Proyek Selesai</MenuItem>
-                                <MenuItem value="pending">Proyek Belum Selesai</MenuItem>
+                                <MenuItem value="true">Proyek Selesai</MenuItem>
+                                <MenuItem value="false">Proyek Belum Selesai</MenuItem>
                             </Select>
                         </div>
 
@@ -170,15 +161,15 @@ function ListProjectPage() {
                                                 <CircularProgress />
                                             </TableCell>
                                         </TableRow>
-                                    ) : filteredData.length > 0 ? (
-                                        filteredData.map((row, index) => (
+                                    ) : data.length > 0 ? (
+                                        data.map((row, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>{index + 1}</TableCell>
                                                 <TableCell>{row.nama}</TableCell>
                                                 <TableCell>{customerNames[row.id_customer] || 'Loading...'}</TableCell>
                                                 <TableCell>{new Date(row.start).toLocaleDateString('en-GB')}</TableCell>
                                                 <TableCell>{new Date(row.deadline).toLocaleDateString('en-GB')}</TableCell>
-                                                <TableCell>{"status"}</TableCell>
+                                                <TableCell>{row.status == true ? 'Selesai' : 'Belum Selesai'}</TableCell>
                                                 <TableCell>
                                                     <button
                                                         onClick={() => handleDetail(row.id)}
