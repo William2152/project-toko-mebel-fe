@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ProjectData, ProyekProdukData } from '../../interface';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/storeRedux';
-import { Modal, Box, TextField, Button, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress, TablePagination } from '@mui/material';
+import { Modal, Box, TextField, Button, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress, TablePagination, Snackbar, IconButton } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { DatePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import CloseIcon from '@mui/icons-material/Close';
 
 
 function ProjectDetailPage() {
     const token = useSelector((state: RootState) => state.localStorage.value);
     const { id } = useParams(); // Mengambil id dari URL params
+    const id_projek = id;
     const [data, setData] = useState<ProjectData>(); // State untuk menyimpan data proyek
     const [error, setError] = useState("");
     const [open, setOpen] = useState(false); // State untuk modal
@@ -24,7 +26,6 @@ function ProjectDetailPage() {
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [dataProduk, setDataProduk] = useState<ProyekProdukData[]>([]);
-    const [openJasa, setOpenJasa] = useState(false);
 
     // Handle page change
     const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -39,6 +40,7 @@ function ProjectDetailPage() {
 
     const handleDetail = (id: number) => {
         window.location.href = `/project/product/detail/${id}`;
+        localStorage.setItem('id_projek', id_projek?.toString() || '');
     };
 
     const fetchProduk = async () => {
@@ -106,6 +108,16 @@ function ProjectDetailPage() {
         }
     };
 
+    const handleSelesai = async () => {
+        await axios.put(`http://localhost:6347/api/proyek/${id}/status`, { status: 1 }, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        }
+        )
+        setError("Berhasil Selesaikan Project");
+    }
+
     const handleDelete = async () => {
         try {
             await axios.delete(`http://localhost:6347/api/proyek/${id}`, {
@@ -119,10 +131,6 @@ function ProjectDetailPage() {
         }
     };
 
-    if (error) {
-        return <p className="text-red-500">{error}</p>;
-    }
-
     if (!data) {
         return <p>Loading...</p>;
     }
@@ -130,13 +138,33 @@ function ProjectDetailPage() {
     return (
         <>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <div>
+                    <Snackbar
+                        open={!!error}
+                        autoHideDuration={6000}
+                        onClose={() => setError("")}
+                        message={error}
+                        action={
+                            <Fragment>
+                                <IconButton
+                                    size="small"
+                                    aria-label="close"
+                                    color="inherit"
+                                    onClick={() => setError("")}
+                                >
+                                    <CloseIcon fontSize="small" />
+                                </IconButton>
+                            </Fragment>
+                        }
+                    />
+                </div>
                 <div className="mb-12 mt-6">
                     <h2 className="text-5xl font-bold text-[#65558f] mb-6 mx-12">Detail Proyek</h2>
                 </div>
                 <div className="border-2 rounded-lg shadow-2xl mx-12">
                     <div className="flex justify-end">
                         <button
-                            onClick={handleUpdate}
+                            onClick={handleSelesai}
                             className="px-8 py-3 me-5 mt-5 bg-[#65558f] text-white rounded-lg text-lg shadow-md hover:shadow-lg hover:from-blue-600 hover:to-indigo-700 transition-transform transform hover:scale-105 focus:outline-none"
                         >
                             Selesai
