@@ -8,13 +8,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import React, { useEffect, useState } from "react";
-import { CircularProgress, TablePagination, TextField } from "@mui/material";
+import React, { Fragment, useEffect, useState } from "react";
+import { CircularProgress, IconButton, Snackbar, TablePagination, TextField } from "@mui/material";
 import { RootState } from "../../app/storeRedux";
 import Joi from "joi";
 import { joiResolver } from "@hookform/resolvers/joi";
-import { set } from "date-fns";
-import { Update } from "@mui/icons-material";
+import CloseIcon from '@mui/icons-material/Close';
 
 function MasterBahanPage() {
     interface DataBahan {
@@ -30,12 +29,20 @@ function MasterBahanPage() {
     }
 
     const schemaBahan = Joi.object({
-        namaBahan: Joi.string().required(),
+        namaBahan: Joi.string().required().messages({
+            "string.empty": "Nama bahan harus diisi",
+        }),
     });
     const schemaSatuan = Joi.object({
-        satuanBahan: Joi.string().required(),
-        satuanTerkecil: Joi.string().required(),
-        konversi: Joi.number().required(),
+        satuanBahan: Joi.string().required().messages({
+            "string.empty": "Satuan bahan harus diisi",
+        }),
+        satuanTerkecil: Joi.string().required().messages({
+            "string.empty": "Satuan terkecil harus diisi",
+        }),
+        konversi: Joi.number().required().messages({
+            "number.base": "Konversi harus diisi",
+        }),
     });
 
     const token = useSelector((state: RootState) => state.localStorage.value);
@@ -59,6 +66,7 @@ function MasterBahanPage() {
     const [updateIdSatuan, setUpdateIdSatuan] = useState<number>(0);
     const [updateSatuan, setUpdateSatuan] = useState<boolean>(false);
     const [updateBahan, setUpdateBahan] = useState<boolean>(false);
+    const [error, setError] = useState<string>("");
 
     // Handle page change
     const handleChangePageBahan = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -105,6 +113,7 @@ function MasterBahanPage() {
                 Authorization: `Bearer ${token}`,
             },
         })
+        setError('Berhasil Menghapus Bahan');
         setReload(!reload);
     };
     const handleDeleteSatuan = async (id: number) => {
@@ -114,6 +123,7 @@ function MasterBahanPage() {
                 Authorization: `Bearer ${token}`,
             },
         })
+        setError('Berhasil Menghapus Satuan');
         setReload(!reload);
     };
 
@@ -180,18 +190,25 @@ function MasterBahanPage() {
             console.log(response);
             setUpdateBahan(false);
         } else {
-            const response = await axios.post("http://localhost:6347/api/bahan", {
-                nama: data.namaBahan,
-            },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+            try {
+                const response = await axios.post("http://localhost:6347/api/bahan", {
+                    nama: data.namaBahan,
+                },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                )
+                setReload(!reload);
+                resetBahan();
+                console.log(response);
+                setError('Berhasil Menambahkan Bahan');
+            } catch (err) {
+                if (axios.isAxiosError(err)) {
+                    setError(err.response?.data.message);
                 }
-            )
-            setReload(!reload);
-            resetBahan();
-            console.log(response);
+            }
         }
     }
 
@@ -213,25 +230,52 @@ function MasterBahanPage() {
             console.log(response);
             setUpdateSatuan(false);
         } else {
-            const response = await axios.post("http://localhost:6347/api/satuan", {
-                nama: data.satuanBahan,
-                satuan_terkecil: data.satuanTerkecil,
-                konversi: data.konversi
-            },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+            try {
+                const response = await axios.post("http://localhost:6347/api/satuan", {
+                    nama: data.satuanBahan,
+                    satuan_terkecil: data.satuanTerkecil,
+                    konversi: data.konversi
+                },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                )
+                setReload(!reload);
+                resetSatuan();
+                console.log(response);
+                setError('Berhasil Menambahkan Satuan');
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    setError(error.response?.data.message);
                 }
-            )
-            setReload(!reload);
-            resetSatuan();
-            console.log(response);
+            }
         }
     }
 
     return (
         <>
+            <div>
+                <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
+                    onClose={() => setError("")}
+                    message={error}
+                    action={
+                        <Fragment>
+                            <IconButton
+                                size="small"
+                                aria-label="close"
+                                color="inherit"
+                                onClick={() => setError("")}
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </Fragment>
+                    }
+                />
+            </div>
             {/* Header */}
             <div className="mb-12 mt-6">
                 <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">
