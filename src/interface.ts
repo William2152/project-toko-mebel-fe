@@ -16,6 +16,7 @@ export interface ProjectData {
   start: Date;
   deadline: Date;
   alamat_pengiriman: string;
+  status: boolean;
 }
 
 export interface ProyekProdukData {
