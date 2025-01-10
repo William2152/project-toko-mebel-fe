@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/storeRedux';
 import { set } from 'date-fns';
+import { id } from 'date-fns/locale';
 
 function InputPemakaianBahan() {
     const token = useSelector((state: RootState) => state.localStorage.value);
@@ -104,7 +105,8 @@ function InputPemakaianBahan() {
 
             setProdukOptions(await produkResponse.data.data);
         }
-        fetchProduk();
+        if (idProyek)
+            fetchProduk();
     }, [idProyek]);
 
     useEffect(() => {
@@ -117,7 +119,8 @@ function InputPemakaianBahan() {
             console.log(karyawanResponse.data.data);
             setKaryawanOptions(await karyawanResponse.data.data);
         }
-        fetchKaryawan();
+        if (idProyekProduk)
+            fetchKaryawan();
     }, [idProyekProduk]);
 
     useEffect(() => {
@@ -130,7 +133,8 @@ function InputPemakaianBahan() {
             console.log(bahanResponse.data.data);
             setBahanOptions(await bahanResponse.data.data);
         }
-        fetchBahan();
+        if (idProyekProduk)
+            fetchBahan();
     }, [idProyekProduk]);
 
     return (
