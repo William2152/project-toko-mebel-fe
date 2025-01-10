@@ -1,14 +1,16 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
 import { RootState } from '../../../app/storeRedux';
-import { Autocomplete, Box, Button, CircularProgress, Modal, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from '@mui/material';
+import { Autocomplete, Box, Button, CircularProgress, IconButton, Modal, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from '@mui/material';
 import { BahanData, BahanProdukData, DetailBahanProdukData, SatuanData } from '../../interface';
+import CloseIcon from '@mui/icons-material/Close';
 
 function ProdukDetailPage() {
     const { id } = useParams();
+    const id_projek = localStorage.getItem('id_projek');
     const token = useSelector((state: RootState) => state.localStorage.value);
     const [dataBahan, setDataBahan] = useState<BahanProdukData[]>([]);
     const [dataBahanDetail, setDataBahanDetail] = useState<DetailBahanProdukData[]>([]);
@@ -30,6 +32,7 @@ function ProdukDetailPage() {
     const [satuanOptions, setSatuanOptions] = useState<SatuanData[]>([]);
     const [dataJasa, setDataJasa] = useState([]);
     const [reloadTableJasa, setReloadTableJasa] = useState(false);
+    const [error, setError] = useState('');
 
     const handleCloseJasa = () => {
         setOpenJasa(false); // Tutup modal
@@ -59,6 +62,15 @@ function ProdukDetailPage() {
         setUpdateId(detail.id_bahan);
         setUpdate(true);
     };
+
+    const handleSelesai = async () => {
+        await axios.put(`http://localhost:6347/api/proyek/${id_projek}/produk/${id}/status`, { status: 1 }, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        })
+        setError("Berhasil Selesaikan Produk");
+    }
 
     const handleDelete = async (id: number) => {
         setDataBahanDetail(dataBahanDetail.filter((detail) => detail.id_bahan !== id));
@@ -182,6 +194,7 @@ function ProdukDetailPage() {
             })
             setUpdate(false);
             reset();
+            setError("Berhasil Mengubah Data");
             setReload(!reload);
         } else {
             const namaBahan = await getNamaBahan(data.id_bahan);
@@ -283,23 +296,41 @@ function ProdukDetailPage() {
     }, [openDaftarJasa, reloadTableJasa]);
     return (
         <>
+            <div>
+                <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
+                    onClose={() => setError("")}
+                    message={error}
+                    action={
+                        <Fragment>
+                            <IconButton
+                                size="small"
+                                aria-label="close"
+                                color="inherit"
+                                onClick={() => setError("")}
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </Fragment>
+                    }
+                />
+            </div>
             <div className="mb-12 mt-6">
                 <h2 className="text-5xl font-bold text-[#65558f] mb-6 mx-12">Detail Produk</h2>
             </div>
-            <div className="border-2 rounded-lg shadow-2xl mx-12">
-                <div className="flex justify-end">
-                    <button
-                        onClick={handleUpdate}
-                        className="px-8 py-3 me-5 mt-5 bg-[#65558f] text-white rounded-lg text-lg shadow-md hover:shadow-lg hover:from-blue-600 hover:to-indigo-700 transition-transform transform hover:scale-105 focus:outline-none"
-                    >
-                        Selesai
-                    </button>
-                </div>
+            <div className="border-2 rounded-lg shadow-2xl mx-12 px-12">
                 <div className='container mx-auto py-12'>
-                    <div className="flex justify-end">
+                    <div className="flex justify-between">
+                        <button
+                            onClick={handleSelesai}
+                            className="px-8 py-2 me-5 mt-5 mb-5 bg-[#65558f] text-white rounded-lg text-lg shadow-md hover:shadow-lg hover:from-blue-600 hover:to-indigo-700 transition-transform transform hover:scale-105 focus:outline-none"
+                        >
+                            Selesai
+                        </button>
                         <button
                             onClick={() => handleSave()}
-                            className="px-6 py-2 text-white bg-[#65558f] rounded-lg hover:bg-green-500 mt-4"
+                            className="px-6 py-2 mb-5 text-white bg-[#65558f] rounded-lg hover:bg-green-500 mt-4"
                         >
                             Save Produk
                         </button>
