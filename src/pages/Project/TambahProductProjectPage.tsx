@@ -6,10 +6,38 @@ import { KaryawanData, ProjectData, ProyekProdukData } from '../../interface';
 import axios from 'axios';
 import { IconButton, Snackbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import Joi from 'joi';
+import { joiResolver } from '@hookform/resolvers/joi';
 
 function TambahProductProjectPage() {
     const token = useSelector((state: RootState) => state.localStorage.value);
-    const { handleSubmit, register, reset } = useForm<ProyekProdukData>();
+    const schema = Joi.object({
+        id_proyek: Joi.string().required().messages({
+            'string.empty': 'Proyek Harus Diisi',
+        }),
+        tipe: Joi.string().required().messages({
+            'string.empty': 'Tipe Produk Harus Diisi',
+        }),
+        id_penanggung_jawab: Joi.number().required().messages({
+            'number.base': 'Penanggung Jawab Harus Diisi',
+        }),
+        id_karyawan1: Joi.number().required().messages({
+            'number.base': 'Karyawan 1 Harus Diisi',
+        }),
+        id_karyawan2: Joi.number().required().messages({
+            'number.base': 'Karyawan 2 Harus Diisi',
+        }),
+        nama_produk: Joi.string().required().messages({
+            'string.empty': 'Nama Produk Harus Diisi',
+        }),
+        qty: Joi.number().required().greater(0).messages({
+            'number.greater': 'Jumlah Produk harus lebih besar dari 0',
+            'number.base': 'Jumlah Produk Harus Diisi',
+        }),
+    })
+    const { handleSubmit, register, reset, formState: { errors } } = useForm<ProyekProdukData>({
+        resolver: joiResolver(schema)
+    });
     const [error, setError] = useState('');
     const [proyek, setProyek] = useState([]);
     const [ketua, setKetua] = useState([]);
@@ -32,6 +60,7 @@ function TambahProductProjectPage() {
                 },
             });
             reset();
+            setError('Berhasil Menambahkan Produk');
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 setError(error.response?.data.message);
@@ -138,6 +167,11 @@ function TambahProductProjectPage() {
                                     <option key={proyek.id} value={proyek.id}>{proyek.nama}</option>
                                 ))}
                             </select>
+                            {errors.id_proyek && (
+                                <p className="text-red-500 text-xs mt-1">
+                                    {errors.id_proyek.message}
+                                </p>
+                            )}
                         </div>
 
                         {/* Tipe Proyek */}
@@ -158,6 +192,11 @@ function TambahProductProjectPage() {
                                 <option value="finishing">Finishing</option>
                                 <option value="resin">Resin</option>
                             </select>
+                            {errors.tipe && (
+                                <p className="text-red-500 text-xs mt-1">
+                                    {errors.tipe.message}
+                                </p>
+                            )}
                         </div>
 
                         {/* Nama Produk */}
@@ -175,6 +214,11 @@ function TambahProductProjectPage() {
                                 placeholder="Masukkan nama produk"
                                 {...register('nama_produk')}
                             />
+                            {errors.nama_produk && (
+                                <p className="text-red-500 text-xs mt-1">
+                                    {errors.nama_produk.message}
+                                </p>
+                            )}
                         </div>
 
                         {/* Quantity */}
@@ -192,6 +236,11 @@ function TambahProductProjectPage() {
                                 placeholder="Masukkan jumlah produk"
                                 {...register('qty')}
                             />
+                            {errors.qty && (
+                                <p className="text-red-500 text-xs mt-1">
+                                    {errors.qty.message}
+                                </p>
+                            )}
                         </div>
 
                         {/* List Penanggung Jawab */}
@@ -216,6 +265,11 @@ function TambahProductProjectPage() {
                                         <option key={ketua.id} value={ketua.id}>{ketua.nama}</option>
                                     ))}
                                 </select>
+                                {errors.id_penanggung_jawab && (
+                                    <p className="text-red-500 text-xs mt-1">
+                                        {errors.id_penanggung_jawab.message}
+                                    </p>
+                                )}
                             </div>
                             <div className="flex flex-col gap-y-2">
                                 <label
@@ -234,6 +288,11 @@ function TambahProductProjectPage() {
                                         <option key={member.id} value={member.id}>{member.nama}</option>
                                     ))}
                                 </select>
+                                {errors.id_karyawan1 && (
+                                    <p className="text-red-500 text-xs mt-1">
+                                        {errors.id_karyawan1.message}
+                                    </p>
+                                )}
                             </div>
                             <div className="flex flex-col gap-y-2">
                                 <label
@@ -252,6 +311,11 @@ function TambahProductProjectPage() {
                                         <option key={member.id} value={member.id}>{member.nama}</option>
                                     ))}
                                 </select>
+                                {errors.id_karyawan2 && (
+                                    <p className="text-red-500 text-xs mt-1">
+                                        {errors.id_karyawan2.message}
+                                    </p>
+                                )}
                             </div>
                         </div>
 
