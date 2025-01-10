@@ -10,6 +10,9 @@ import axios from 'axios';
 const DashboardPage: React.FC = () => {
   const token = useSelector((state: RootState) => state.localStorage.value);
   const [projectData, setProjectData] = useState<ProjectData[]>([]);
+  const [projectDataSelesai, setProjectDataSelesai] = useState<ProjectData[]>([]);
+  const [projectDataActive, setProjectDataActive] = useState<ProjectData[]>([]);
+  const [projectDataActive2, setProjectDataActive2] = useState<ProjectData[]>([]);
 
   const fetchProjectData = async () => {
     try {
@@ -17,27 +20,66 @@ const DashboardPage: React.FC = () => {
         headers: {
           Authorization: `Bearer ${token}`,
         }
-      })
+      });
       setProjectData(response.data.data);
-      console.log(response.data.data);
-
     } catch (error) {
       console.error('Error fetching project data:', error);
     }
   };
-  const rows = [
-    { id: 1, name: 'Project A', quantity: 120, location: 'Warehouse 1' },
-    { id: 2, name: 'Project B', quantity: 80, location: 'Warehouse 2' },
-    { id: 3, name: 'Project C', quantity: 150, location: 'Warehouse 3' },
-  ];
+
+  const fetchProjectDataActive = async () => {
+    try {
+      const response = await axios.get('http://localhost:6347/api/proyek?status=false', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      setProjectDataActive2(response.data.data);
+    } catch (error) {
+      console.error('Error fetching project data:', error);
+    }
+  };
+
+  const fetchProjectSelesai = async () => {
+    const response = await axios.get('http://localhost:6347/api/master/proyek?status=true', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    setProjectDataSelesai(response.data.data);
+  };
+
+  const fetchProjectActive = async () => {
+    const response = await axios.get('http://localhost:6347/api/master/proyek?status=false', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    setProjectDataActive(response.data.data);
+  };
+
+  const formatDate = (date: string): string => {
+    return new Intl.DateTimeFormat('en-GB').format(new Date(date));
+  };
+
+  const formattedProjectDataActive2 = projectDataActive2.map((project) => ({
+    ...project,
+    start: formatDate(project.start),
+    deadline: formatDate(project.deadline),
+  }));
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'name', headerName: 'Project Name', width: 200 },
+    { field: 'nama', headerName: 'Project Name', width: 200 },
+    { field: 'start', headerName: 'Start Date', width: 200 },
+    { field: 'deadline', headerName: 'Deadline', width: 200 },
   ];
 
   useEffect(() => {
     fetchProjectData();
+    fetchProjectSelesai();
+    fetchProjectActive();
+    fetchProjectDataActive();
   }, []);
 
   return (
@@ -62,15 +104,7 @@ const DashboardPage: React.FC = () => {
             <Card>
               <CardContent>
                 <Typography variant="h6">Active Project</Typography>
-                <Typography variant="h4">3</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6">Pending Project</Typography>
-                <Typography variant="h4">27</Typography>
+                <Typography variant="h4">{projectDataActive.length}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -78,7 +112,7 @@ const DashboardPage: React.FC = () => {
             <Card>
               <CardContent>
                 <Typography variant="h6">Completed Project</Typography>
-                <Typography variant="h4">120</Typography>
+                <Typography variant="h4">{projectDataSelesai.length}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -90,7 +124,7 @@ const DashboardPage: React.FC = () => {
             Recent Project
           </Typography>
           <div style={{ height: 400, width: '100%' }}>
-            <DataGrid rows={rows} columns={columns} pageSize={5} rowsPerPageOptions={[5]} checkboxSelection />
+            <DataGrid rows={formattedProjectDataActive2} columns={columns} pageSize={5} rowsPerPageOptions={[5]} checkboxSelection />
           </div>
         </Paper>
       </Box>
