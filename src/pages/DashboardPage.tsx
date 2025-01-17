@@ -81,10 +81,12 @@ const DashboardPage: React.FC = () => {
   ];
 
   return (
-    <Box sx={{ padding: 3, backgroundColor: '#f7f9fc', minHeight: '100vh' }}>
-      <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3, color: '#3f51b5' }}>
-        Dashboard
-      </Typography>
+    <Box sx={{ padding: 3, backgroundColor: '#f7f9fc' }}>
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+          Dashboard
+        </h1>
+      </div>
 
       {/* Statistic Cards */}
       <Grid container spacing={4} sx={{ mb: 3 }}>

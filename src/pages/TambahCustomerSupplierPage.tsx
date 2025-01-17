@@ -409,6 +409,9 @@ function TambahCustomerSupplierPage() {
                 <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
                     Tambah Customer / Supplier
                 </h1>
+                <p className="mt-2 text-lg text-gray-600">
+                    Berikut adalah form untuk input Customer / Supplier.
+                </p>
             </div>
 
             {/* Form Container */}
