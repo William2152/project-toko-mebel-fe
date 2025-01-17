@@ -79,8 +79,13 @@ function HistoryPemakaianBahan() {
                     }
                 />
             </div>
-            <div className="mb-12 mt-6">
-                <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">List Project</h2>
+            <div className="text-center mb-8">
+                <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+                    List Pemakaian Bahan
+                </h1>
+                <p className="mt-2 text-lg text-gray-600">
+                    Berikut adalah List Pemakaian Bahan dari Proyek.
+                </p>
             </div>
             <div className="border-2 h-[80vh] rounded-lg shadow-2xl mx-12 bg-white">
                 <div className="container mx-auto px-8 py-8">

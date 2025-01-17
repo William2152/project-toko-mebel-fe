@@ -281,8 +281,13 @@ function TambahUserPage() {
                     }
                 />
             </div>
-            <div className='mb-12 mt-6'>
-                <h2 className='text-4xl font-bold text-[#65558f] mb-2 mx-12'>Tambah Pengguna Baru</h2>
+            <div className="text-center mb-8">
+                <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+                    Tambah User
+                </h1>
+                <p className="mt-2 text-lg text-gray-600">
+                    Berikut adalah halaman untuk menambahkan user baru yang dapat mengakses website ini.
+                </p>
             </div>
             <div className='border-2 rounded-lg shadow-2xl mx-12'>
                 <div className='container mx-auto px-12 py-12'>

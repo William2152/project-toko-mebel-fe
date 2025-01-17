@@ -193,8 +193,13 @@ function TambahNotaPage() {
                     }
                 />
             </div>
-            <div className='mb-12 mt-6'>
-                <h2 className='text-4xl font-bold text-[#65558f] mb-2 px-12'>Tambah Nota</h2>
+            <div className="text-center mb-8">
+                <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+                    Input Nota
+                </h1>
+                <p className="mt-2 text-lg text-gray-600">
+                    Berikut adalah form untuk input nota.
+                </p>
             </div>
             <div className="px-12 my-6">
                 {/* Form Header */}

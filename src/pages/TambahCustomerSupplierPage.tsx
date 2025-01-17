@@ -405,10 +405,10 @@ function TambahCustomerSupplierPage() {
                 />
             </div>
             {/* Header */}
-            <div className="mb-12 mt-6">
-                <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">
+            <div className="text-center mb-8">
+                <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
                     Tambah Customer / Supplier
-                </h2>
+                </h1>
             </div>
 
             {/* Form Container */}

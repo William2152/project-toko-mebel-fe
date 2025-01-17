@@ -186,10 +186,10 @@ function GenerateLaporanNotaBySupplier() {
           }
         />
       </div>
-      <div className="mb-12 mt-6">
-        <h2 className="text-4xl font-bold text-[#65558f] mb-2 px-12">
-          Laporan Nota Per Supplier
-        </h2>
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+          Laporan Nota per Supplier
+        </h1>
       </div>
       <div className="px-12 my-6">
         <div className="mb-8">
