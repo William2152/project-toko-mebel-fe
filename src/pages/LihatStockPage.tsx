@@ -106,11 +106,16 @@ function LihatStockPage() {
                     }
                 />
             </div>
-            <div className="mb-12 mt-6">
-                <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">Lihat Stock</h2>
+            <div className="text-center mb-8">
+                <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+                    Stock Bahan
+                </h1>
+                <p className="mt-2 text-lg text-gray-600">
+                    Berikut adalah seluruh Stock yang tersedia.
+                </p>
             </div>
-            <div className="border-2 rounded-lg shadow-2xl mx-12">
-                <div className="container mx-auto px-12 py-12">
+            <Paper className="overflow-hidden shadow-lg rounded-xl bg-white">
+                <div className="p-8">
                     <Paper sx={{ width: "100%", overflow: "hidden" }}>
                         {/* Search Bar */}
                         <div className="px-4 py-2 flex justify-between items-center">
@@ -180,7 +185,7 @@ function LihatStockPage() {
                         </div>
                     </Paper>
                 </div>
-            </div>
+            </Paper>
         </>
     );
 };

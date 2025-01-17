@@ -277,7 +277,7 @@ function MasterBahanPage() {
             {/* Header */}
             <div className="max-w-7xl mx-auto py-8">
                 <div className="text-center mb-8">
-                    <h2 className="text-4xl font-bold text-[#65558f]">Master Bahan</h2>
+                    <h2 className="text-4xl font-extrabold text-[#65558f] tracking-tight">Master Bahan</h2>
                 </div>
             </div>
 

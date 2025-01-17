@@ -283,7 +283,7 @@ function MainLayout() {
                         primaryTypographyProps={{
                           sx: { fontSize: ukSubTitle },
                         }}
-                        primary="Catat Stock Bahan"
+                        primary="Input Stock Bahan"
                       />
                     </ListItemButton>
                     <ListItemButton
@@ -295,7 +295,7 @@ function MainLayout() {
                         primaryTypographyProps={{
                           sx: { fontSize: ukSubTitle },
                         }}
-                        primary="Lihat Stok Bahan"
+                        primary="Stock Bahan"
                       />
                     </ListItemButton>
                     <ListItemButton
@@ -355,7 +355,7 @@ function MainLayout() {
                         primaryTypographyProps={{
                           sx: { fontSize: ukSubTitle },
                         }}
-                        primary="Bahan Sisa"
+                        primary="List Bahan Sisa"
                       />
                     </ListItemButton>
                   </List>
@@ -458,7 +458,7 @@ function MainLayout() {
                   >
                     <ListItemText
                       primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }}
-                      primary="Masukkan Nota"
+                      primary="Input Nota"
                     />
                   </ListItemButton>
                   <ListItemButton
@@ -468,7 +468,7 @@ function MainLayout() {
                   >
                     <ListItemText
                       primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }}
-                      primary="Lihat Nota"
+                      primary="List Nota"
                     />
                   </ListItemButton>
                 </List>
