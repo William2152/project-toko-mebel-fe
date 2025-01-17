@@ -282,8 +282,8 @@ function MasterBahanPage() {
             </div>
 
             {/* Tambah Nama Bahan */}
-            <div className="border-2 rounded-lg shadow-2xl mx-12 bg-white text-[#65558f] w-[95%]">
-                <div className="container mx-auto px-8 py-8">
+            <Paper className="overflow-hidden shadow-lg rounded-xl bg-white">
+                <div className="p-8">
                     <h3 className="text-2xl font-bold mb-6">Tambah Nama Bahan</h3>
                     <form onSubmit={handleSubmitBahan(onSubmitBahan)}>
                         <div className="mb-4">
@@ -405,11 +405,11 @@ function MasterBahanPage() {
                         </div>
                     </Paper>
                 </div>
-            </div>
+            </Paper>
 
             {/* Tambah Satuan Bahan */}
-            <div className="border-2 rounded-lg w-[60%] shadow-2xl mx-12 bg-white w-[95%] mt-10">
-                <div className="container mx-auto px-8 py-8">
+            <Paper className="overflow-hidden shadow-lg rounded-xl bg-white mt-10">
+                <div className="p-8">
                     <h3 className="text-2xl font-bold mb-6 text-[#65558f]">Tambah Satuan Bahan</h3>
                     <form onSubmit={handleSubmitSatuan(onSubmitSatuan)}>
                         <div className="mb-4">
@@ -576,7 +576,7 @@ function MasterBahanPage() {
                         </div>
                     </Paper>
                 </div>
-            </div>
+            </Paper>
         </>
     );
 }

@@ -16,23 +16,42 @@ function TambahNotaPage() {
     const [error, setError] = useState('');
 
     const schemaAll = Joi.object({
-        kodeNota: Joi.string().required(),
-        supplier: Joi.string().required(),
-        tanggalNota: Joi.string().required(),
-        totalPajak: Joi.number().required(),
-        totalDiscount: Joi.number().required(),
+        kodeNota: Joi.string().required().messages({
+            "string.empty": "Kode Nota harus diisi",
+        }),
+        supplier: Joi.string().required().messages({
+            "string.empty": "Supplier harus diisi",
+        }),
+        tanggalNota: Joi.string().required().messages({
+            "string.empty": "Tanggal Nota harus diisi",
+        }),
+        totalPajak: Joi.number().required().messages({
+            "number.base": "Total Pajak harus diisi",
+        }),
+        totalDiscount: Joi.number().required().messages({
+            "number.base": "Total Discount harus diisi",
+        }),
     })
     const formAll = useForm({ resolver: joiResolver(schemaAll) });
     const { register: registerAll, handleSubmit: handleSubmitAll, formState: { errors: errorsAll }, reset: resetAll } = formAll;
 
     const schemaBarang = Joi.object({
-        namaBahan: Joi.string().required(),
-        satuan: Joi.string().required(),
+        namaBahan: Joi.string().required().messages({
+            "string.empty": "Nama Bahan Harus Diisi",
+        }),
+        satuan: Joi.string().required().messages({
+            "string.empty": "Satuan Harus Diisi",
+        }),
         jumlahBahan: Joi.number().greater(0).messages({
             'number.greater': 'Jumlah Bahan harus lebih besar dari 0',
+            'number.base': 'Jumlah Bahan Harus Diisi',
         }),
-        hargaSatuan: Joi.number().required(),
-        diskonAkhir: Joi.number().required(),
+        hargaSatuan: Joi.number().required().messages({
+            'number.base': 'Harga Satuan Harus Diisi',
+        }),
+        diskonAkhir: Joi.number().required().messages({
+            'number.base': 'Diskon Akhir Harus Diisi',
+        }),
     })
     const formBarang = useForm({ resolver: joiResolver(schemaBarang) });
     const { register: registerBarang, handleSubmit: handleSubmitBarang, reset: resetBarang, formState: { errors: errorsBarang } } = formBarang;
