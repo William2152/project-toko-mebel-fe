@@ -50,6 +50,7 @@ function HistoryAllBahanKeluarPage() {
                 setTotalPages(response.data.total_page || 0); // Pastikan total_page default
             } catch (error) {
                 console.error("Error fetching data:", error);
+                setError(error.response.data.message);
             }
         };
 

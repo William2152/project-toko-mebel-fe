@@ -87,6 +87,7 @@ function HistoryAllBahanMasuk() {
                 setSupplierOptions(response.data.data)
             } catch (error: any) {
                 console.error('Error fetching supplier options:', error);
+                setError(error.response.data.message);
             }
         }
 
@@ -120,7 +121,7 @@ function HistoryAllBahanMasuk() {
                 setTotalPages(response.data.total_page)
             } catch (error: any) {
                 console.error('Error fetching all bahan masuk:', error);
-                setError(error.message);
+                setError(error.response.data.message);
             } finally {
                 setLoading(false);
             }

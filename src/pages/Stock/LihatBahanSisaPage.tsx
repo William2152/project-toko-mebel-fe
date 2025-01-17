@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import {
     Table,
     TableBody,
@@ -14,11 +14,14 @@ import {
     Box,
     Autocomplete,
     Button,
+    Snackbar,
+    IconButton,
 } from "@mui/material";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/storeRedux";
 import { Controller, useForm } from "react-hook-form";
+import CloseIcon from "@mui/icons-material/Close";
 
 function LihatBahanSisaPage() {
     const [data, setData] = useState([]);
@@ -34,7 +37,7 @@ function LihatBahanSisaPage() {
     const [satuan_terkecil, setSatuanTerkecil] = useState('');
     const [historyId, setHistoryId] = useState(0);
     const [reload, setReload] = useState(false);
-
+    const [error, setError] = useState('');
     const handleClose = () => {
         setOpen(false);
         reset();
@@ -51,8 +54,10 @@ function LihatBahanSisaPage() {
                 },
             })
             setReload(!reload);
+            setError('Berhasil Mengambil Bahan');
         } catch (error) {
             console.error("Error fetching data:", error);
+            setError(error.response.data.message);
         }
     }
 
@@ -89,6 +94,7 @@ function LihatBahanSisaPage() {
             } catch (error) {
                 console.error("Error fetching data:", error);
                 setLoading(false);
+                setError(error.response.data.message);
             }
         };
 
@@ -113,6 +119,26 @@ function LihatBahanSisaPage() {
     }, [satuan_terkecil]);
     return (
         <>
+            <div>
+                <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
+                    onClose={() => setError("")}
+                    message={error}
+                    action={
+                        <Fragment>
+                            <IconButton
+                                size="small"
+                                aria-label="close"
+                                color="inherit"
+                                onClick={() => setError("")}
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </Fragment>
+                    }
+                />
+            </div>
             <div className="mb-12 mt-6">
                 <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">Bahan Sisa</h2>
             </div>

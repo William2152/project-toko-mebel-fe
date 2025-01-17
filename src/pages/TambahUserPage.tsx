@@ -224,7 +224,7 @@ function TambahUserPage() {
             .then(response => {
                 console.log(response.data);
 
-                const dataWithNo = response.data.map((item: Omit<Data, 'no'>, index: number) => ({
+                const dataWithNo = response.data.data.map((item: Omit<Data, 'no'>, index: number) => ({
                     ...item,
                     no: index + 1,
                 }));

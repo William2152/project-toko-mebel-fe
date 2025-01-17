@@ -7,6 +7,7 @@ import Joi from "joi";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { IconButton, Snackbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { set } from "date-fns";
 
 function CatatStockPage() {
     const token = useSelector((state: RootState) => state.localStorage.value);
@@ -49,7 +50,7 @@ function CatatStockPage() {
             })
             .catch(e => {
                 console.log('Error fetching nama bahan:', e);
-
+                setError(e.response.data.message);
             })
     }, [])
 
@@ -65,7 +66,7 @@ function CatatStockPage() {
             })
             .catch(e => {
                 console.log('Error fetching nama bahan:', e);
-
+                setError(e.response.data.message);
             })
     }, [])
 
@@ -81,7 +82,7 @@ function CatatStockPage() {
             })
             .catch(e => {
                 console.log('Error fetching nama satuan:', e);
-
+                setError(e.response.data.message);
             })
     }, [])
 

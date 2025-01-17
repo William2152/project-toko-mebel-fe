@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import {
     Table,
     TableBody,
@@ -10,10 +10,13 @@ import {
     Paper,
     TextField,
     CircularProgress,
+    Snackbar,
+    IconButton,
 } from "@mui/material";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/storeRedux";
+import CloseIcon from "@mui/icons-material/Close";
 
 // Define the structure of your data
 interface StockData {
@@ -33,6 +36,7 @@ function LihatStockPage() {
     const [totalPages, setTotalPages] = useState<number>(0);
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string>("");
 
     // Fetch data from the backend
     const fetchData = async (page: number, rowsPerPage: number) => {
@@ -51,6 +55,7 @@ function LihatStockPage() {
             setTotalPages(result.total_page);
         } catch (error) {
             console.error("Error fetching data:", error);
+            setError(error.response.data.message);
         } finally {
             setLoading(false);
         }
@@ -81,6 +86,26 @@ function LihatStockPage() {
 
     return (
         <>
+            <div>
+                <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
+                    onClose={() => setError("")}
+                    message={error}
+                    action={
+                        <Fragment>
+                            <IconButton
+                                size="small"
+                                aria-label="close"
+                                color="inherit"
+                                onClick={() => setError("")}
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </Fragment>
+                    }
+                />
+            </div>
             <div className="mb-12 mt-6">
                 <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">Lihat Stock</h2>
             </div>

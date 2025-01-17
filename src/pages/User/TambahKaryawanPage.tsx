@@ -65,6 +65,7 @@ function TambahKaryawanPage() {
     })
     console.log(response);
     setReload(!reload);
+    setError('Berhasil Menghapus Karyawan');
   }
 
   const handleClose = () => {
@@ -88,6 +89,7 @@ function TambahKaryawanPage() {
         )
         setReload(!reload);
         setUpdate(false);
+        setError('Berhasil Mengubah Karyawan');
         reset()
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -109,6 +111,7 @@ function TambahKaryawanPage() {
           }
         )
         setReload(!reload);
+        setError('Berhasil Menambah Karyawan');
         reset()
       } catch (error) {
         if (axios.isAxiosError(error)) {

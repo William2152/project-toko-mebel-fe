@@ -38,7 +38,7 @@ function HistoryAllBahanMasukDetailPage() {
                 await getNamaSupplier(response.data.id_supplier)
             } catch (error: any) {
                 console.error('Error fetching history pemakaian bahan:', error);
-                setError(error.message);
+                setError(error.response.data.message);
             } finally {
                 setLoading(false);
             }

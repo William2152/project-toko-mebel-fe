@@ -7,6 +7,7 @@ import { RootState } from '../../../app/storeRedux';
 import { Autocomplete, Box, Button, CircularProgress, IconButton, Modal, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from '@mui/material';
 import { BahanData, BahanProdukData, DetailBahanProdukData, SatuanData } from '../../interface';
 import CloseIcon from '@mui/icons-material/Close';
+import { set } from 'date-fns';
 
 function ProdukDetailPage() {
     const { id } = useParams();
@@ -169,8 +170,10 @@ function ProdukDetailPage() {
                 }
             })
             console.log(response);
+            setError("Berhasil Mengubah Data");
         } catch (error) {
             console.error('Error fetching bahan:', error);
+            setError("Gagal Mengubah Data");
         }
     }
 
@@ -194,7 +197,6 @@ function ProdukDetailPage() {
             })
             setUpdate(false);
             reset();
-            setError("Berhasil Mengubah Data");
             setReload(!reload);
         } else {
             const namaBahan = await getNamaBahan(data.id_bahan);
@@ -211,6 +213,7 @@ function ProdukDetailPage() {
                 }
             ]);
             reset();
+            setReload(!reload);
         }
         console.log(dataBahanDetail);
     };
@@ -235,6 +238,7 @@ function ProdukDetailPage() {
             resetJasa();
         } catch (error) {
             console.error('Error fetching bahan:', error);
+            setError(error.response.data.message);
         }
     }
 
@@ -271,6 +275,7 @@ function ProdukDetailPage() {
             } catch (error) {
                 console.error('Error fetching produk:', error);
                 setLoading(false);
+                setError(error.response.data.message);
             }
         };
         fetchSatuan();
@@ -290,6 +295,7 @@ function ProdukDetailPage() {
             } catch (error) {
                 console.error('Error fetching produk:', error);
                 setLoading(false);
+                setError(error.response.data.message);
             }
         }
         fetchJasa();
