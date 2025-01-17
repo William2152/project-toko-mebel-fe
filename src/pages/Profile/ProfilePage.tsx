@@ -4,14 +4,27 @@ import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/storeRedux';
 import axios from 'axios';
-import { IconButton, Snackbar } from '@mui/material';
+import { Card, CardContent, IconButton, Snackbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import Joi from 'joi';
+import { joiResolver } from '@hookform/resolvers/joi';
 
 
 function ProfilePage() {
     const token = useSelector((state: RootState) => state.localStorage.value);
-    const role = localStorage.getItem('role');
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<PasswordFormData>();
+    const schema = Joi.object({
+        "oldPassword": Joi.string().required().pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])')).messages({
+            'string.empty': 'Old Password harus diisi',
+            'string.pattern.base': 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character',
+        }),
+        "newPassword": Joi.string().required().pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])')).messages({
+            'string.empty': 'New Password harus diisi',
+            'string.pattern.base': 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character',
+        })
+    })
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<PasswordFormData>({
+        resolver: joiResolver(schema)
+    });
     const [profileData, setProfileData] = useState<ProfileData>();
     const [error, setError] = useState("");
 
@@ -25,7 +38,9 @@ function ProfilePage() {
             reset();
         } catch (error) {
             console.error('Error updating password:', error);
-            setError(error.response.data.message);
+            if (axios.isAxiosError(error)) {
+                setError(error.response?.data.message);
+            }
         }
     };
 
@@ -40,7 +55,9 @@ function ProfilePage() {
                 setProfileData(response.data);
             } catch (error) {
                 console.error('Error fetching profile data:', error);
-                setError(error.response.data.message);
+                if (axios.isAxiosError(error)) {
+                    setError(error.response?.data.message);
+                }
             }
         };
 
@@ -49,105 +66,114 @@ function ProfilePage() {
 
     return (
         <>
-            <div>
-                <Snackbar
-                    open={!!error}
-                    autoHideDuration={6000}
-                    onClose={() => setError("")}
-                    message={error}
-                    action={
-                        <Fragment>
-                            <IconButton
-                                size="small"
-                                aria-label="close"
-                                color="inherit"
-                                onClick={() => setError("")}
-                            >
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        </Fragment>
-                    }
-                />
-            </div>
-            <div>
-                {/* Header Halaman */}
-                <div className="mb-12 mt-6">
-                    <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">Profile</h2>
+            <Snackbar
+                open={!!error}
+                autoHideDuration={6000}
+                onClose={() => setError("")}
+                message={error}
+                action={
+                    <Fragment>
+                        <IconButton
+                            size="small"
+                            aria-label="close"
+                            color="inherit"
+                            onClick={() => setError("")}
+                        >
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    </Fragment>
+                }
+            />
+
+            <div className="max-w mx-auto">
+                <div className="text-center mb-12">
+                    <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+                        Profile Settings
+                    </h1>
+                    <p className="mt-2 text-lg text-gray-600">
+                        Manage your account information and password
+                    </p>
                 </div>
 
-                <div className="border-2 rounded-lg h-[80vh] shadow-2xl mx-12">
-                    <div className="container mx-auto px-12 py-12">
-                        {/* Header Data Profile */}
-                        <div className="mb-6">
-                            <h3 className="text-3xl text-[#65558f] font-semibold mb-4 border-b-2 border-gray-300 pb-2">Data Profile</h3>
+                <Card className="overflow-hidden shadow-lg rounded-2xl bg-white">
+                    <CardContent className="p-8">
+                        {/* Profile Information Section */}
+                        <div className="mb-12">
+                            <h2 className="text-2xl font-semibold text-[#65558f] mb-6 pb-2 border-b border-gray-200">
+                                Personal Information
+                            </h2>
+                            <div className="grid gap-6">
+                                <div className="flex items-center">
+                                    <div className="w-40 text-sm font-medium text-gray-500">Username</div>
+                                    <div className="flex-1 text-lg font-medium text-gray-900">{profileData?.username}</div>
+                                </div>
+                                <div className="flex items-center">
+                                    <div className="w-40 text-sm font-medium text-gray-500">Name</div>
+                                    <div className="flex-1 text-lg font-medium text-gray-900">{profileData?.nama}</div>
+                                </div>
+                                <div className="flex items-center">
+                                    <div className="w-40 text-sm font-medium text-gray-500">Role</div>
+                                    <div className="flex-1">
+                                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-[#65558f]">
+                                            {profileData?.role}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center">
+                                    <div className="w-40 text-sm font-medium text-gray-500">Email</div>
+                                    <div className="flex-1 text-lg font-medium text-gray-900">{profileData?.email}</div>
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Informasi Profil */}
-                        <div className="mb-8">
-                            <div className="flex gap-x-4 mb-4">
-                                <label className="w-[25%] text-2xl font-bold">Username</label>
-                                <span className="text-xl font-medium text-gray-700">{profileData?.username}</span>
-                            </div>
-                            <div className="flex gap-x-4 mb-4">
-                                <label className="w-[25%] text-2xl font-bold">Nama</label>
-                                <span className="text-xl font-medium text-gray-700">{profileData?.nama}</span>
-                            </div>
-                            <div className="flex gap-x-4 mb-4">
-                                <label className="w-[25%] text-2xl font-bold">Role</label>
-                                <span className="text-xl font-medium text-gray-700">{profileData?.role}</span>
-                            </div>
-                            <div className="flex gap-x-4 mb-4">
-                                <label className="w-[25%] text-2xl font-bold">Email</label>
-                                <span className="text-xl font-medium text-gray-700">{profileData?.email}</span>
-                            </div>
+                        {/* Password Change Section */}
+                        <div className="mt-10">
+                            <h2 className="text-2xl font-semibold text-[#65558f] mb-6 pb-2 border-b border-gray-200">
+                                Change Password
+                            </h2>
+                            <form onSubmit={handleSubmit(onSubmitPassword)} className="space-y-6">
+                                <div>
+                                    <label htmlFor="oldPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Current Password
+                                    </label>
+                                    <input
+                                        type="password"
+                                        id="oldPassword"
+                                        {...register("oldPassword")}
+                                        className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#65558f] focus:border-transparent"
+                                    />
+                                    {errors.oldPassword && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.oldPassword.message}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                                        New Password
+                                    </label>
+                                    <input
+                                        type="password"
+                                        id="newPassword"
+                                        {...register("newPassword")}
+                                        className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#65558f] focus:border-transparent"
+                                    />
+                                    {errors.newPassword && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.newPassword.message}</p>
+                                    )}
+                                </div>
+
+                                <div className="flex justify-end">
+                                    <button
+                                        type="submit"
+                                        className="inline-flex items-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-[#65558f] hover:bg-[#544a7d] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#65558f] transition-colors duration-200"
+                                    >
+                                        Update Password
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-
-                        {/* Header Ubah Password */}
-                        <div className="mb-6">
-                            <h3 className="text-3xl font-semibold text-[#65558f] mb-4 border-b-2 border-gray-300 pb-2">Ubah Password</h3>
-                        </div>
-
-                        {/* Formulir Ganti Password */}
-                        <form onSubmit={handleSubmit(onSubmitPassword)}>
-                            {/* Password Lama */}
-                            <div className="flex gap-x-4 mb-4">
-                                <label htmlFor="oldPassword" className="w-[25%] text-2xl font-bold">Old Password</label>
-                                <input
-                                    type="password"
-                                    id="oldPassword"
-                                    {...register("oldPassword", { required: "Old password is required" })}
-                                    className="border-2 border-gray-300 rounded px-2 py-2 w-full"
-                                />
-                                {errors.oldPassword && <span className="text-red-500 text-sm">{errors.oldPassword.message}</span>}
-                            </div>
-
-                            {/* Password Baru */}
-                            <div className="flex gap-x-4 mb-4">
-                                <label htmlFor="newPassword" className="w-[25%] text-2xl font-bold">New Password</label>
-                                <input
-                                    type="password"
-                                    id="newPassword"
-                                    {...register("newPassword", {
-                                        required: "New password is required",
-                                        minLength: { value: 6, message: "Password must be at least 6 characters" },
-                                    })}
-                                    className="border-2 border-gray-300 rounded px-2 py-2 w-full"
-                                />
-                                {errors.newPassword && <span className="text-red-500 text-sm">{errors.newPassword.message}</span>}
-                            </div>
-
-                            {/* Tombol Submit */}
-                            <div className="flex justify-end">
-                                <button
-                                    type="submit"
-                                    className="bg-[#65558f] text-white px-4 py-3 rounded-lg mt-4 font-bold text-xl"
-                                >
-                                    Update Password
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                    </CardContent>
+                </Card>
             </div>
         </>
     )

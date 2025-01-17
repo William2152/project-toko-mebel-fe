@@ -4,7 +4,7 @@ import { RootState } from '../../../app/storeRedux';
 import { useForm } from 'react-hook-form';
 import { KaryawanData, ProjectData, ProyekProdukData } from '../../interface';
 import axios from 'axios';
-import { IconButton, Snackbar } from '@mui/material';
+import { Card, CardContent, IconButton, Snackbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import Joi from 'joi';
 import { joiResolver } from '@hookform/resolvers/joi';
@@ -121,213 +121,198 @@ function TambahProductProjectPage() {
 
     return (
         <>
-            <div>
-                <Snackbar
-                    open={!!error}
-                    autoHideDuration={6000}
-                    onClose={() => setError("")}
-                    message={error}
-                    action={
-                        <Fragment>
-                            <IconButton
-                                size="small"
-                                aria-label="close"
-                                color="inherit"
-                                onClick={() => setError("")}
-                            >
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        </Fragment>
-                    }
-                />
-            </div>
-            <div className="mb-12 mt-6">
-                <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">
-                    Tambah Produk ke Proyek
-                </h2>
-            </div>
-            <div className="border-2 rounded-lg h-auto shadow-2xl mx-12 bg-white">
-                <div className="container mx-auto px-12 py-12">
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        {/* Nama Proyek */}
-                        <div className="flex flex-col gap-y-2 mb-6">
-                            <label
-                                htmlFor="namaProyek"
-                                className="text-xl font-semibold text-gray-700"
-                            >
-                                Nama Proyek
-                            </label>
-                            <select
-                                id="namaProyek"
-                                className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                {...register('id_proyek')}
-                            >
-                                <option hidden value="">Pilih Proyek</option>
-                                {proyek.map((proyek: ProjectData) => (
-                                    <option key={proyek.id} value={proyek.id}>{proyek.nama}</option>
-                                ))}
-                            </select>
-                            {errors.id_proyek && (
-                                <p className="text-red-500 text-xs mt-1">
-                                    {errors.id_proyek.message}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Tipe Proyek */}
-                        <div className="flex flex-col gap-y-2 mb-6">
-                            <label
-                                htmlFor="tipeProyek"
-                                className="text-xl font-semibold text-gray-700"
-                            >
-                                Tipe Proyek
-                            </label>
-                            <select
-                                id="tipeProyek"
-                                className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                {...register('tipe')}
-                            >
-                                <option hidden value="">Pilih Tipe</option>
-                                <option value="kayu">Kayu</option>
-                                <option value="finishing">Finishing</option>
-                                <option value="resin">Resin</option>
-                            </select>
-                            {errors.tipe && (
-                                <p className="text-red-500 text-xs mt-1">
-                                    {errors.tipe.message}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Nama Produk */}
-                        <div className="flex flex-col gap-y-2 mb-6">
-                            <label
-                                htmlFor="namaProduk"
-                                className="text-xl font-semibold text-gray-700"
-                            >
-                                Nama Produk
-                            </label>
-                            <input
-                                type="text"
-                                id="namaProduk"
-                                className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                placeholder="Masukkan nama produk"
-                                {...register('nama_produk')}
-                            />
-                            {errors.nama_produk && (
-                                <p className="text-red-500 text-xs mt-1">
-                                    {errors.nama_produk.message}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Quantity */}
-                        <div className="flex flex-col gap-y-2 mb-6">
-                            <label
-                                htmlFor="quantity"
-                                className="text-xl font-semibold text-gray-700"
-                            >
-                                Quantity
-                            </label>
-                            <input
-                                type="number"
-                                id="quantity"
-                                className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                placeholder="Masukkan jumlah produk"
-                                {...register('qty')}
-                            />
-                            {errors.qty && (
-                                <p className="text-red-500 text-xs mt-1">
-                                    {errors.qty.message}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* List Penanggung Jawab */}
-                        <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                            List Penanggung Jawab
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                            <div className="flex flex-col gap-y-2">
-                                <label
-                                    htmlFor="penanggungJawab"
-                                    className="text-lg font-medium text-gray-700"
-                                >
-                                    Penanggung Jawab
-                                </label>
-                                <select
-                                    id="penanggungJawab"
-                                    className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                    {...register('id_penanggung_jawab')}
-                                >
-                                    <option hidden>Penanggung Jawab</option>
-                                    {ketua.map((ketua: KaryawanData) => (
-                                        <option key={ketua.id} value={ketua.id}>{ketua.nama}</option>
-                                    ))}
-                                </select>
-                                {errors.id_penanggung_jawab && (
-                                    <p className="text-red-500 text-xs mt-1">
-                                        {errors.id_penanggung_jawab.message}
-                                    </p>
-                                )}
-                            </div>
-                            <div className="flex flex-col gap-y-2">
-                                <label
-                                    htmlFor="karyawan1"
-                                    className="text-lg font-medium text-gray-700"
-                                >
-                                    Karyawan 1
-                                </label>
-                                <select
-                                    id="karyawan1"
-                                    className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                    {...register('id_karyawan1')}
-                                >
-                                    <option hidden>Karyawan 1</option>
-                                    {member.map((member: KaryawanData) => (
-                                        <option key={member.id} value={member.id}>{member.nama}</option>
-                                    ))}
-                                </select>
-                                {errors.id_karyawan1 && (
-                                    <p className="text-red-500 text-xs mt-1">
-                                        {errors.id_karyawan1.message}
-                                    </p>
-                                )}
-                            </div>
-                            <div className="flex flex-col gap-y-2">
-                                <label
-                                    htmlFor="karyawan2"
-                                    className="text-lg font-medium text-gray-700"
-                                >
-                                    Karyawan 2
-                                </label>
-                                <select
-                                    id="karyawan2"
-                                    className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                    {...register('id_karyawan2')}
-                                >
-                                    <option hidden>Karyawan 2</option>
-                                    {member.map((member: KaryawanData) => (
-                                        <option key={member.id} value={member.id}>{member.nama}</option>
-                                    ))}
-                                </select>
-                                {errors.id_karyawan2 && (
-                                    <p className="text-red-500 text-xs mt-1">
-                                        {errors.id_karyawan2.message}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Submit Button */}
-                        <button
-                            type="submit"
-                            className="bg-[#65558f] text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-purple-700 transition focus:ring-2 focus:ring-purple-500"
+            <Snackbar
+                open={!!error}
+                autoHideDuration={6000}
+                onClose={() => setError("")}
+                message={error}
+                action={
+                    <Fragment>
+                        <IconButton
+                            size="small"
+                            aria-label="close"
+                            color="inherit"
+                            onClick={() => setError("")}
                         >
-                            Tambah Produk
-                        </button>
-                    </form>
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    </Fragment>
+                }
+            />
+
+            <div className="max-w mx-auto">
+                <div className="text-center mb-8">
+                    <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+                        Tambah Produk ke Proyek
+                    </h1>
+                    <p className="mt-2 text-lg text-gray-600">
+                        Isi informasi produk dan tentukan penanggung jawab
+                    </p>
                 </div>
+
+                <Card className="overflow-hidden shadow-lg rounded-xl bg-white">
+                    <CardContent className="p-8">
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Nama Proyek */}
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Nama Proyek
+                                    </label>
+                                    <select
+                                        {...register('id_proyek')}
+                                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm
+                                                 focus:outline-none focus:ring-2 focus:ring-[#65558f] focus:border-transparent"
+                                    >
+                                        <option hidden value="">Pilih Proyek</option>
+                                        {proyek.map((proyek: ProjectData) => (
+                                            <option key={proyek.id} value={proyek.id}>{proyek.nama}</option>
+                                        ))}
+                                    </select>
+                                    {errors.id_proyek && (
+                                        <p className="text-red-500 text-sm">{errors.id_proyek.message}</p>
+                                    )}
+                                </div>
+
+                                {/* Tipe Proyek */}
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Tipe Proyek
+                                    </label>
+                                    <select
+                                        {...register('tipe')}
+                                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm
+                                                 focus:outline-none focus:ring-2 focus:ring-[#65558f] focus:border-transparent"
+                                    >
+                                        <option hidden value="">Pilih Tipe</option>
+                                        <option value="kayu">Kayu</option>
+                                        <option value="finishing">Finishing</option>
+                                        <option value="resin">Resin</option>
+                                    </select>
+                                    {errors.tipe && (
+                                        <p className="text-red-500 text-sm">{errors.tipe.message}</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Nama Produk */}
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Nama Produk
+                                    </label>
+                                    <input
+                                        type="text"
+                                        {...register('nama_produk')}
+                                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm
+                                                 focus:outline-none focus:ring-2 focus:ring-[#65558f] focus:border-transparent"
+                                        placeholder="Masukkan nama produk"
+                                    />
+                                    {errors.nama_produk && (
+                                        <p className="text-red-500 text-sm">{errors.nama_produk.message}</p>
+                                    )}
+                                </div>
+
+                                {/* Quantity */}
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Quantity
+                                    </label>
+                                    <input
+                                        type="number"
+                                        {...register('qty')}
+                                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm
+                                                 focus:outline-none focus:ring-2 focus:ring-[#65558f] focus:border-transparent"
+                                        placeholder="Masukkan jumlah produk"
+                                    />
+                                    {errors.qty && (
+                                        <p className="text-red-500 text-sm">{errors.qty.message}</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Penanggung Jawab Section */}
+                            <div className="pt-6">
+                                <h3 className="text-lg font-medium text-gray-900 mb-4 pb-2 border-b">
+                                    Penanggung Jawab
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    {/* Penanggung Jawab */}
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Penanggung Jawab Utama
+                                        </label>
+                                        <select
+                                            {...register('id_penanggung_jawab')}
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm
+                                                     focus:outline-none focus:ring-2 focus:ring-[#65558f] focus:border-transparent"
+                                        >
+                                            <option hidden value="">Pilih Penanggung Jawab</option>
+                                            {ketua.map((ketua: KaryawanData) => (
+                                                <option key={ketua.id} value={ketua.id}>{ketua.nama}</option>
+                                            ))}
+                                        </select>
+                                        {errors.id_penanggung_jawab && (
+                                            <p className="text-red-500 text-sm">{errors.id_penanggung_jawab.message}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Karyawan 1 */}
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Karyawan 1
+                                        </label>
+                                        <select
+                                            {...register('id_karyawan1')}
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm
+                                                     focus:outline-none focus:ring-2 focus:ring-[#65558f] focus:border-transparent"
+                                        >
+                                            <option hidden value="">Pilih Karyawan 1</option>
+                                            {member.map((member: KaryawanData) => (
+                                                <option key={member.id} value={member.id}>{member.nama}</option>
+                                            ))}
+                                        </select>
+                                        {errors.id_karyawan1 && (
+                                            <p className="text-red-500 text-sm">{errors.id_karyawan1.message}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Karyawan 2 */}
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Karyawan 2
+                                        </label>
+                                        <select
+                                            {...register('id_karyawan2')}
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm
+                                                     focus:outline-none focus:ring-2 focus:ring-[#65558f] focus:border-transparent"
+                                        >
+                                            <option hidden value="">Pilih Karyawan 2</option>
+                                            {member.map((member: KaryawanData) => (
+                                                <option key={member.id} value={member.id}>{member.nama}</option>
+                                            ))}
+                                        </select>
+                                        {errors.id_karyawan2 && (
+                                            <p className="text-red-500 text-sm">{errors.id_karyawan2.message}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Submit Button */}
+                            <div className="pt-6">
+                                <button
+                                    type="submit"
+                                    className="w-full md:w-auto px-6 py-3 bg-[#65558f] text-white rounded-lg font-medium
+                                             hover:bg-[#544a7d] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#65558f]
+                                             transition-colors duration-200 flex items-center justify-center"
+                                >
+                                    Tambah Produk
+                                </button>
+                            </div>
+                        </form>
+                    </CardContent>
+                </Card>
             </div>
         </>
     );

@@ -256,32 +256,31 @@ function MasterBahanPage() {
 
     return (
         <>
-            <div>
-                <Snackbar
-                    open={!!error}
-                    autoHideDuration={6000}
-                    onClose={() => setError("")}
-                    message={error}
-                    action={
-                        <Fragment>
-                            <IconButton
-                                size="small"
-                                aria-label="close"
-                                color="inherit"
-                                onClick={() => setError("")}
-                            >
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        </Fragment>
-                    }
-                />
-            </div>
+            <Snackbar
+                open={!!error}
+                autoHideDuration={6000}
+                onClose={() => setError("")}
+                message={error}
+                action={
+                    <Fragment>
+                        <IconButton
+                            size="small"
+                            aria-label="close"
+                            color="inherit"
+                            onClick={() => setError("")}
+                        >
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    </Fragment>
+                }
+            />
             {/* Header */}
-            <div className="mb-12 mt-6">
-                <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">
-                    Master Bahan
-                </h2>
+            <div className="max-w-7xl mx-auto py-8">
+                <div className="text-center mb-8">
+                    <h2 className="text-4xl font-bold text-[#65558f]">Master Bahan</h2>
+                </div>
             </div>
+
             {/* Tambah Nama Bahan */}
             <div className="border-2 rounded-lg shadow-2xl mx-12 bg-white text-[#65558f] w-[95%]">
                 <div className="container mx-auto px-8 py-8">

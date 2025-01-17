@@ -275,77 +275,90 @@ function TambahNotaPage() {
                     </div>
                 </div>
 
-                {/* Form Tambah Barang */}
                 <div className="border-2 rounded-lg shadow-xl py-6 mb-8">
                     <form onSubmit={handleSubmitBarang(handleAddItem)}>
-                        <div className="flex items-center gap-x-4">
-                            {/* Tambah Bahan */}
-                            <div className="flex justify-start gap-x-16 items-center p-8">
-                                {/* Nama Bahan */}
-                                <div className="flex flex-col items-start p-4 rounded">
-                                    <label htmlFor="">Nama Bahan</label>
-                                    <select className='mt-1 border border-gray-300 rounded px-2 py-1 w-[200px]'
-                                        {...registerBarang("namaBahan")} name='namaBahan'>
-                                        <option value="" hidden>Pilih Bahan</option>
-                                        {namaBahan.map((bahan: any) => {
-                                            return (
-                                                <option value={bahan.id}>{bahan.nama}</option>
-                                            )
-                                        })}
-                                    </select>
-                                    {errorsBarang.namaBahan && <p className="text-red-500">{String(errorsBarang.namaBahan.message)}</p>}
-                                </div>
-                                {/* Jumlah Bahan */}
-                                <div className="flex flex-col items-start p-4 rounded">
-                                    <label htmlFor="">Jumlah Bahan</label>
-                                    <input type="number" className='mt-1 border border-gray-300 w-[70px] rounded px-2 py-1' {...registerBarang("jumlahBahan")} min={0} name="jumlahBahan" step="0.1" />
-                                    {errorsBarang.jumlahBahan && <p className="text-red-500">{String(errorsBarang.jumlahBahan.message)}</p>}
-                                </div>
-                                {/* Satuan */}
-                                <div className="flex flex-col items-start p-4 rounded">
-                                    <label htmlFor="">Satuan</label>
-                                    <select
-                                        className='mt-1 border border-gray-300 rounded px-2 py-1 w-[150px]'
-                                        {...registerBarang("satuan")}
-                                        name="satuan">
-                                        <option value="" hidden>Pilih Satuan</option>
-                                        {satuan.map((s: any) => {
-                                            return (
-                                                <option value={s.id}>{s.nama}</option>
-                                            )
-                                        })}
-                                    </select>
-                                    {errorsBarang.satuan && <p className="text-red-500">{String(errorsBarang.satuan.message)}</p>}
-                                </div>
-                                {/* Harga Satuan */}
-                                <div className="flex flex-col items-start p-4 rounded">
-                                    <label htmlFor="">Harga Satuan</label>
+                        <div className="flex flex-wrap justify-between gap-4 px-8">
+                            {/* Nama Bahan */}
+                            <div className="flex flex-col items-start w-1/5">
+                                <label htmlFor="namaBahan" className="text-gray-700 font-semibold">Nama Bahan</label>
+                                <select
+                                    id="namaBahan"
+                                    {...registerBarang("namaBahan")}
+                                    className="mt-1 border border-gray-300 rounded px-2 py-1 w-full"
+                                >
+                                    <option value="" hidden>Pilih Bahan</option>
+                                    {namaBahan.map((bahan) => (
+                                        <option key={bahan.id} value={bahan.id}>{bahan.nama}</option>
+                                    ))}
+                                </select>
+                                {errorsBarang.namaBahan && <p className="text-red-500 text-sm">{String(errorsBarang.namaBahan.message)}</p>}
+                            </div>
+
+                            {/* Jumlah Bahan */}
+                            <div className="flex flex-col items-start w-1/6">
+                                <label htmlFor="jumlahBahan" className="text-gray-700 font-semibold">Jumlah Bahan</label>
+                                <input
+                                    id="jumlahBahan"
+                                    type="number"
+                                    {...registerBarang("jumlahBahan")}
+                                    className="mt-1 border border-gray-300 rounded px-2 py-1 w-full"
+                                    min={0}
+                                    step="0.1"
+                                />
+                                {errorsBarang.jumlahBahan && <p className="text-red-500 text-sm">{String(errorsBarang.jumlahBahan.message)}</p>}
+                            </div>
+
+                            {/* Satuan */}
+                            <div className="flex flex-col items-start w-1/6">
+                                <label htmlFor="satuan" className="text-gray-700 font-semibold">Satuan</label>
+                                <select
+                                    id="satuan"
+                                    {...registerBarang("satuan")}
+                                    className="mt-1 border border-gray-300 rounded px-2 py-1 w-full"
+                                >
+                                    <option value="" hidden>Pilih Satuan</option>
+                                    {satuan.map((s) => (
+                                        <option key={s.id} value={s.id}>{s.nama}</option>
+                                    ))}
+                                </select>
+                                {errorsBarang.satuan && <p className="text-red-500 text-sm">{String(errorsBarang.satuan.message)}</p>}
+                            </div>
+
+                            {/* Harga Satuan */}
+                            <div className="flex flex-col items-start w-1/4">
+                                <label htmlFor="hargaSatuan" className="text-gray-700 font-semibold">Harga Satuan</label>
+                                <input
+                                    id="hargaSatuan"
+                                    type="number"
+                                    {...registerBarang("hargaSatuan")}
+                                    className="mt-1 border border-gray-300 rounded px-2 py-1 w-full"
+                                    min={0}
+                                />
+                                {errorsBarang.hargaSatuan && <p className="text-red-500 text-sm">{String(errorsBarang.hargaSatuan.message)}</p>}
+                            </div>
+
+                            {/* Diskon Akhir */}
+                            <div className="flex flex-col items-start w-1/6">
+                                <label htmlFor="diskonAkhir" className="text-gray-700 font-semibold">Diskon Akhir</label>
+                                <div className="flex items-center gap-x-2">
                                     <input
+                                        id="diskonAkhir"
                                         type="number"
-                                        className='mt-1 border border-gray-300 rounded px-2 py-1 w-[200px]'
-                                        {...registerBarang("hargaSatuan")}
-                                        name="hargaSatuan"
+                                        {...registerBarang("diskonAkhir")}
+                                        className="mt-1 border border-gray-300 rounded px-2 py-1 w-full"
                                         min={0}
                                     />
-                                    {errorsBarang.hargaSatuan && <p className="text-red-500">{String(errorsBarang.hargaSatuan.message)}</p>}
+                                    <span className="text-gray-700">%</span>
                                 </div>
-                                {/* Diskon Akhir */}
-                                <div className="flex flex-col items-start p-4 rounded">
-                                    <label htmlFor="">Diskon Akhir</label>
-                                    <div className="flex items-center">
-                                        <input
-                                            type="number"
-                                            className='mt-1 border border-gray-300 rounded px-2 py-1 w-[50px]'
-                                            {...registerBarang("diskonAkhir")}
-                                            name="diskonAkhir"
-                                            min={0}
-                                        />
-                                        <span className="ml-2 mt-1">%</span>
-                                        {errorsBarang.diskonAkhir && <p className="text-red-500">{String(errorsBarang.diskonAkhir.message)}</p>}
-                                    </div>
-                                </div>
-                                {/* Tambah Barang Button */}
-                                <button type='submit' className="bg-[#65558f] text-white mt-4 px-6 py-2 rounded-full hover:bg-purple-700">
+                                {errorsBarang.diskonAkhir && <p className="text-red-500 text-sm">{String(errorsBarang.diskonAkhir.message)}</p>}
+                            </div>
+
+                            {/* Tambah Barang Button */}
+                            <div className="flex items-center justify-end w-full mt-4">
+                                <button
+                                    type="submit"
+                                    className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition duration-200"
+                                >
                                     Tambah Barang
                                 </button>
                             </div>
@@ -353,8 +366,9 @@ function TambahNotaPage() {
                     </form>
                 </div>
 
+
                 {/* Tabel Barang */}
-                <div className="border-2 rounded-lg shadow-xl py-6">
+                <div className="border-2 rounded-lg shadow-xl py-6 px-8">
                     <div className="flex justify-between items-center border-b pb-2 mb-4">
                         <div className="w-20 text-center font-semibold text-lg">No</div>
                         <div className="flex-1 text-center font-semibold text-lg">Nama Bahan</div>

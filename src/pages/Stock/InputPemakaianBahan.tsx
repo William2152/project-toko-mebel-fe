@@ -5,8 +5,6 @@ import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/storeRedux';
-import { set } from 'date-fns';
-import { id } from 'date-fns/locale';
 
 function InputPemakaianBahan() {
     const token = useSelector((state: RootState) => state.localStorage.value);
@@ -20,7 +18,6 @@ function InputPemakaianBahan() {
     const [satuanOptions, setSatuanOptions] = useState([]);
     const [detailData, setDetailData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
     const [idProyek, setIdProyek] = useState(0);
     const [idProyekProduk, setIdProyekProduk] = useState(0);
 

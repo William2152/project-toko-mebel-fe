@@ -4,7 +4,7 @@ import { CustomerData, ProjectData } from '../../interface';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/storeRedux';
-import { IconButton, Snackbar } from '@mui/material';
+import { Card, CardContent, IconButton, Snackbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import Joi from 'joi';
 import { joiResolver } from '@hookform/resolvers/joi';
@@ -78,105 +78,136 @@ function TambahProjectPage() {
 
     return (
         <>
-            <div>
-                <Snackbar
-                    open={!!error}
-                    autoHideDuration={6000}
-                    onClose={() => setError('')}
-                    message={error}
-                    action={
-                        <Fragment>
-                            <IconButton
-                                size="small"
-                                aria-label="close"
-                                color="inherit"
-                                onClick={() => setError('')}
-                            >
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        </Fragment>
-                    }
-                />
-            </div>
-            <div className="mb-12 mt-6">
-                <h2 className="text-4xl font-bold text-[#65558f] mb-6 text-center">Tambah Project Baru</h2>
-            </div>
-            <div className="border-2 rounded-lg shadow-2xl mx-12">
-                <div className="container mx-auto px-12 py-12">
-                    {/* Formulir untuk Menambah Project */}
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        {/* Nama Project */}
-                        <div className="flex flex-col gap-y-4 mb-6">
-                            <label htmlFor="namaProject" className="text-xl font-bold">Nama Project</label>
-                            <input
-                                type="text"
-                                id="namaProject"
-                                {...register("nama")}
-                                className="border-2 border-gray-300 rounded px-4 py-2 w-full"
-                            />
-                            {errors.nama && <span className="text-red-500 text-sm">{String(errors.nama.message)}</span>}
-                        </div>
+            <Snackbar
+                open={!!error}
+                autoHideDuration={6000}
+                onClose={() => setError('')}
+                message={error}
+                action={
+                    <Fragment>
+                        <IconButton
+                            size="small"
+                            aria-label="close"
+                            color="inherit"
+                            onClick={() => setError('')}
+                        >
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    </Fragment>
+                }
+            />
 
-                        {/* Customer */}
-                        <div className="flex flex-col gap-y-4 mb-6">
-                            <label htmlFor="customer" className="text-xl font-bold">Customer</label>
-                            <select
-                                id="customer"
-                                {...register("id_customer")}
-                                className="border-2 border-gray-300 rounded px-4 py-2 w-full"
-                            >
-                                <option hidden value="">Pilih Customer</option>
-                                {customer.map((customer: CustomerData) => (
-                                    <option key={customer.id} value={customer.id}>{customer.nama}</option>
-                                ))}
-                            </select>
-                            {errors.id_customer && <span className="text-red-500 text-sm">{errors.id_customer.message}</span>}
-                        </div>
-
-                        {/* Tanggal Mulai */}
-                        <div className="flex flex-col gap-y-4 mb-6">
-                            <label htmlFor="tanggalMulai" className="text-xl font-bold">Tanggal Mulai</label>
-                            <input
-                                type="date"
-                                id="tanggalMulai"
-                                {...register("start")}
-                                className="border-2 border-gray-300 rounded px-4 py-2 w-full"
-                            />
-                            {errors.start && <span className="text-red-500 text-sm">{errors.start.message}</span>}
-                        </div>
-
-                        {/* Deadline */}
-                        <div className="flex flex-col gap-y-4 mb-6">
-                            <label htmlFor="deadline" className="text-xl font-bold">Deadline</label>
-                            <input
-                                type="date"
-                                id="deadline"
-                                {...register("deadline")}
-                                className="border-2 border-gray-300 rounded px-4 py-2 w-full"
-                            />
-                            {errors.deadline && <span className="text-red-500 text-sm">{errors.deadline.message}</span>}
-                        </div>
-
-                        {/* Alamat Pengiriman */}
-                        <div className="flex flex-col gap-y-4 mb-6">
-                            <label htmlFor="alamatPengiriman" className="text-xl font-bold">Alamat Pengiriman</label>
-                            <input
-                                type="text"
-                                id="alamatPengiriman"
-                                {...register("alamat_pengiriman")}
-                                className="border-2 border-gray-300 rounded px-4 py-2 w-full"
-                            />
-                            {errors.alamat_pengiriman && <span className="text-red-500 text-sm">{errors.alamat_pengiriman.message}</span>}
-                        </div>
-
-                        {/* Tombol Submit */}
-                        <div className="flex justify-end">
-                            <button type="submit" className="bg-[#65558f] text-white px-6 py-3 rounded-lg font-bold text-lg">
-                                Tambah Project
-                            </button>
-                        </div>
-                    </form>
+            <div className="max-w mx-auto">
+                <div className="text-center mb-8">
+                    <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+                        Tambah Project Baru
+                    </h1>
+                    <p className="mt-2 text-lg text-gray-600">
+                        Isi detail informasi project baru di bawah ini
+                    </p>
                 </div>
+
+                <Card className="overflow-hidden shadow-lg rounded-xl bg-white">
+                    <CardContent className="p-8">
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                            {/* Nama Project */}
+                            <div className="space-y-2">
+                                <label htmlFor="namaProject" className="block text-sm font-medium text-gray-700">
+                                    Nama Project
+                                </label>
+                                <input
+                                    type="text"
+                                    id="namaProject"
+                                    {...register("nama")}
+                                    className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-sm shadow-sm transition-colors
+                                             focus:outline-none focus:ring-2 focus:ring-[#65558f] focus:border-transparent"
+                                    placeholder="Masukkan nama project"
+                                />
+                                {errors.nama && <p className="text-red-500 text-sm mt-1">{String(errors.nama.message)}</p>}
+                            </div>
+
+                            {/* Customer Selection */}
+                            <div className="space-y-2">
+                                <label htmlFor="customer" className="block text-sm font-medium text-gray-700">
+                                    Customer
+                                </label>
+                                <select
+                                    id="customer"
+                                    {...register("id_customer")}
+                                    className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-sm shadow-sm
+                                             focus:outline-none focus:ring-2 focus:ring-[#65558f] focus:border-transparent"
+                                >
+                                    <option hidden value="">Pilih Customer</option>
+                                    {customer.map((customer: CustomerData) => (
+                                        <option key={customer.id} value={customer.id}>{customer.nama}</option>
+                                    ))}
+                                </select>
+                                {errors.id_customer && <p className="text-red-500 text-sm mt-1">{errors.id_customer.message}</p>}
+                            </div>
+
+                            {/* Date Fields Container */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Start Date */}
+                                <div className="space-y-2">
+                                    <label htmlFor="tanggalMulai" className="block text-sm font-medium text-gray-700">
+                                        Tanggal Mulai
+                                    </label>
+                                    <input
+                                        type="date"
+                                        id="tanggalMulai"
+                                        {...register("start")}
+                                        className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-sm shadow-sm
+                                                 focus:outline-none focus:ring-2 focus:ring-[#65558f] focus:border-transparent"
+                                    />
+                                    {errors.start && <p className="text-red-500 text-sm mt-1">{errors.start.message}</p>}
+                                </div>
+
+                                {/* Deadline */}
+                                <div className="space-y-2">
+                                    <label htmlFor="deadline" className="block text-sm font-medium text-gray-700">
+                                        Deadline
+                                    </label>
+                                    <input
+                                        type="date"
+                                        id="deadline"
+                                        {...register("deadline")}
+                                        className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-sm shadow-sm
+                                                 focus:outline-none focus:ring-2 focus:ring-[#65558f] focus:border-transparent"
+                                    />
+                                    {errors.deadline && <p className="text-red-500 text-sm mt-1">{errors.deadline.message}</p>}
+                                </div>
+                            </div>
+
+                            {/* Alamat Pengiriman */}
+                            <div className="space-y-2">
+                                <label htmlFor="alamatPengiriman" className="block text-sm font-medium text-gray-700">
+                                    Alamat Pengiriman
+                                </label>
+                                <textarea
+                                    id="alamatPengiriman"
+                                    {...register("alamat_pengiriman")}
+                                    rows={3}
+                                    className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-sm shadow-sm
+                                             focus:outline-none focus:ring-2 focus:ring-[#65558f] focus:border-transparent"
+                                    placeholder="Masukkan alamat pengiriman lengkap"
+                                />
+                                {errors.alamat_pengiriman && <p className="text-red-500 text-sm mt-1">{errors.alamat_pengiriman.message}</p>}
+                            </div>
+
+                            {/* Submit Button */}
+                            <div className="pt-4">
+                                <button
+                                    type="submit"
+                                    className="w-full md:w-auto px-6 py-3 bg-[#65558f] text-white rounded-lg font-medium text-sm
+                                             hover:bg-[#544a7d] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#65558f]
+                                             transition-colors duration-200 flex items-center justify-center"
+                                >
+                                    Tambah Project
+                                </button>
+                            </div>
+                        </form>
+                    </CardContent>
+                </Card>
             </div>
         </>
     );

@@ -138,86 +138,69 @@ function ProjectDetailPage() {
     return (
         <>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <div>
-                    <Snackbar
-                        open={!!error}
-                        autoHideDuration={6000}
-                        onClose={() => setError("")}
-                        message={error}
-                        action={
-                            <Fragment>
-                                <IconButton
-                                    size="small"
-                                    aria-label="close"
-                                    color="inherit"
-                                    onClick={() => setError("")}
-                                >
-                                    <CloseIcon fontSize="small" />
-                                </IconButton>
-                            </Fragment>
-                        }
-                    />
-                </div>
-                <div className="mb-12 mt-6">
-                    <h2 className="text-5xl font-bold text-[#65558f] mb-6 mx-12">Detail Proyek</h2>
-                </div>
-                <div className="border-2 rounded-lg shadow-2xl mx-12">
-                    <div className="flex justify-end">
-                        <button
-                            onClick={handleSelesai}
-                            className="px-8 py-3 me-5 mt-5 bg-[#65558f] text-white rounded-lg text-lg shadow-md hover:shadow-lg hover:from-blue-600 hover:to-indigo-700 transition-transform transform hover:scale-105 focus:outline-none"
-                        >
-                            Selesai
-                        </button>
+                <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
+                    onClose={() => setError("")}
+                    message={error}
+                    action={
+                        <Fragment>
+                            <IconButton size="small" color="inherit" onClick={() => setError("")}>
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </Fragment>
+                    }
+                />
+
+                <div className="max-w mx-auto">
+                    <div className="text-center mb-8">
+                        <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+                            Detail Project
+                        </h1>
+                        <p className="mt-2 text-lg text-gray-600">
+                            Berikut adalah Detail Project yang anda pilih.
+                        </p>
                     </div>
-                    <div className="flex flex-row px-12 py-12">
-                        {/* Bagian Kiri */}
-                        <div className="flex-1 pr-8">
-                            <div className="space-y-6 text-xl">
-                                <p><strong>Nama Project:</strong> {data.nama}</p>
-                                <p><strong>Customer:</strong> {data.id_customer}</p>
-                                <p><strong>Start:</strong> {new Date(data.start).toLocaleDateString('en-GB')}</p>
+
+                    <Paper className="overflow-hidden shadow-lg rounded-xl bg-white">
+                        <div className="p-8">
+                            <div className="flex justify-between items-center mb-6">
+                                <div>
+                                    <p className="text-lg font-semibold">Nama Project: {data.nama}</p>
+                                    <p className="text-lg font-semibold">Customer: {data.id_customer}</p>
+                                    <p className="text-lg font-semibold">Start: {new Date(data.start).toLocaleDateString('en-GB')}</p>
+                                    <p className="text-lg font-semibold">Deadline: {new Date(data.deadline).toLocaleDateString('en-GB')}</p>
+                                    <p className="text-lg font-semibold">Alamat Pengiriman: {data.alamat_pengiriman}</p>
+                                </div>
                             </div>
-                            <div className="flex space-x-4 mt-8">
-                                <button
-                                    onClick={handleUpdate}
-                                    className="px-8 py-3 bg-blue-500 text-white rounded-lg text-lg shadow hover:bg-blue-600 focus:outline-none"
-                                >
+                            <div className="space-x-4 mb-5">
+                                <Button variant="contained" color="primary" onClick={handleUpdate}>
                                     Update
-                                </button>
-                                <button
-                                    onClick={handleDelete}
-                                    className="px-8 py-3 bg-red-500 text-white rounded-lg text-lg shadow hover:bg-red-600 focus:outline-none"
-                                >
+                                </Button>
+                                <Button variant="outlined" color="error" onClick={handleDelete}>
                                     Delete
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Bagian Kanan */}
-                        <div className="flex-1 pl-8">
-                            <div className="space-y-6 text-xl">
-                                <p><strong>Deadline:</strong> {new Date(data.deadline).toLocaleDateString('en-GB')}</p>
-                                <p><strong>Alamat Pengiriman:</strong> {data.alamat_pengiriman}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className='px-12 pb-12'>
-
-                        <Paper sx={{ width: "100%", overflow: "hidden" }}>
-                            {/* Search Bar */}
-                            <div className="px-4 py-2 flex justify-between items-center">
-                                <TextField
-                                    label="Cari Produk"
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
+                                </Button>
+                                <Button variant="contained" sx={{
+                                    backgroundColor: '#65558f', // Warna kustom
+                                    '&:hover': {
+                                        backgroundColor: '#65558f', // Warna ketika di-hover
+                                    },
+                                }} onClick={() => handleSelesai()}>
+                                    Selesai
+                                </Button>
                             </div>
 
-                            <TableContainer sx={{ maxHeight: 300 }}>
+                            <TextField
+                                label="Cari Produk"
+                                variant="outlined"
+                                size="small"
+                                fullWidth
+                                className="mb-6"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+
+                            <TableContainer className="max-h-96">
                                 <Table stickyHeader>
                                     <TableHead>
                                         <TableRow>
@@ -233,13 +216,13 @@ function ProjectDetailPage() {
                                     <TableBody>
                                         {loading ? (
                                             <TableRow>
-                                                <TableCell colSpan={5} align="center">
+                                                <TableCell colSpan={7} align="center">
                                                     <CircularProgress />
                                                 </TableCell>
                                             </TableRow>
                                         ) : dataProduk.length > 0 ? (
                                             dataProduk.map((row, index) => (
-                                                <TableRow key={index}>
+                                                <TableRow key={index} className="hover:bg-gray-100">
                                                     <TableCell>{index + 1}</TableCell>
                                                     <TableCell>{row.nama_produk}</TableCell>
                                                     <TableCell>{row.qty}</TableCell>
@@ -248,22 +231,15 @@ function ProjectDetailPage() {
                                                     <TableCell>{row.nama_karyawan1}</TableCell>
                                                     <TableCell>{row.nama_karyawan2}</TableCell>
                                                     <TableCell>
-                                                        <button onClick={() => handleDetail(row.id)}
-                                                            style={{
-                                                                padding: '5px 10px',
-                                                                marginRight: '10px',
-                                                                backgroundColor: '#4CAF50',
-                                                                color: 'white',
-                                                                border: 'none',
-                                                                borderRadius: '5px',
-                                                                cursor: 'pointer',
-                                                            }}>Detail</button>
+                                                        <Button variant="contained" color="success" onClick={() => handleDetail(row.id)}>
+                                                            Detail
+                                                        </Button>
                                                     </TableCell>
                                                 </TableRow>
                                             ))
                                         ) : (
                                             <TableRow>
-                                                <TableCell colSpan={5} align="center">
+                                                <TableCell colSpan={7} align="center">
                                                     Tidak ada data yang sesuai
                                                 </TableCell>
                                             </TableRow>
@@ -271,10 +247,8 @@ function ProjectDetailPage() {
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-                            <div className="flex items-center justify-between px-4 py-2">
-                                <span className="text-sm text-gray-600">
-                                    Page {page + 1} of {totalPages}
-                                </span>
+                            <div className="flex items-center justify-between mt-6">
+                                <span className="text-sm text-gray-600">Page {page + 1} of {totalPages}</span>
                                 <TablePagination
                                     rowsPerPageOptions={[10, 20, 50]}
                                     component="div"
@@ -285,115 +259,78 @@ function ProjectDetailPage() {
                                     onRowsPerPageChange={handleChangeRowsPerPage}
                                 />
                             </div>
-                        </Paper>
-                    </div>
+                        </div>
+                    </Paper>
 
+                    <Modal open={open} onClose={handleClose}>
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                width: 400,
+                                bgcolor: 'background.paper',
+                                boxShadow: 24,
+                                p: 4,
+                                borderRadius: 2,
+                            }}
+                        >
+                            <h2 className="text-xl font-bold mb-4">Update Proyek</h2>
+                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                                <Controller
+                                    name="nama"
+                                    control={control}
+                                    render={({ field }) => <TextField {...field} fullWidth label="Nama Project" />}
+                                />
+                                <Controller
+                                    name="id_customer"
+                                    control={control}
+                                    render={({ field }) => <TextField {...field} fullWidth label="Customer" />}
+                                />
+                                <Controller
+                                    name="start"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <DatePicker
+                                            label="Start"
+                                            inputFormat="dd/MM/yyyy"
+                                            value={field.value ? new Date(field.value) : null}
+                                            onChange={(date) => field.onChange(date?.toISOString().split('T')[0] || '')}
+                                            renderInput={(params) => <TextField {...params} fullWidth />}
+                                        />
+                                    )}
+                                />
+                                <Controller
+                                    name="deadline"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <DatePicker
+                                            label="Deadline"
+                                            inputFormat="dd/MM/yyyy"
+                                            value={field.value ? new Date(field.value) : null}
+                                            onChange={(date) => field.onChange(date?.toISOString().split('T')[0] || '')}
+                                            renderInput={(params) => <TextField {...params} fullWidth />}
+                                        />
+                                    )}
+                                />
+                                <Controller
+                                    name="alamat_pengiriman"
+                                    control={control}
+                                    render={({ field }) => <TextField {...field} fullWidth label="Alamat Pengiriman" />}
+                                />
+                                <div className="flex justify-end mt-4 space-x-4">
+                                    <Button type="submit" variant="contained" color="primary">
+                                        Simpan
+                                    </Button>
+                                    <Button variant="outlined" color="secondary" onClick={handleClose}>
+                                        Batal
+                                    </Button>
+                                </div>
+                            </form>
+                        </Box>
+                    </Modal>
                 </div>
-
-                {/* Modal Update */}
-                <Modal open={open} onClose={handleClose}>
-                    <Box sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: 400,
-                        bgcolor: 'background.paper',
-                        boxShadow: 24,
-                        p: 4,
-                        borderRadius: 2
-                    }}>
-                        <h2 className="text-2xl font-bold mb-4">Update Proyek</h2>
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                            <Controller
-                                name="nama"
-                                control={control}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        fullWidth
-                                        label="Nama Project"
-                                        variant="outlined"
-                                    />
-                                )}
-                            />
-                            <Controller
-                                name="id_customer"
-                                control={control}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        fullWidth
-                                        label="Customer"
-                                        variant="outlined"
-                                    />
-                                )}
-                            />
-                            <Controller
-                                name="start"
-                                control={control}
-                                render={({ field }) => (
-                                    <DatePicker
-                                        label="Start"
-                                        inputFormat="dd/MM/yyyy" // Menampilkan tanggal dalam format DD/MM/YYYY
-                                        value={field.value ? new Date(field.value) : null} // Pastikan nilai diubah menjadi objek Date
-                                        onChange={(date) => {
-                                            if (date) {
-                                                // Ubah ke format YYYY-MM-DD
-                                                const formattedDate = date.toISOString().split('T')[0];
-                                                field.onChange(formattedDate); // Simpan ke state React Hook Form
-                                            } else {
-                                                field.onChange(''); // Kosongkan nilai jika tidak valid
-                                            }
-                                        }}
-                                        renderInput={(params) => <TextField {...params} fullWidth />}
-                                    />
-                                )}
-                            />
-                            <Controller
-                                name="deadline"
-                                control={control}
-                                render={({ field }) => (
-                                    <DatePicker
-                                        label="Deadline"
-                                        inputFormat="dd/MM/yyyy" // Menampilkan tanggal dalam format DD/MM/YYYY
-                                        value={field.value ? new Date(field.value) : null} // Pastikan nilai diubah menjadi objek Date
-                                        onChange={(date) => {
-                                            if (date) {
-                                                // Ubah ke format YYYY-MM-DD
-                                                const formattedDate = date.toISOString().split('T')[0];
-                                                field.onChange(formattedDate); // Simpan ke state React Hook Form
-                                            } else {
-                                                field.onChange(''); // Kosongkan nilai jika tidak valid
-                                            }
-                                        }}
-                                        renderInput={(params) => <TextField {...params} fullWidth />}
-                                    />
-                                )}
-                            />
-                            <Controller
-                                name="alamat_pengiriman"
-                                control={control}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        fullWidth
-                                        label="Alamat Pengiriman"
-                                        variant="outlined"
-                                    />
-                                )}
-                            />
-                            <div className="flex justify-end space-x-4 mt-4">
-                                <Button type="submit" variant="contained" color="primary">
-                                    Simpan
-                                </Button>
-                                <Button variant="outlined" color="secondary" onClick={handleClose}>
-                                    Batal
-                                </Button>
-                            </div>
-                        </form>
-                    </Box>
-                </Modal>
             </LocalizationProvider>
         </>
     );

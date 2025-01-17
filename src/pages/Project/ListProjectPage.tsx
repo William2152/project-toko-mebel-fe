@@ -92,34 +92,38 @@ function ListProjectPage() {
 
     return (
         <>
-            <div>
-                <Snackbar
-                    open={!!error}
-                    autoHideDuration={6000}
-                    onClose={() => setError('')}
-                    message={error}
-                    action={
-                        <Fragment>
-                            <IconButton
-                                size="small"
-                                aria-label="close"
-                                color="inherit"
-                                onClick={() => setError('')}
-                            >
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        </Fragment>
-                    }
-                />
-            </div>
-            <div className="mb-12 mt-6">
-                <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">List Project</h2>
-            </div>
-            <div className="border-2 rounded-lg shadow-2xl mx-12 bg-white">
-                <div className="container mx-auto px-8 py-8">
-                    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                        {/* Search Bar and Filter */}
-                        <div className="px-4 py-2 flex justify-between items-center">
+            <Snackbar
+                open={!!error}
+                autoHideDuration={6000}
+                onClose={() => setError('')}
+                message={error}
+                action={
+                    <Fragment>
+                        <IconButton
+                            size="small"
+                            aria-label="close"
+                            color="inherit"
+                            onClick={() => setError('')}
+                        >
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    </Fragment>
+                }
+            />
+
+            <div className="max-w mx-auto">
+                <div className="text-center mb-8">
+                    <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+                        List Project
+                    </h1>
+                    <p className="mt-2 text-lg text-gray-600">
+                        Berikut adalah daftar project yang tersedia.
+                    </p>
+                </div>
+
+                <Paper className="overflow-hidden shadow-lg rounded-xl bg-white">
+                    <div className="p-8">
+                        <div className="flex justify-between items-center mb-6">
                             <TextField
                                 label="Cari Proyek"
                                 variant="outlined"
@@ -133,7 +137,7 @@ function ListProjectPage() {
                                 onChange={(e) => setFilter(e.target.value)}
                                 displayEmpty
                                 size="small"
-                                sx={{ minWidth: 150, marginLeft: 2 }}
+                                className="ml-4 w-40"
                             >
                                 <MenuItem value="all">Semua Proyek</MenuItem>
                                 <MenuItem value="true">Proyek Selesai</MenuItem>
@@ -141,7 +145,7 @@ function ListProjectPage() {
                             </Select>
                         </div>
 
-                        <TableContainer sx={{ maxHeight: 600 }}>
+                        <TableContainer className="max-h-96">
                             <Table stickyHeader>
                                 <TableHead>
                                     <TableRow>
@@ -157,31 +161,23 @@ function ListProjectPage() {
                                 <TableBody>
                                     {loading ? (
                                         <TableRow>
-                                            <TableCell colSpan={5} align="center">
+                                            <TableCell colSpan={7} align="center">
                                                 <CircularProgress />
                                             </TableCell>
                                         </TableRow>
                                     ) : data.length > 0 ? (
                                         data.map((row, index) => (
-                                            <TableRow key={index}>
+                                            <TableRow key={index} className="hover:bg-gray-100">
                                                 <TableCell>{index + 1}</TableCell>
                                                 <TableCell>{row.nama}</TableCell>
                                                 <TableCell>{customerNames[row.id_customer] || 'Loading...'}</TableCell>
                                                 <TableCell>{new Date(row.start).toLocaleDateString('en-GB')}</TableCell>
                                                 <TableCell>{new Date(row.deadline).toLocaleDateString('en-GB')}</TableCell>
-                                                <TableCell>{row.status == true ? 'Selesai' : 'Belum Selesai'}</TableCell>
+                                                <TableCell>{row.status ? 'Selesai' : 'Belum Selesai'}</TableCell>
                                                 <TableCell>
                                                     <button
                                                         onClick={() => handleDetail(row.id)}
-                                                        style={{
-                                                            padding: '5px 10px',
-                                                            marginRight: '10px',
-                                                            backgroundColor: '#4CAF50',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '5px',
-                                                            cursor: 'pointer',
-                                                        }}
+                                                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
                                                     >
                                                         Detail
                                                     </button>
@@ -190,7 +186,7 @@ function ListProjectPage() {
                                         ))
                                     ) : (
                                         <TableRow>
-                                            <TableCell colSpan={5} align="center">
+                                            <TableCell colSpan={7} align="center">
                                                 Tidak ada data yang sesuai
                                             </TableCell>
                                         </TableRow>
@@ -198,7 +194,8 @@ function ListProjectPage() {
                                 </TableBody>
                             </Table>
                         </TableContainer>
-                        <div className="flex items-center justify-between px-4 py-2">
+
+                        <div className="flex items-center justify-between mt-6">
                             <span className="text-sm text-gray-600">
                                 Page {page + 1} of {totalPages}
                             </span>
@@ -212,8 +209,8 @@ function ListProjectPage() {
                                 onRowsPerPageChange={handleChangeRowsPerPage}
                             />
                         </div>
-                    </Paper>
-                </div>
+                    </div>
+                </Paper>
             </div>
         </>
     );
