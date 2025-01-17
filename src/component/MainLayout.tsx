@@ -92,6 +92,97 @@ function MainLayout() {
     fontSize: ukIcon,
   };
 
+  const menuItemsAdminKantor = [
+    { title: "Dashboard", icon: DashboardIcon, path: "/dashboard" },
+    {
+      title: "Nota",
+      icon: SummarizeIcon,
+      subItems: [
+        { title: "Input Nota", path: "/nota/tambah" },
+        { title: "List Nota", path: "/nota/lihat" },
+      ],
+    },
+    {
+      title: "Report",
+      icon: ReportIcon,
+      subItems: [
+        { title: "Laporan HPP", path: "/report/laporan/hpp" },
+        { title: "Laporan Nota Per Supplier", path: "/report/laporan/nota-by-supplier" },
+        { title: "Laporan Nota Per Tanggal", path: "/report/laporan/nota-by-tanggal" },
+      ],
+    },
+  ];
+
+  const menuItemsKaryawanKantor = [
+    { title: "Dashboard", icon: DashboardIcon, path: "/dashboard" },
+    {
+      title: "Report",
+      icon: ReportIcon,
+      subItems: [
+        { title: "Laporan HPP", path: "/report/laporan/hpp" },
+        { title: "Laporan Nota Per Supplier", path: "/report/laporan/nota-by-supplier" },
+        { title: "Laporan Nota Per Tanggal", path: "/report/laporan/nota-by-tanggal" },
+      ],
+    },
+  ];
+
+  const menuItemsAdminWorkshop = [
+    { title: "Dashboard", icon: DashboardIcon, path: "/dashboard" },
+    {
+      title: "Project",
+      icon: FolderIcon,
+      subItems: [
+        { title: "Tambah Project", path: "/project/tambah" },
+        { title: "Tambah Product", path: "/project/product" },
+        { title: "List Project", path: "/project/list" },
+      ],
+    },
+    {
+      title: "Stock",
+      icon: InventoryIcon,
+      subItems: [
+        { title: "Master Bahan", path: "/stock/master" },
+        { title: "Input Stock Bahan", path: "/stock/catat" },
+        { title: "Stock Bahan", path: "/stock/lihat" },
+        { title: "Input Pemakaian Bahan", path: "/stock/pemakaian" },
+        { title: "List Pemakaian Bahan", path: "/stock/history" },
+        { title: "History Bahan Masuk", path: "/stock/history/pemasukkan" },
+        { title: "History Bahan Keluar", path: "/stock/history/keluar" },
+        { title: "List Bahan Sisa", path: "/stock/bahansisa" },
+      ],
+    },
+    {
+      title: "Report",
+      icon: ReportIcon,
+      subItems: [
+        { title: "Laporan HPP", path: "/report/laporan/hpp" },
+        { title: "Laporan Bahan Masuk", path: "/report/laporan/bahan-masuk" },
+        { title: "Laporan Bahan Keluar", path: "/report/laporan/bahan-keluar" },
+      ],
+    },
+    {
+      title: "User",
+      icon: PersonIcon,
+      subItems: [
+        { title: "Tambah Customer / Supplier", path: "/user/cust" },
+        { title: "Tambah Karyawan", path: "/user/karyawan" },
+      ],
+    },
+  ];
+
+  const menuItemsKaryawanWorkshop = [
+    { title: "Dashboard", icon: DashboardIcon, path: "/dashboard" },
+    {
+      title: "Report",
+      icon: ReportIcon,
+      subItems: [
+        { title: "Laporan HPP", path: "/report/laporan/hpp" },
+        { title: "Laporan Bahan Masuk", path: "/report/laporan/bahan-masuk" },
+        { title: "Laporan Bahan Keluar", path: "/report/laporan/bahan-keluar" },
+      ],
+    },
+  ];
+
   const menuItems = [
     { title: "Dashboard", icon: DashboardIcon, path: "/dashboard" },
     {
@@ -174,6 +265,334 @@ function MainLayout() {
               </Box>
               <List>
                 {menuItems.map((item) => (
+                  <React.Fragment key={item.title}>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        component={NavLink}
+                        to={item.path || "#"}
+                        onClick={item.subItems ? () => toggleMenu(item.title.toLowerCase()) : item.onClick}
+                        sx={listItemStyle}
+                      >
+                        <ListItemIcon sx={iconStyle}>
+                          <item.icon style={{ fontSize: ukIcon }} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primaryTypographyProps={{ sx: { fontSize: ukTitle } }}
+                          sx={{ pl: 2 }}
+                          primary={item.title}
+                        />
+                        {item.subItems && (
+                          openMenus[item.title.toLowerCase()] ? <ExpandLess /> : <ExpandMore />
+                        )}
+                      </ListItemButton>
+                    </ListItem>
+                    {item.subItems && (
+                      <Collapse in={openMenus[item.title.toLowerCase()]} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                          {item.subItems.map((subItem) => (
+                            <ListItemButton
+                              key={subItem.title}
+                              component={NavLink}
+                              to={subItem.path}
+                              sx={{ ...listItemStyle, pl: 13 }}
+                            >
+                              <ListItemText
+                                primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }}
+                                primary={subItem.title}
+                              />
+                            </ListItemButton>
+                          ))}
+                        </List>
+                      </Collapse>
+                    )}
+                  </React.Fragment>
+                ))}
+              </List>
+              <Box sx={{ mt: "auto", pb: 2 }}>
+                <List>
+                  {fixedBottomItems.map((item) => (
+                    <ListItem disablePadding key={item.title}>
+                      <ListItemButton
+                        component={NavLink}
+                        to={item.path}
+                        onClick={item.onClick}
+                        sx={listItemStyle}
+                      >
+                        <ListItemIcon sx={iconStyle}>
+                          <item.icon style={{ fontSize: ukIcon }} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primaryTypographyProps={{ sx: { fontSize: ukTitle } }}
+                          sx={{ pl: 2 }}
+                          primary={item.title}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            </>
+          )}
+          {role === "adminkantor" && token != null && (
+            <>
+              <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Avatar
+                  sx={{ width: 130, height: 130, mb: 2 }}
+                  alt="User Avatar"
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx5TZn5gGOAn3J9Wv9yTaLzAuCf15S7HrBPg&s"
+                />
+                <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600, mb: 2 }}>
+                  Admin Kantor
+                </Typography>
+              </Box>
+              <List>
+                {menuItemsAdminKantor.map((item) => (
+                  <React.Fragment key={item.title}>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        component={NavLink}
+                        to={item.path || "#"}
+                        onClick={item.subItems ? () => toggleMenu(item.title.toLowerCase()) : item.onClick}
+                        sx={listItemStyle}
+                      >
+                        <ListItemIcon sx={iconStyle}>
+                          <item.icon style={{ fontSize: ukIcon }} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primaryTypographyProps={{ sx: { fontSize: ukTitle } }}
+                          sx={{ pl: 2 }}
+                          primary={item.title}
+                        />
+                        {item.subItems && (
+                          openMenus[item.title.toLowerCase()] ? <ExpandLess /> : <ExpandMore />
+                        )}
+                      </ListItemButton>
+                    </ListItem>
+                    {item.subItems && (
+                      <Collapse in={openMenus[item.title.toLowerCase()]} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                          {item.subItems.map((subItem) => (
+                            <ListItemButton
+                              key={subItem.title}
+                              component={NavLink}
+                              to={subItem.path}
+                              sx={{ ...listItemStyle, pl: 13 }}
+                            >
+                              <ListItemText
+                                primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }}
+                                primary={subItem.title}
+                              />
+                            </ListItemButton>
+                          ))}
+                        </List>
+                      </Collapse>
+                    )}
+                  </React.Fragment>
+                ))}
+              </List>
+              <Box sx={{ mt: "auto", pb: 2 }}>
+                <List>
+                  {fixedBottomItems.map((item) => (
+                    <ListItem disablePadding key={item.title}>
+                      <ListItemButton
+                        component={NavLink}
+                        to={item.path}
+                        onClick={item.onClick}
+                        sx={listItemStyle}
+                      >
+                        <ListItemIcon sx={iconStyle}>
+                          <item.icon style={{ fontSize: ukIcon }} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primaryTypographyProps={{ sx: { fontSize: ukTitle } }}
+                          sx={{ pl: 2 }}
+                          primary={item.title}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            </>
+          )}
+          {role === "adminworkshop" && token != null && (
+            <>
+              <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Avatar
+                  sx={{ width: 130, height: 130, mb: 2 }}
+                  alt="User Avatar"
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx5TZn5gGOAn3J9Wv9yTaLzAuCf15S7HrBPg&s"
+                />
+                <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600, mb: 2 }}>
+                  Admin Workshop
+                </Typography>
+              </Box>
+              <List>
+                {menuItemsAdminWorkshop.map((item) => (
+                  <React.Fragment key={item.title}>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        component={NavLink}
+                        to={item.path || "#"}
+                        onClick={item.subItems ? () => toggleMenu(item.title.toLowerCase()) : item.onClick}
+                        sx={listItemStyle}
+                      >
+                        <ListItemIcon sx={iconStyle}>
+                          <item.icon style={{ fontSize: ukIcon }} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primaryTypographyProps={{ sx: { fontSize: ukTitle } }}
+                          sx={{ pl: 2 }}
+                          primary={item.title}
+                        />
+                        {item.subItems && (
+                          openMenus[item.title.toLowerCase()] ? <ExpandLess /> : <ExpandMore />
+                        )}
+                      </ListItemButton>
+                    </ListItem>
+                    {item.subItems && (
+                      <Collapse in={openMenus[item.title.toLowerCase()]} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                          {item.subItems.map((subItem) => (
+                            <ListItemButton
+                              key={subItem.title}
+                              component={NavLink}
+                              to={subItem.path}
+                              sx={{ ...listItemStyle, pl: 13 }}
+                            >
+                              <ListItemText
+                                primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }}
+                                primary={subItem.title}
+                              />
+                            </ListItemButton>
+                          ))}
+                        </List>
+                      </Collapse>
+                    )}
+                  </React.Fragment>
+                ))}
+              </List>
+              <Box sx={{ mt: "auto", pb: 2 }}>
+                <List>
+                  {fixedBottomItems.map((item) => (
+                    <ListItem disablePadding key={item.title}>
+                      <ListItemButton
+                        component={NavLink}
+                        to={item.path}
+                        onClick={item.onClick}
+                        sx={listItemStyle}
+                      >
+                        <ListItemIcon sx={iconStyle}>
+                          <item.icon style={{ fontSize: ukIcon }} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primaryTypographyProps={{ sx: { fontSize: ukTitle } }}
+                          sx={{ pl: 2 }}
+                          primary={item.title}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            </>
+          )}
+          {role === "karyawanworkshop" && token != null && (
+            <>
+              <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Avatar
+                  sx={{ width: 130, height: 130, mb: 2 }}
+                  alt="User Avatar"
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx5TZn5gGOAn3J9Wv9yTaLzAuCf15S7HrBPg&s"
+                />
+                <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600, mb: 2 }}>
+                  Karyawan Workshop
+                </Typography>
+              </Box>
+              <List>
+                {menuItemsKaryawanWorkshop.map((item) => (
+                  <React.Fragment key={item.title}>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        component={NavLink}
+                        to={item.path || "#"}
+                        onClick={item.subItems ? () => toggleMenu(item.title.toLowerCase()) : item.onClick}
+                        sx={listItemStyle}
+                      >
+                        <ListItemIcon sx={iconStyle}>
+                          <item.icon style={{ fontSize: ukIcon }} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primaryTypographyProps={{ sx: { fontSize: ukTitle } }}
+                          sx={{ pl: 2 }}
+                          primary={item.title}
+                        />
+                        {item.subItems && (
+                          openMenus[item.title.toLowerCase()] ? <ExpandLess /> : <ExpandMore />
+                        )}
+                      </ListItemButton>
+                    </ListItem>
+                    {item.subItems && (
+                      <Collapse in={openMenus[item.title.toLowerCase()]} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                          {item.subItems.map((subItem) => (
+                            <ListItemButton
+                              key={subItem.title}
+                              component={NavLink}
+                              to={subItem.path}
+                              sx={{ ...listItemStyle, pl: 13 }}
+                            >
+                              <ListItemText
+                                primaryTypographyProps={{ sx: { fontSize: ukSubTitle } }}
+                                primary={subItem.title}
+                              />
+                            </ListItemButton>
+                          ))}
+                        </List>
+                      </Collapse>
+                    )}
+                  </React.Fragment>
+                ))}
+              </List>
+              <Box sx={{ mt: "auto", pb: 2 }}>
+                <List>
+                  {fixedBottomItems.map((item) => (
+                    <ListItem disablePadding key={item.title}>
+                      <ListItemButton
+                        component={NavLink}
+                        to={item.path}
+                        onClick={item.onClick}
+                        sx={listItemStyle}
+                      >
+                        <ListItemIcon sx={iconStyle}>
+                          <item.icon style={{ fontSize: ukIcon }} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primaryTypographyProps={{ sx: { fontSize: ukTitle } }}
+                          sx={{ pl: 2 }}
+                          primary={item.title}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            </>
+          )}
+          {role === "karyawankantor" && token != null && (
+            <>
+              <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Avatar
+                  sx={{ width: 130, height: 130, mb: 2 }}
+                  alt="User Avatar"
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx5TZn5gGOAn3J9Wv9yTaLzAuCf15S7HrBPg&s"
+                />
+                <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600, mb: 2 }}>
+                  Karyawan Kantor
+                </Typography>
+              </Box>
+              <List>
+                {menuItemsKaryawanKantor.map((item) => (
                   <React.Fragment key={item.title}>
                     <ListItem disablePadding>
                       <ListItemButton
