@@ -51,7 +51,7 @@ function CatatStockPage() {
     ]);
 
     useEffect(() => {
-        axios.get("http://localhost:6347/api/supplier", {
+        axios.get("http://localhost:6347/api/supplier?per_page=1000", {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
@@ -67,7 +67,7 @@ function CatatStockPage() {
     }, [])
 
     useEffect(() => {
-        axios.get("http://localhost:6347/api/bahan", {
+        axios.get("http://localhost:6347/api/master/bahan?per_page=1000", {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
@@ -83,7 +83,7 @@ function CatatStockPage() {
     }, [])
 
     useEffect(() => {
-        axios.get("http://localhost:6347/api/satuan", {
+        axios.get("http://localhost:6347/api/satuan?per_page=1000", {
             headers: {
                 Authorization: `Bearer ${token}`,
             }

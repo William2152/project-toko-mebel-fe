@@ -60,7 +60,7 @@ function TambahNotaPage() {
     ]);
 
     useEffect(() => {
-        axios.get("http://localhost:6347/api/supplier", {
+        axios.get("http://localhost:6347/api/supplier?per_page=1000", {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
@@ -76,7 +76,7 @@ function TambahNotaPage() {
     }, [])
 
     useEffect(() => {
-        axios.get("http://localhost:6347/api/bahan", {
+        axios.get("http://localhost:6347/api/bahan?per_page=1000", {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
@@ -92,7 +92,7 @@ function TambahNotaPage() {
     }, [])
 
     useEffect(() => {
-        axios.get("http://localhost:6347/api/satuan", {
+        axios.get("http://localhost:6347/api/satuan?per_page=1000", {
             headers: {
                 Authorization: `Bearer ${token}`,
             }

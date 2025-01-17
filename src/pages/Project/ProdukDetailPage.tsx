@@ -92,7 +92,7 @@ function ProdukDetailPage() {
     const fetchProduk = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:6347/api/bahan`, {
+            const response = await axios.get(`http://localhost:6347/api/bahan?per_page=1000`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -109,7 +109,7 @@ function ProdukDetailPage() {
     const fetchSatuan = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:6347/api/satuan`, {
+            const response = await axios.get(`http://localhost:6347/api/satuan?per_page=1000`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
