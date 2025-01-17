@@ -20,6 +20,7 @@ import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/storeRedux";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function InputPemakaianBahan() {
   const token = useSelector((state: RootState) => state.localStorage.value);
@@ -89,6 +90,10 @@ function InputPemakaianBahan() {
       satuan: null,
       quantity: "",
     });
+  };
+
+  const handleDeleteDetail = (index) => {
+    setDetailData((prevData) => prevData.filter((_, i) => i.id !== index));
   };
 
   useEffect(() => {
@@ -404,6 +409,7 @@ function InputPemakaianBahan() {
                         <TableCell>Nama Bahan</TableCell>
                         <TableCell>Satuan</TableCell>
                         <TableCell>Quantity</TableCell>
+                        <TableCell>Delete</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -420,6 +426,15 @@ function InputPemakaianBahan() {
                             <TableCell>{row.bahan?.nama || "N/A"}</TableCell>
                             <TableCell>{row.satuan?.nama || "N/A"}</TableCell>
                             <TableCell>{row.quantity}</TableCell>
+                            <TableCell>
+                              <IconButton
+                                aria-label="delete"
+                                size="small"
+                                onClick={() => handleDeleteDetail(row.id)}
+                              >
+                                <DeleteIcon fontSize="inherit" />
+                              </IconButton>
+                            </TableCell>
                           </TableRow>
                         ))
                       ) : (
