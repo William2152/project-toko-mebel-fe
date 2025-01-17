@@ -240,140 +240,131 @@ function TambahUserPage() {
 
     return (
         <>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">
-                    {"Hapus User"}
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        Apakah Anda yakin ingin menghapus user ini?
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => { handleDelete(deleteId); handleClose() }}>Ya</Button>
-                    <Button onClick={handleClose} autoFocus>
-                        Tidak
-                    </Button>
-                </DialogActions>
-            </Dialog>
-            <div>
-                <Snackbar
-                    open={!!error}
-                    autoHideDuration={6000}
-                    onClose={() => setError("")}
-                    message={error}
-                    action={
-                        <Fragment>
-                            <IconButton
-                                size="small"
-                                aria-label="close"
-                                color="inherit"
-                                onClick={() => setError("")}
-                            >
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        </Fragment>
-                    }
-                />
-            </div>
-            <div className="text-center mb-8">
-                <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+            <Snackbar
+                open={!!error}
+                autoHideDuration={6000}
+                onClose={() => setError('')}
+                message={error}
+                action={
+                    <Fragment>
+                        <IconButton
+                            size="small"
+                            aria-label="close"
+                            color="inherit"
+                            onClick={() => setError('')}
+                        >
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    </Fragment>
+                }
+            />
+            <div className="text-center bg-[#65558f] rounded-lg py-2 mb-12">
+                <h1 className="text-4xl font-bold text-white tracking-tight">
                     Tambah User
                 </h1>
-                <p className="mt-2 text-lg text-gray-600">
-                    Berikut adalah halaman untuk menambahkan user baru yang dapat mengakses website ini.
+                <p className="mt-2 text-lg text-white">
+                    Halaman untuk menambahkan user baru yang dapat mengakses sistem ini.
                 </p>
             </div>
-            <div className='border-2 rounded-lg shadow-2xl mx-12'>
-                <div className='container mx-auto px-12 py-12'>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        {/* Tombol Submit */}
-                        <div className='flex flex-col h-full'>
-                            {update ? <><button type="submit" className="self-end bg-[#65558f] text-white px-4 py-3 rounded mt-4 font-bold text-xl rounded-lg">
-                                Update User
+            <Paper className="overflow-hidden shadow-lg rounded-xl bg-white">
+                <div className="p-8">
+                    {/* Form Tambah/Update User */}
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Role */}
+                            <div>
+                                <label htmlFor="role" className="block text-lg font-semibold mb-2">
+                                    Role
+                                </label>
+                                <select
+                                    {...register("role")}
+                                    className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-[#65558f]"
+                                    id="role"
+                                >
+                                    <option hidden value="">-- Pilih Role --</option>
+                                    <option value="adminkantor">Admin Kantor</option>
+                                    <option value="karyawankantor">Karyawan Kantor</option>
+                                    <option value="adminworkshop">Admin Workshop</option>
+                                    <option value="karyawanworkshop">Karyawan Workshop</option>
+                                </select>
+                                {errors.role && <span className="text-red-500 text-sm">{String(errors.role?.message)}</span>}
+                            </div>
+                            {/* Nama Lengkap */}
+                            <div>
+                                <label htmlFor="nama" className="block text-lg font-semibold mb-2">
+                                    Nama Lengkap
+                                </label>
+                                <input
+                                    type="text"
+                                    id="nama"
+                                    {...register("nama")}
+                                    className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-[#65558f]"
+                                    placeholder="Masukkan nama lengkap"
+                                />
+                                {errors.nama && <span className="text-red-500 text-sm">{String(errors.nama?.message)}</span>}
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Username */}
+                            <div>
+                                <label htmlFor="username" className="block text-lg font-semibold mb-2">
+                                    Username
+                                </label>
+                                <input
+                                    type="text"
+                                    id="username"
+                                    {...register("username")}
+                                    className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-[#65558f]"
+                                    placeholder="Masukkan username"
+                                />
+                                {errors.username && <span className="text-red-500 text-sm">{String(errors.username?.message)}</span>}
+                            </div>
+                            {/* Email */}
+                            <div>
+                                <label htmlFor="email" className="block text-lg font-semibold mb-2">
+                                    Email
+                                </label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    {...register("email")}
+                                    className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-[#65558f]"
+                                    placeholder="Masukkan email"
+                                />
+                                {errors.email && <span className="text-red-500 text-sm">{String(errors.email?.message)}</span>}
+                            </div>
+                        </div>
+
+                        {!update && (
+                            <div>
+                                <label htmlFor="password" className="block text-lg font-semibold mb-2">
+                                    Password
+                                </label>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    {...register("password")}
+                                    className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-[#65558f]"
+                                    placeholder="Masukkan password"
+                                />
+                                {errors.password && <span className="text-red-500 text-sm">{String(errors.password?.message)}</span>}
+                            </div>
+                        )}
+
+                        <div className="flex justify-end">
+                            <button
+                                type="submit"
+                                className="bg-[#65558f] hover:bg-[#54437f] text-white px-6 py-2 rounded-lg font-semibold"
+                            >
+                                {update ? "Update User" : "Tambah User"}
                             </button>
-                            </> : <><button type="submit" className="self-end bg-[#65558f] text-white px-4 py-3 rounded mt-4 font-bold text-xl rounded-lg">
-                                Tambah User
-                            </button></>}
                         </div>
-                        <br />
-                        {/* Role */}
-                        <div className='flex gap-x-4'>
-                            <label htmlFor="Role" className='w-[25%] text-xl font-bold'>Role</label>
-                            <select {...register("role")} className="border-2 border-gray-300 rounded px-2 py-2 w-full" id="">
-                                <option hidden value="">-- Pilih Role --</option>
-                                <option value="adminkantor">Admin Kantor</option>
-                                <option value="karyawankantor">Karyawan Kantor</option>
-                                <option value="adminworkshop">Admin Workshop</option>
-                                <option value="karyawanworkshop">Karyawan Workshop</option>
-                            </select>
-                            {errors.role && <span className="text-red-500 text-sm">{String(errors.role?.message)}</span>}
-                        </div>
-                        <br />
-                        {/* Nama Lengkap */}
-                        <div className='flex gap-x-4'>
-                            <label htmlFor="name" className='w-[25%] text-xl font-bold'>Nama Lengkap</label>
-                            <input
-                                type="text"
-                                id="name"
-                                {...register("nama", { required: "Nama Lengkap is required" })}
-                                className="border-2 border-gray-300 rounded px-2 py-2 w-full"
-                            />
-                            {errors.nama && <span className="text-red-500 text-sm">{String(errors.nama.message)}</span>}
-                        </div>
-                        <br />
-
-                        {/* Username */}
-                        <div className='flex gap-x-4'>
-                            <label htmlFor="username" className='w-[25%] text-xl font-bold'>Username</label>
-                            <input
-                                type="text"
-                                id="username"
-                                {...register("username", { required: "Username is required" })}
-                                className="border-2 border-gray-300 rounded px-2 py-2 w-full"
-                            />
-                            {errors.username && <span className="text-red-500 text-sm">{String(errors.username.message)}</span>}
-                        </div>
-                        <br />
-
-                        {/* Email */}
-                        <div className='flex gap-x-4'>
-                            <label htmlFor="email" className='w-[25%] text-xl font-bold'>Email</label>
-                            <input
-                                type="email"
-                                id="email"
-                                {...register("email", {
-                                    required: "Email is required",
-                                    pattern: { value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: "Invalid email" }
-                                })}
-                                className="border-2 border-gray-300 rounded px-2 py-2 w-full"
-                            />
-                            {errors.email && <span className="text-red-500 text-sm">{String(errors.email.message)}</span>}
-                        </div>
-                        <br />
-                        {/* Password */}
-                        {update ? <></> : <><div className='flex gap-x-4'>
-                            <label htmlFor="email" className='w-[25%] text-xl font-bold'>Password</label>
-                            <input
-                                type="password"
-                                id="password"
-                                {...register("password", {
-                                    required: "Password is required",
-                                })}
-                                className="border-2 border-gray-300 rounded px-2 py-2 w-full mb-5"
-                            />
-                            {errors.password && <span className="text-red-500 text-sm">{String(errors.password.message)}</span>}
-                        </div></>}
-
                     </form>
-                    <Paper sx={{ width: "100%", overflow: "hidden" }}>
-                        {/* Search Bar */}
-                        <div className="px-4 py-2 flex justify-between items-center">
+
+                    {/* Table */}
+                    <Paper sx={{ width: "100%", overflow: "hidden" }} className="mt-8">
+                        <div className="px-4 py-2">
                             <TextField
                                 label="Cari User"
                                 variant="outlined"
@@ -383,8 +374,7 @@ function TambahUserPage() {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
-
-                        <TableContainer sx={{ maxHeight: 300 }}>
+                        <TableContainer sx={{ maxHeight: 400 }}>
                             <Table stickyHeader>
                                 <TableHead>
                                     <TableRow>
@@ -399,44 +389,40 @@ function TambahUserPage() {
                                 <TableBody>
                                     {loading ? (
                                         <TableRow>
-                                            <TableCell colSpan={5} align="center">
+                                            <TableCell colSpan={6} align="center">
                                                 <CircularProgress />
                                             </TableCell>
                                         </TableRow>
                                     ) : data.length > 0 ? (
                                         data.map((row, index) => (
                                             <TableRow key={index}>
-                                                <TableCell>{index + 1}</TableCell>
+                                                <TableCell>{row.no}</TableCell>
                                                 <TableCell>{row.nama}</TableCell>
                                                 <TableCell>{row.username}</TableCell>
                                                 <TableCell>{row.email}</TableCell>
                                                 <TableCell>{row.role}</TableCell>
                                                 <TableCell>
-                                                    <button onClick={() => handleUpdate(row)}
-                                                        style={{
-                                                            padding: '5px 10px',
-                                                            marginRight: '10px',
-                                                            backgroundColor: '#4CAF50',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '5px',
-                                                            cursor: 'pointer',
-                                                        }}>Update</button>
-                                                    <button onClick={() => { setDeleteId(row.id); setOpen(true) }}
-                                                        style={{
-                                                            padding: '5px 10px',
-                                                            backgroundColor: '#4CAF50',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '5px',
-                                                            cursor: 'pointer',
-                                                        }}>Delete</button>
+                                                    <button
+                                                        onClick={() => handleUpdate(row)}
+                                                        className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg mr-2"
+                                                    >
+                                                        Update
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setDeleteId(row.id);
+                                                            setOpen(true);
+                                                        }}
+                                                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg"
+                                                    >
+                                                        Delete
+                                                    </button>
                                                 </TableCell>
                                             </TableRow>
                                         ))
                                     ) : (
                                         <TableRow>
-                                            <TableCell colSpan={5} align="center">
+                                            <TableCell colSpan={6} align="center">
                                                 Tidak ada data yang sesuai
                                             </TableCell>
                                         </TableRow>
@@ -444,7 +430,7 @@ function TambahUserPage() {
                                 </TableBody>
                             </Table>
                         </TableContainer>
-                        <div className="flex items-center justify-between px-4 py-2">
+                        <div className="flex justify-between items-center px-4 py-2">
                             <span className="text-sm text-gray-600">
                                 Page {page + 1} of {totalPages}
                             </span>
@@ -460,9 +446,11 @@ function TambahUserPage() {
                         </div>
                     </Paper>
                 </div>
-            </div>
+            </Paper>
         </>
     );
+
+
 }
 
 export default TambahUserPage;

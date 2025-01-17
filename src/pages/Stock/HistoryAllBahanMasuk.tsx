@@ -132,160 +132,160 @@ function HistoryAllBahanMasuk() {
 
     return (
         <>
-            <div>
-                <Snackbar
-                    open={!!error}
-                    autoHideDuration={6000}
-                    onClose={() => setError('')}
-                    message={error}
-                    action={
-                        <Fragment>
-                            <IconButton
-                                size="small"
-                                aria-label="close"
-                                color="inherit"
-                                onClick={() => setError('')}
-                            >
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        </Fragment>
-                    }
-                />
-            </div>
-            <div className="text-center mb-8">
-                <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
-                    History Bahan Masuk
-                </h1>
-                <p className="mt-2 text-lg text-gray-600">
-                    Berikut adalah seluruh history bahan masuk.
-                </p>
-            </div>
-            <div className="border-2 rounded-lg shadow-2xl mx-12 bg-white">
-                <div className="container mx-auto px-8 py-8">
-                    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                        {/* Filter Section */}
-                        <div className="flex items-center gap-4 p-4 bg-gray-100">
-                            {/* Filter Kode Nota */}
-                            <TextField
-                                label="Cari Kode Nota"
-                                variant="outlined"
-                                value={filterKodeNota}
-                                onChange={(e) => setFilterKodeNota(e.target.value)}
-                            />
+            <Snackbar
+                open={!!error}
+                autoHideDuration={6000}
+                onClose={() => setError("")}
+                message={error}
+                action={
+                    <Fragment>
+                        <IconButton
+                            size="small"
+                            aria-label="close"
+                            color="inherit"
+                            onClick={() => setError("")}
+                        >
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    </Fragment>
+                }
+            />
+            <div className="w-full">
+                {/* Header Section */}
+                <div className="text-center mb-8 bg-[#65558f] rounded-lg py-2">
+                    <h1 className="text-4xl font-bold text-white tracking-tight">
+                        History Bahan Masuk
+                    </h1>
+                    <p className="mt-2 text-lg text-white">
+                        Berikut adalah seluruh history bahan masuk.
+                    </p>
+                </div>
 
-                            {/* Filter Supplier */}
-                            <div className="flex-1">
+                {/* Filter and Table Section */}
+                <Paper className="overflow-hidden shadow-lg rounded-xl bg-white">
+                    <div className="p-8">
+                        <Paper sx={{ width: "100%", overflow: "hidden" }}>
+                            {/* Filter Section */}
+                            <div className="flex flex-col md:flex-row md:items-center gap-4 p-4 bg-gray-100 rounded-md mb-6">
+                                {/* Filter Kode Nota */}
+                                <TextField
+                                    label="Cari Kode Nota"
+                                    variant="outlined"
+                                    size="small"
+                                    value={filterKodeNota}
+                                    onChange={(e) => setFilterKodeNota(e.target.value)}
+                                    fullWidth
+                                />
+                                {/* Filter Supplier */}
                                 <Autocomplete
-                                    value={selectedSupplier} // Nilai yang dipilih
-                                    onChange={(_, newValue) => setSelectedSupplier(newValue)} // Mengatur nilai terpilih
-                                    options={supplierOptions} // Daftar opsi
-                                    getOptionLabel={(option) => option.nama || ''} // Menentukan label untuk setiap opsi
+                                    value={selectedSupplier}
+                                    onChange={(_, newValue) => setSelectedSupplier(newValue)}
+                                    options={supplierOptions}
+                                    getOptionLabel={(option) => option.nama || ""}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
                                             label="Pilih Supplier"
                                             variant="outlined"
+                                            size="small"
                                         />
                                     )}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id} // Membandingkan opsi berdasarkan ID
+                                    isOptionEqualToValue={(option, value) =>
+                                        option.id === value?.id
+                                    }
+                                    className="flex-1"
+                                />
+                                {/* Filter Tanggal Nota */}
+                                <TextField
+                                    label="Tanggal Nota"
+                                    type="date"
+                                    variant="outlined"
+                                    size="small"
+                                    InputLabelProps={{ shrink: true }}
+                                    value={filterTglNota || ""}
+                                    onChange={(e) => setFilterTglNota(e.target.value || null)}
                                 />
                             </div>
 
-                            {/* Filter Tanggal Nota */}
-                            <TextField
-                                label="Tanggal Nota"
-                                type="date"
-                                variant="outlined"
-                                size="small"
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                value={filterTglNota || ''}
-                                onChange={(e) => setFilterTglNota(e.target.value || null)}
-                            />
-                        </div>
-
-                        {/* Table Section */}
-                        <TableContainer sx={{ maxHeight: 600 }}>
-                            <Table stickyHeader>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>No</TableCell>
-                                        <TableCell>Tanggal Nota</TableCell>
-                                        <TableCell>Kode Nota</TableCell>
-                                        <TableCell>No SPB</TableCell>
-                                        <TableCell>Supplier</TableCell>
-                                        <TableCell>Detail</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {loading ? (
+                            {/* Table Section */}
+                            <TableContainer sx={{ maxHeight: 600 }}>
+                                <Table stickyHeader>
+                                    <TableHead>
                                         <TableRow>
-                                            <TableCell colSpan={5} align="center">
-                                                <CircularProgress />
-                                            </TableCell>
+                                            <TableCell className="font-bold text-lg">No</TableCell>
+                                            <TableCell className="font-bold text-lg">Tanggal Nota</TableCell>
+                                            <TableCell className="font-bold text-lg">Kode Nota</TableCell>
+                                            <TableCell className="font-bold text-lg">No SPB</TableCell>
+                                            <TableCell className="font-bold text-lg">Supplier</TableCell>
+                                            <TableCell className="font-bold text-lg">Detail</TableCell>
                                         </TableRow>
-                                    ) : data.length > 0 ? (
-                                        data.map((row, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell>{index + 1}</TableCell>
-                                                <TableCell>{new Date(row.tgl_nota).toLocaleDateString('id-ID', {
-                                                    day: '2-digit',
-                                                    month: '2-digit',
-                                                    year: 'numeric',
-                                                })}</TableCell>
-                                                <TableCell>{row.kode_nota}</TableCell>
-                                                <TableCell>{row.no_spb}</TableCell>
-                                                <TableCell>{supplierNames[row.id_supplier] || (
-                                                    <CircularProgress size={16} /> // Loader jika nama belum tersedia
-                                                )}</TableCell>
-                                                <TableCell>
-                                                    <button
-                                                        onClick={() => handleDetail(row.id)}
-                                                        style={{
-                                                            padding: '5px 10px',
-                                                            backgroundColor: '#4CAF50',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '5px',
-                                                            cursor: 'pointer',
-                                                        }}
-                                                    >
-                                                        Detail
-                                                    </button>
+                                    </TableHead>
+                                    <TableBody>
+                                        {loading ? (
+                                            <TableRow>
+                                                <TableCell colSpan={6} align="center">
+                                                    <CircularProgress />
                                                 </TableCell>
                                             </TableRow>
-                                        ))
-                                    ) : (
-                                        <TableRow>
-                                            <TableCell colSpan={5} align="center">
-                                                Tidak ada data yang sesuai
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                        <div className="flex items-center justify-between px-4 py-2">
-                            <span className="text-sm text-gray-600">
-                                Page {page + 1} of {totalPages}
-                            </span>
-                            <TablePagination
-                                rowsPerPageOptions={[10, 20, 50]}
-                                component="div"
-                                count={totalPages * rowsPerPage}
-                                rowsPerPage={rowsPerPage}
-                                page={page}
-                                onPageChange={handleChangePage}
-                                onRowsPerPageChange={handleChangeRowsPerPage}
-                            />
-                        </div>
-                    </Paper>
+                                        ) : data.length > 0 ? (
+                                            data.map((row, index) => (
+                                                <TableRow key={index}>
+                                                    <TableCell>{index + 1}</TableCell>
+                                                    <TableCell>{new Date(row.tgl_nota).toLocaleDateString('id-ID', {
+                                                        day: "2-digit",
+                                                        month: "2-digit",
+                                                        year: "numeric",
+                                                    })}</TableCell>
+                                                    <TableCell>{row.kode_nota}</TableCell>
+                                                    <TableCell>{row.no_spb}</TableCell>
+                                                    <TableCell>
+                                                        {supplierNames[row.id_supplier] || (
+                                                            <CircularProgress size={16} />
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <button
+                                                            onClick={() => handleDetail(row.id)}
+                                                            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+                                                        >
+                                                            Detail
+                                                        </button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        ) : (
+                                            <TableRow>
+                                                <TableCell colSpan={6} align="center">
+                                                    Tidak ada data yang sesuai
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
 
-                </div>
+                            {/* Pagination Section */}
+                            <div className="flex justify-between items-center mt-4 px-4 py-2">
+                                <span className="text-sm text-gray-600">
+                                    Page {page + 1} of {totalPages}
+                                </span>
+                                <TablePagination
+                                    rowsPerPageOptions={[10, 20, 50]}
+                                    component="div"
+                                    count={totalPages * rowsPerPage}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    onPageChange={handleChangePage}
+                                    onRowsPerPageChange={handleChangeRowsPerPage}
+                                />
+                            </div>
+                        </Paper>
+                    </div>
+                </Paper>
             </div>
         </>
-    )
+    );
+
 }
 
 export default HistoryAllBahanMasuk

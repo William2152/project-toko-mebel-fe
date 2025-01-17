@@ -106,11 +106,11 @@ function LihatStockPage() {
                     }
                 />
             </div>
-            <div className="text-center mb-8">
-                <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+            <div className="text-center mb-8 bg-[#65558f] rounded-lg py-2">
+                <h1 className="text-4xl font-bold text-white tracking-tight">
                     Stock Bahan
                 </h1>
-                <p className="mt-2 text-lg text-gray-600">
+                <p className="mt-2 text-lg text-white">
                     Berikut adalah seluruh Stock yang tersedia.
                 </p>
             </div>

@@ -147,18 +147,37 @@ function TambahKaryawanPage() {
   }, [reload, searchTerm, page, rowsPerPage]);
   return (
     <>
+      {/* Snackbar untuk pesan notifikasi */}
+      <Snackbar
+        open={!!error}
+        autoHideDuration={6000}
+        onClose={() => setError("")}
+        message={error}
+        action={
+          <Fragment>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={() => setError("")}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Fragment>
+        }
+      />
+
+      {/* Dialog Konfirmasi Hapus */}
       <Dialog
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
-          {"Hapus User"}
-        </DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"Hapus Karyawan"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Apakah Anda yakin ingin menghapus user ini?
+            Apakah Anda yakin ingin menghapus karyawan ini?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -168,80 +187,68 @@ function TambahKaryawanPage() {
           </Button>
         </DialogActions>
       </Dialog>
-      <div>
-        <Snackbar
-          open={!!error}
-          autoHideDuration={6000}
-          onClose={() => setError("")}
-          message={error}
-          action={
-            <Fragment>
-              <IconButton
-                size="small"
-                aria-label="close"
-                color="inherit"
-                onClick={() => setError("")}
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </Fragment>
-          }
-        />
-      </div>
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+
+      {/* Header Halaman */}
+      <div className="text-center mb-8 bg-[#65558f] rounded-lg py-2">
+        <h1 className="text-4xl font-bold text-white tracking-tight">
           Tambah Karyawan
         </h1>
-        <p className="mt-2 text-lg text-gray-600">
-          Berikut adalah halaman untuk menambahkan karyawan untuk project.
+        <p className="mt-2 text-lg text-white">
+          Berikut adalah halaman untuk menambahkan karyawan untuk proyek.
         </p>
       </div>
-      <div className='border-2 rounded-lg shadow-2xl mx-12'>
-        <div className='container mx-auto px-12 py-12'>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            {/* Tombol Submit */}
-            {update ?
-              <div className='flex flex-col h-full'>
-                <button type="submit" className="self-end bg-[#65558f] text-white px-4 py-3 rounded mt-4 font-bold text-xl rounded-lg">
-                  Update Karyawan
-                </button>
-              </div>
-              :
-              <div className='flex flex-col h-full'>
-                <button type="submit" className="self-end bg-[#65558f] text-white px-4 py-3 rounded mt-4 font-bold text-xl rounded-lg">
-                  Tambah Karyawan
-                </button>
-              </div>}
-            <br />
-            {/* Role */}
-            <div className='flex gap-x-4'>
-              <label htmlFor="Role" className='w-[25%] text-xl font-bold'>Role</label>
-              <select {...register("role")} className="border-2 border-gray-300 rounded px-2 py-2 w-full" id="">
+
+      {/* Kontainer Form dan Tabel */}
+      <Paper className="overflow-hidden shadow-lg rounded-xl bg-white">
+        <div className="p-8">
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                className="bg-[#65558f] hover:bg-[#54437b] text-white px-6 py-3 rounded-lg font-bold text-xl"
+              >
+                {update ? "Update Karyawan" : "Tambah Karyawan"}
+              </button>
+            </div>
+
+            {/* Input Role */}
+            <div className="flex items-center gap-x-4">
+              <label htmlFor="Role" className="w-[25%] text-xl font-bold">
+                Role
+              </label>
+              <select
+                {...register("role")}
+                className="border-2 border-gray-300 rounded px-4 py-2 w-full"
+              >
                 <option hidden value="">-- Pilih Role --</option>
                 <option value="ketua">Ketua</option>
                 <option value="member">Member</option>
               </select>
               {errors.role && <span className="text-red-500 text-sm">{String(errors.role?.message)}</span>}
             </div>
-            <br />
-            {/* Nama Lengkap */}
-            <div className='flex gap-x-4'>
-              <label htmlFor="name" className='w-[25%] text-xl font-bold'>Nama Lengkap</label>
+
+            {/* Input Nama Lengkap */}
+            <div className="flex items-center gap-x-4">
+              <label htmlFor="name" className="w-[25%] text-xl font-bold">
+                Nama Lengkap
+              </label>
               <input
                 type="text"
                 id="name"
                 {...register("nama", { required: "Nama Lengkap is required" })}
-                className="border-2 border-gray-300 rounded px-2 py-2 w-full"
+                className="border-2 border-gray-300 rounded px-4 py-2 w-full"
               />
               {errors.nama && <span className="text-red-500 text-sm">{String(errors.nama.message)}</span>}
             </div>
-            <br />
           </form>
-          <Paper sx={{ width: "100%", overflow: "hidden" }}>
+
+          {/* Tabel Data */}
+          <Paper className="mt-10 shadow-lg">
             {/* Search Bar */}
-            <div className="px-4 py-2 flex justify-between items-center">
+            <div className="px-4 py-2">
               <TextField
-                label="Cari User"
+                label="Cari Karyawan"
                 variant="outlined"
                 size="small"
                 fullWidth
@@ -250,7 +257,7 @@ function TambahKaryawanPage() {
               />
             </div>
 
-            <TableContainer sx={{ maxHeight: 300 }}>
+            <TableContainer sx={{ maxHeight: 400 }}>
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
@@ -263,7 +270,7 @@ function TambahKaryawanPage() {
                 <TableBody>
                   {loading ? (
                     <TableRow>
-                      <TableCell colSpan={5} align="center">
+                      <TableCell colSpan={4} align="center">
                         <CircularProgress />
                       </TableCell>
                     </TableRow>
@@ -274,31 +281,24 @@ function TambahKaryawanPage() {
                         <TableCell>{row.nama}</TableCell>
                         <TableCell>{row.role}</TableCell>
                         <TableCell>
-                          <button onClick={() => handleUpdate(row)}
-                            style={{
-                              padding: '5px 10px',
-                              marginRight: '10px',
-                              backgroundColor: '#4CAF50',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '5px',
-                              cursor: 'pointer',
-                            }}>Update</button>
-                          <button onClick={() => { setDeleteId(row.id); setOpen(true) }}
-                            style={{
-                              padding: '5px 10px',
-                              backgroundColor: '#4CAF50',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '5px',
-                              cursor: 'pointer',
-                            }}>Delete</button>
+                          <button
+                            onClick={() => handleUpdate(row)}
+                            className="bg-[#4CAF50] text-white px-4 py-2 rounded-lg mr-2"
+                          >
+                            Update
+                          </button>
+                          <button
+                            onClick={() => { setDeleteId(row.id); setOpen(true); }}
+                            className="bg-[#e53935] text-white px-4 py-2 rounded-lg"
+                          >
+                            Delete
+                          </button>
                         </TableCell>
                       </TableRow>
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={5} align="center">
+                      <TableCell colSpan={4} align="center">
                         Tidak ada data yang sesuai
                       </TableCell>
                     </TableRow>
@@ -322,9 +322,10 @@ function TambahKaryawanPage() {
             </div>
           </Paper>
         </div>
-      </div>
+      </Paper>
     </>
   );
+
 }
 
 export default TambahKaryawanPage;

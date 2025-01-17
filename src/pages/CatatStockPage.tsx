@@ -177,130 +177,123 @@ function CatatStockPage() {
 
     return (
         <>
-            <div>
-                <Snackbar
-                    open={!!error}
-                    autoHideDuration={6000}
-                    onClose={() => setError("")}
-                    message={error}
-                    action={
-                        <Fragment>
-                            <IconButton
-                                size="small"
-                                aria-label="close"
-                                color="inherit"
-                                onClick={() => setError("")}
-                            >
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        </Fragment>
-                    }
-                />
-            </div>
-            <div className="text-center mb-8">
-                <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
-                    Input Stock
-                </h1>
-                <p className="mt-2 text-lg text-gray-600">
-                    Berikut adalah halaman untuk menginputkan Stock.
-                </p>
-            </div>
-            <div className="px-12 my-6">
+            <Snackbar
+                open={!!error}
+                autoHideDuration={6000}
+                onClose={() => setError("")}
+                message={error}
+                action={
+                    <Fragment>
+                        <IconButton
+                            size="small"
+                            aria-label="close"
+                            color="inherit"
+                            onClick={() => setError("")}
+                        >
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    </Fragment>
+                }
+            />
+            <div className="w-full">
+                {/* Header Section */}
+                <div className="text-center mb-10 bg-[#65558f] rounded-lg py-2">
+                    <h1 className="text-4xl font-bold text-white tracking-tight">
+                        Input Stock
+                    </h1>
+                    <p className="mt-2 text-lg text-white">
+                        Berikut adalah halaman untuk menginputkan Stock.
+                    </p>
+                </div>
+
                 {/* Form Header */}
-                <div className="mb-8">
-                    <div className=" py-6">
-                        <form onSubmit={handleSubmitAll(onSubmitStok)}>
-                            <div className="bg-white shadow-xl border-2 rounded-xl p-8">
-                                {/* <h2 className="text-3xl font-bold text-gray-800 mb-6">Form Input Stock</h2> */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8">
-                                    {/* Tanggal Nota */}
-                                    <div className="flex flex-col gap-y-2">
-                                        <label htmlFor="tanggalNota" className="text-lg font-semibold text-gray-700">
-                                            Tanggal Nota
-                                        </label>
-                                        <input
-                                            type="date"
-                                            id="tanggalNota"
-                                            {...registerAll("tanggalNota", { required: "Tanggal Nota wajib diisi" })}
-                                            className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                            placeholder="Masukkan tanggal nota"
-                                        />
-                                        {errorsAll.tanggalNota && <p className="text-red-500">{String(errorsAll.tanggalNota.message)}</p>}
-                                    </div>
-
-                                    {/* Supplier */}
-                                    <div className="flex flex-col gap-y-2">
-                                        <label htmlFor="supplier" className="text-lg font-semibold text-gray-700">
-                                            Supplier
-                                        </label>
-                                        <select id="supplier"{...registerAll("supplier", { required: "Supplier wajib diisi" })}
-                                            className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                            <option hidden value="">Masukkan Supplier</option>
-                                            {supplier.map((item: any) => (
-                                                <option key={item.id} value={item.id}>{item.nama}</option>
-                                            ))}
-                                        </select>
-                                        {errorsAll.supplier && <p className="text-red-500">{String(errorsAll.supplier.message)}</p>}
-                                    </div>
-
-                                    {/* No Surat Jalan */}
-                                    <div className="flex flex-col gap-y-2">
-                                        <label htmlFor="noNota" className="text-lg font-semibold text-gray-700">
-                                            No Surat Jalan
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="noNota"
-                                            {...registerAll("noNota", { required: "No Surat Jalan wajib diisi" })}
-                                            className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                            placeholder="Masukkan no surat jalan"
-                                        />
-                                        {errorsAll.noNota && <p className="text-red-500">{String(errorsAll.noNota.message)}</p>}
-                                    </div>
-
-                                    {/* No SPB */}
-                                    <div className="flex flex-col gap-y-2">
-                                        <label htmlFor="noSpb" className="text-lg font-semibold text-gray-700">
-                                            No SPB
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="noSpb"
-                                            {...registerAll("noSpb", { required: "No SPB wajib diisi" })}
-                                            className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                            placeholder="Masukkan no SPB"
-                                        />
-                                        {errorsAll.noSpb && <p className="text-red-500">{String(errorsAll.noSpb.message)}</p>}
-                                    </div>
+                <div className="mb-10">
+                    <form onSubmit={handleSubmitAll(onSubmitStok)}>
+                        <div className="bg-white shadow-md rounded-lg p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label htmlFor="tanggalNota" className="block text-lg font-semibold text-gray-700">
+                                        Tanggal Nota
+                                    </label>
+                                    <input
+                                        type="date"
+                                        id="tanggalNota"
+                                        {...registerAll("tanggalNota")}
+                                        className="mt-1 border border-gray-300 rounded-lg w-full px-4 py-2 focus:ring-purple-500 focus:border-purple-500"
+                                        placeholder="Masukkan tanggal nota"
+                                    />
+                                    {errorsAll.tanggalNota && <p className="text-red-500 text-sm">{String(errorsAll.tanggalNota.message)}</p>}
                                 </div>
 
-                                {/* Save Button */}
-                                <div className="flex justify-end mt-8">
-                                    <button
-                                        type="submit"
-                                        className="bg-[#65558f] text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-purple-700 transition duration-200"
+                                <div>
+                                    <label htmlFor="supplier" className="block text-lg font-semibold text-gray-700">
+                                        Supplier
+                                    </label>
+                                    <select
+                                        id="supplier"
+                                        {...registerAll("supplier")}
+                                        className="mt-1 border border-gray-300 rounded-lg w-full px-4 py-2 focus:ring-purple-500 focus:border-purple-500"
                                     >
-                                        Simpan
-                                    </button>
+                                        <option hidden value="">Masukkan Supplier</option>
+                                        {supplier.map((item: any) => (
+                                            <option key={item.id} value={item.id}>{item.nama}</option>
+                                        ))}
+                                    </select>
+                                    {errorsAll.supplier && <p className="text-red-500 text-sm">{String(errorsAll.supplier.message)}</p>}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="noNota" className="block text-lg font-semibold text-gray-700">
+                                        No Surat Jalan
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="noNota"
+                                        {...registerAll("noNota")}
+                                        className="mt-1 border border-gray-300 rounded-lg w-full px-4 py-2 focus:ring-purple-500 focus:border-purple-500"
+                                        placeholder="Masukkan no surat jalan"
+                                    />
+                                    {errorsAll.noNota && <p className="text-red-500 text-sm">{String(errorsAll.noNota.message)}</p>}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="noSpb" className="block text-lg font-semibold text-gray-700">
+                                        No SPB
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="noSpb"
+                                        {...registerAll("noSpb")}
+                                        className="mt-1 border border-gray-300 rounded-lg w-full px-4 py-2 focus:ring-purple-500 focus:border-purple-500"
+                                        placeholder="Masukkan no SPB"
+                                    />
+                                    {errorsAll.noSpb && <p className="text-red-500 text-sm">{String(errorsAll.noSpb.message)}</p>}
                                 </div>
                             </div>
-                        </form>
-                    </div>
+                            <div className="flex justify-end mt-6">
+                                <button
+                                    type="submit"
+                                    className="bg-[#65558f] text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-purple-700 transition duration-200"
+                                >
+                                    Simpan
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
 
                 {/* Form Tambah Barang */}
-                <div className="bg-white border-2 rounded-lg shadow-xl py-8 px-6 mb-8">
+                <div className="bg-white shadow-md rounded-lg p-6 mb-10">
                     <h3 className="text-2xl font-bold text-[#65558f] mb-6">Tambah Barang</h3>
-                    <form onSubmit={handleSubmitBarang(handleAddItem)} className="space-y-6">
+                    <form onSubmit={handleSubmitBarang(handleAddItem)}>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {/* Nama Bahan */}
-                            <div className="flex flex-col">
-                                <label htmlFor="namaBahan" className="text-lg font-medium text-gray-700">
+                            <div>
+                                <label htmlFor="namaBahan" className="block text-lg font-medium text-gray-700">
                                     Nama Bahan
                                 </label>
                                 <select
                                     id="namaBahan"
-                                    className="mt-2 border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="mt-1 border border-gray-300 rounded-lg w-full px-4 py-2 focus:ring-purple-500 focus:border-purple-500"
                                     {...registerBarang("namaBahan")}
                                 >
                                     <option value="" hidden>Pilih Bahan</option>
@@ -310,42 +303,30 @@ function CatatStockPage() {
                                         </option>
                                     ))}
                                 </select>
-                                {errorsBarang.namaBahan && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                        {String(errorsBarang.namaBahan.message)}
-                                    </p>
-                                )}
+                                {errorsBarang.namaBahan && <p className="text-red-500 text-sm mt-1">{String(errorsBarang.namaBahan.message)}</p>}
                             </div>
 
-                            {/* Jumlah Barang */}
-                            <div className="flex flex-col">
-                                <label htmlFor="jumlahBahan" className="text-lg font-medium text-gray-700">
+                            <div>
+                                <label htmlFor="jumlahBahan" className="block text-lg font-medium text-gray-700">
                                     Jumlah Bahan
                                 </label>
                                 <input
                                     type="number"
                                     id="jumlahBahan"
-                                    className="mt-2 border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="mt-1 border border-gray-300 rounded-lg w-full px-4 py-2 focus:ring-purple-500 focus:border-purple-500"
                                     {...registerBarang("jumlahBahan")}
-                                    min={0}
-                                    step="0.01"
                                     placeholder="Masukkan jumlah bahan"
                                 />
-                                {errorsBarang.jumlahBahan && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                        {String(errorsBarang.jumlahBahan.message)}
-                                    </p>
-                                )}
+                                {errorsBarang.jumlahBahan && <p className="text-red-500 text-sm mt-1">{String(errorsBarang.jumlahBahan.message)}</p>}
                             </div>
 
-                            {/* Satuan */}
-                            <div className="flex flex-col">
-                                <label htmlFor="satuan" className="text-lg font-medium text-gray-700">
+                            <div>
+                                <label htmlFor="satuan" className="block text-lg font-medium text-gray-700">
                                     Satuan
                                 </label>
                                 <select
                                     id="satuan"
-                                    className="mt-2 border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="mt-1 border border-gray-300 rounded-lg w-full px-4 py-2 focus:ring-purple-500 focus:border-purple-500"
                                     {...registerBarang("satuan")}
                                 >
                                     <option value="" hidden>Pilih Satuan</option>
@@ -355,19 +336,13 @@ function CatatStockPage() {
                                         </option>
                                     ))}
                                 </select>
-                                {errorsBarang.satuan && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                        {String(errorsBarang.satuan.message)}
-                                    </p>
-                                )}
+                                {errorsBarang.satuan && <p className="text-red-500 text-sm mt-1">{String(errorsBarang.satuan.message)}</p>}
                             </div>
                         </div>
-
-                        {/* Button Tambah Barang */}
-                        <div className="flex justify-end">
+                        <div className="flex justify-end mt-6">
                             <button
                                 type="submit"
-                                className="bg-[#65558f] text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition duration-200 font-semibold"
+                                className="bg-[#65558f] text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition duration-200"
                             >
                                 Tambah Barang
                             </button>
@@ -375,26 +350,24 @@ function CatatStockPage() {
                     </form>
                 </div>
 
-
                 {/* Tabel Barang */}
-                <div className="border-2 rounded-lg shadow-xl py-6 px-8">
-                    <div className="flex justify-between items-center border-b pb-2 mb-4">
-                        <div className="w-20 text-center font-semibold text-lg">No</div>
-                        <div className="flex-1 text-center font-semibold text-lg">Nama Bahan</div>
-                        <div className="w-20 text-center font-semibold text-lg">Jumlah</div>
-                        <div className="w-32 text-center font-semibold text-lg">Satuan</div>
-                        <div className="w-10 text-center"></div>
+                <div className="bg-white shadow-md rounded-lg p-6">
+                    <div className="border-b pb-4 mb-4">
+                        <div className="flex justify-between text-lg font-semibold">
+                            <div className="w-12 text-center">No</div>
+                            <div className="flex-1 text-center">Nama Bahan</div>
+                            <div className="w-20 text-center">Jumlah</div>
+                            <div className="w-28 text-center">Satuan</div>
+                            <div className="w-10 text-center"></div>
+                        </div>
                     </div>
 
                     {items.map((item: any, index) => (
-                        <div
-                            key={item.id}
-                            className="flex justify-between items-center border-b py-2"
-                        >
-                            <div className="w-20 text-center text-md">{index + 1}</div>
-                            <div className="flex-1 text-center text-md">{item.namaBarang}</div>
-                            <div className="w-20 text-center text-md">{item.jumlah}</div>
-                            <div className="w-32 text-center text-md">{item.satuan}</div>
+                        <div key={item.id} className="flex justify-between items-center border-b py-2">
+                            <div className="w-12 text-center text-sm">{index + 1}</div>
+                            <div className="flex-1 text-center text-sm">{item.namaBarang}</div>
+                            <div className="w-20 text-center text-sm">{item.jumlah}</div>
+                            <div className="w-28 text-center text-sm">{item.satuan}</div>
                             <div className="w-10 text-center">
                                 <button
                                     type="button"
@@ -410,6 +383,7 @@ function CatatStockPage() {
             </div>
         </>
     );
+
 }
 
 export default CatatStockPage;

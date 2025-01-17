@@ -8,6 +8,7 @@ import {
   Button,
   IconButton,
   Modal,
+  Paper,
   Snackbar,
   TextField,
 } from "@mui/material";
@@ -226,302 +227,299 @@ function GenerateLaporanHppPage() {
           }
         />
       </div>
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+      <div className="text-center mb-8 bg-[#65558f] rounded-lg py-2">
+        <h1 className="text-4xl font-bold text-white tracking-tight">
           Laporan Harga Pokok Penjualan
         </h1>
+        <p className="mt-2 text-lg text-white">
+          Berikut adalah laporan harga pokok penjualan
+        </p>
       </div>
-      <div className="px-12 my-6">
-        <div className="mb-8">
-          <div className="py-6">
-            <div className="border-2 rounded-lg shadow-2xl">
-              <div className="px-12 py-12">
-                {/* Form section */}
-                <form
-                  onSubmit={handleSubmitHeader(onSubmitReportFilter)}
-                  className="space-y-6 mb-5"
-                >
-                  {/* Input jenis proyek */}
-                  <div className="flex-1">
-                    <Controller
-                      name="jenis_proyek"
-                      control={controlHeader}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          fullWidth
-                          type="text"
-                          label="Jenis Proyek (baru/stock/revisi)"
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                    {errorsAll.jenis_proyek && (
-                      <p className="text-red-500">
-                        {String(errorsAll.jenis_proyek.message)}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Input nomor sj */}
-                  <div className="flex-1">
-                    <Controller
-                      name="sj_no"
-                      control={controlHeader}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          fullWidth
-                          type="text"
-                          label="SJ No."
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                    {errorsAll.sj_no && (
-                      <p className="text-red-500">
-                        {String(errorsAll.sj_no.message)}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Input nama acc */}
-                  <div className="flex-1">
-                    <Controller
-                      name="acc"
-                      control={controlHeader}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          fullWidth
-                          type="text"
-                          label="Nama Acc"
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                    {errorsAll.acc && (
-                      <p className="text-red-500">
-                        {String(errorsAll.acc.message)}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Input nama marketing */}
-                  <div className="flex-1">
-                    <Controller
-                      name="marketing"
-                      control={controlHeader}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          fullWidth
-                          type="text"
-                          label="Nama Marketing"
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                    {errorsAll.marketing && (
-                      <p className="text-red-500">
-                        {String(errorsAll.marketing.message)}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Input nama penanggung jawab */}
-                  <div className="flex-1">
-                    <Controller
-                      name="nama_penanggung_jawab"
-                      control={controlHeader}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          fullWidth
-                          type="text"
-                          label="Nama Penanggung Jawab"
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                    {errorsAll.nama_penanggung_jawab && (
-                      <p className="text-red-500">
-                        {String(errorsAll.nama_penanggung_jawab.message)}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Input total harian */}
-                  <div className="flex-1">
-                    <Controller
-                      name="total_harian"
-                      control={controlHeader}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          fullWidth
-                          type="number"
-                          inputProps={{ step: "1" }}
-                          label="Total harian"
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                    {errorsAll.total_harian && (
-                      <p className="text-red-500">
-                        {String(errorsAll.total_harian.message)}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Input total borongan */}
-                  <div className="flex-1">
-                    <Controller
-                      name="total_borongan"
-                      control={controlHeader}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          fullWidth
-                          type="number"
-                          inputProps={{ step: "1" }}
-                          label="Total Borongan"
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                    {errorsAll.total_borongan && (
-                      <p className="text-red-500">
-                        {String(errorsAll.total_borongan.message)}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Input combobox proyek */}
-                  <div className="flex-1 mr-4">
-                    <Controller
-                      name="proyek"
-                      control={controlHeader}
-                      render={({ field }) => (
-                        <Autocomplete
-                          {...field}
-                          value={field.value || null}
-                          options={proyekOptions}
-                          getOptionLabel={(option) => option.nama}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Pilih Proyek"
-                              variant="outlined"
-                            />
-                          )}
-                          onChange={(_, data) => {
-                            field.onChange(data); // Tetapkan nilai ke form
-                            setIdProyek(data?.id || null); // Set idProyek dengan id dari data yang dipilih
-                          }}
-                          getOptionSelected={(option, value) =>
-                            option.id === value.id
-                          } // Pastikan opsi dipilih berdasarkan ID
-                          isOptionEqualToValue={(option, value) =>
-                            option.id === value.id
-                          }
-                          renderOption={(props, option) => (
-                            <li {...props} key={option.id}>
-                              {" "}
-                              {/* Gunakan ID untuk key */}
-                              {option.nama}
-                            </li>
-                          )}
-                        />
-                      )}
-                    />
-                    {errorsAll.proyek && (
-                      <p className="text-red-500">
-                        {String(errorsAll.proyek.message)}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Input combobox produk */}
-                  <div className="flex-1 mr-4">
-                    <Controller
-                      name="produk"
-                      control={controlHeader}
-                      render={({ field }) => (
-                        <Autocomplete
-                          {...field}
-                          value={field.value || null}
-                          options={produkOptions}
-                          getOptionLabel={(option) => option.nama}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Pilih Produk"
-                              variant="outlined"
-                              disabled={!isProdukEnabled} // Disable jika belum memilih Proyek
-                            />
-                          )}
-                          onChange={(_, data) => {
-                            field.onChange(data); // Tetapkan nilai ke form
-                          }}
-                          getOptionSelected={(option, value) =>
-                            option.id === value.id
-                          } // Pastikan opsi dipilih berdasarkan ID
-                          isOptionEqualToValue={(option, value) =>
-                            option.id === value.id
-                          }
-                          renderOption={(props, option) => (
-                            <li {...props} key={option.id}>
-                              {" "}
-                              {/* Gunakan ID untuk key */}
-                              {option.nama}
-                            </li>
-                          )}
-                        />
-                      )}
-                    />
-                    {errorsAll.produk && (
-                      <p className="text-red-500">
-                        {String(errorsAll.produk.message)}
-                      </p>
-                    )}
-                  </div>
-                  <button
-                    className="bg-[#65558f] text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-purple-700 transition duration-200"
-                    type="submit"
-                    disabled={loading}
-                  >
-                    {loading ? "Membuat laporan..." : "Generate Report"}
-                  </button>
-                </form>
-
-                {/* Modal untuk preview dokumen */}
-                <Modal open={open} onClose={() => setOpen(false)}>
-                  <Box sx={modalStyle}>
-                    <h2>Preview Laporan</h2>
-                    {pdfUrl && (
-                      <iframe
-                        src={pdfUrl}
-                        width="100%"
-                        height="80%"
-                        title="Preview PDF"
-                        style={{ border: "none" }}
-                      ></iframe>
-                    )}
-                    <Button
-                      variant="contained"
-                      onClick={handleDownload}
-                      sx={{ mt: 2 }}
-                    >
-                      Download PDF
-                    </Button>
-                  </Box>
-                </Modal>
-              </div>
+      <Paper className="overflow-hidden shadow-lg rounded-xl bg-white">
+        <div className="p-8">
+          {/* Form section */}
+          <form
+            onSubmit={handleSubmitHeader(onSubmitReportFilter)}
+            className="space-y-6 mb-5"
+          >
+            {/* Input jenis proyek */}
+            <div className="flex-1">
+              <Controller
+                name="jenis_proyek"
+                control={controlHeader}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="text"
+                    label="Jenis Proyek (baru/stock/revisi)"
+                    variant="outlined"
+                  />
+                )}
+              />
+              {errorsAll.jenis_proyek && (
+                <p className="text-red-500">
+                  {String(errorsAll.jenis_proyek.message)}
+                </p>
+              )}
             </div>
-          </div>
+
+            {/* Input nomor sj */}
+            <div className="flex-1">
+              <Controller
+                name="sj_no"
+                control={controlHeader}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="text"
+                    label="SJ No."
+                    variant="outlined"
+                  />
+                )}
+              />
+              {errorsAll.sj_no && (
+                <p className="text-red-500">
+                  {String(errorsAll.sj_no.message)}
+                </p>
+              )}
+            </div>
+
+            {/* Input nama acc */}
+            <div className="flex-1">
+              <Controller
+                name="acc"
+                control={controlHeader}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="text"
+                    label="Nama Acc"
+                    variant="outlined"
+                  />
+                )}
+              />
+              {errorsAll.acc && (
+                <p className="text-red-500">
+                  {String(errorsAll.acc.message)}
+                </p>
+              )}
+            </div>
+
+            {/* Input nama marketing */}
+            <div className="flex-1">
+              <Controller
+                name="marketing"
+                control={controlHeader}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="text"
+                    label="Nama Marketing"
+                    variant="outlined"
+                  />
+                )}
+              />
+              {errorsAll.marketing && (
+                <p className="text-red-500">
+                  {String(errorsAll.marketing.message)}
+                </p>
+              )}
+            </div>
+
+            {/* Input nama penanggung jawab */}
+            <div className="flex-1">
+              <Controller
+                name="nama_penanggung_jawab"
+                control={controlHeader}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="text"
+                    label="Nama Penanggung Jawab"
+                    variant="outlined"
+                  />
+                )}
+              />
+              {errorsAll.nama_penanggung_jawab && (
+                <p className="text-red-500">
+                  {String(errorsAll.nama_penanggung_jawab.message)}
+                </p>
+              )}
+            </div>
+
+            {/* Input total harian */}
+            <div className="flex-1">
+              <Controller
+                name="total_harian"
+                control={controlHeader}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    inputProps={{ step: "1" }}
+                    label="Total harian"
+                    variant="outlined"
+                  />
+                )}
+              />
+              {errorsAll.total_harian && (
+                <p className="text-red-500">
+                  {String(errorsAll.total_harian.message)}
+                </p>
+              )}
+            </div>
+
+            {/* Input total borongan */}
+            <div className="flex-1">
+              <Controller
+                name="total_borongan"
+                control={controlHeader}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    inputProps={{ step: "1" }}
+                    label="Total Borongan"
+                    variant="outlined"
+                  />
+                )}
+              />
+              {errorsAll.total_borongan && (
+                <p className="text-red-500">
+                  {String(errorsAll.total_borongan.message)}
+                </p>
+              )}
+            </div>
+
+            {/* Input combobox proyek */}
+            <div className="flex-1 mr-4">
+              <Controller
+                name="proyek"
+                control={controlHeader}
+                render={({ field }) => (
+                  <Autocomplete
+                    {...field}
+                    value={field.value || null}
+                    options={proyekOptions}
+                    getOptionLabel={(option) => option.nama}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Pilih Proyek"
+                        variant="outlined"
+                      />
+                    )}
+                    onChange={(_, data) => {
+                      field.onChange(data); // Tetapkan nilai ke form
+                      setIdProyek(data?.id || null); // Set idProyek dengan id dari data yang dipilih
+                    }}
+                    getOptionSelected={(option, value) =>
+                      option.id === value.id
+                    } // Pastikan opsi dipilih berdasarkan ID
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.id}>
+                        {" "}
+                        {/* Gunakan ID untuk key */}
+                        {option.nama}
+                      </li>
+                    )}
+                  />
+                )}
+              />
+              {errorsAll.proyek && (
+                <p className="text-red-500">
+                  {String(errorsAll.proyek.message)}
+                </p>
+              )}
+            </div>
+
+            {/* Input combobox produk */}
+            <div className="flex-1 mr-4">
+              <Controller
+                name="produk"
+                control={controlHeader}
+                render={({ field }) => (
+                  <Autocomplete
+                    {...field}
+                    value={field.value || null}
+                    options={produkOptions}
+                    getOptionLabel={(option) => option.nama}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Pilih Produk"
+                        variant="outlined"
+                        disabled={!isProdukEnabled} // Disable jika belum memilih Proyek
+                      />
+                    )}
+                    onChange={(_, data) => {
+                      field.onChange(data); // Tetapkan nilai ke form
+                    }}
+                    getOptionSelected={(option, value) =>
+                      option.id === value.id
+                    } // Pastikan opsi dipilih berdasarkan ID
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.id}>
+                        {" "}
+                        {/* Gunakan ID untuk key */}
+                        {option.nama}
+                      </li>
+                    )}
+                  />
+                )}
+              />
+              {errorsAll.produk && (
+                <p className="text-red-500">
+                  {String(errorsAll.produk.message)}
+                </p>
+              )}
+            </div>
+            <button
+              className="bg-[#65558f] text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-purple-700 transition duration-200"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Membuat laporan..." : "Generate Report"}
+            </button>
+          </form>
+
+          {/* Modal untuk preview dokumen */}
+          <Modal open={open} onClose={() => setOpen(false)}>
+            <Box sx={modalStyle}>
+              <h2>Preview Laporan</h2>
+              {pdfUrl && (
+                <iframe
+                  src={pdfUrl}
+                  width="100%"
+                  height="80%"
+                  title="Preview PDF"
+                  style={{ border: "none" }}
+                ></iframe>
+              )}
+              <Button
+                variant="contained"
+                onClick={handleDownload}
+                sx={{ mt: 2 }}
+              >
+                Download PDF
+              </Button>
+            </Box>
+          </Modal>
         </div>
-      </div>
+      </Paper>
     </>
   );
 }

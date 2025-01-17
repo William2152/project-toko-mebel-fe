@@ -8,6 +8,7 @@ import {
   Button,
   IconButton,
   Modal,
+  Paper,
   Snackbar,
   TextField,
 } from "@mui/material";
@@ -186,123 +187,120 @@ function GenerateLaporanNotaBySupplier() {
           }
         />
       </div>
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+      <div className="text-center mb-8 bg-[#65558f] rounded-lg py-2">
+        <h1 className="text-4xl font-bold text-white tracking-tight">
           Laporan Nota per Supplier
         </h1>
+        <p className="mt-2 text-lg text-white">
+          Berikut adalah laporan nota per supplier.
+        </p>
       </div>
-      <div className="px-12 my-6">
-        <div className="mb-8">
-          <div className="py-6">
-            <div className="border-2 rounded-lg shadow-2xl">
-              <div className="px-12 py-12">
-                {/* Form section */}
-                <form
-                  onSubmit={handleSubmitHeader(onSubmitReportFilter)}
-                  className="space-y-6 mb-5"
-                >
-                  {/* Input tanggal input  */}
-                  <div className="flex-1 mr-4">
-                    <label
-                      htmlFor="tglInput"
-                      className="text-lg font-semibold text-gray-700"
-                    >
-                      Tanggal Input
-                    </label>
-                    <input
-                      type="date"
-                      id="tglInput"
-                      {...register("tgl_input")}
-                      className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
-                      placeholder="Masukkan range tanggal awal"
-                    />
-                    {errorsAll.tgl_input && (
-                      <p className="text-red-500">
-                        {String(errorsAll.tgl_input.message)}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Input combobox supplier */}
-                  <div className="flex-1 mr-4">
-                    <Controller
-                      name="supplier"
-                      control={controlHeader}
-                      render={({ field }) => (
-                        <Autocomplete
-                          {...field}
-                          value={field.value || null}
-                          options={supplierOptions}
-                          getOptionLabel={(option) => option.nama}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Pilih Supplier"
-                              variant="outlined"
-                            />
-                          )}
-                          onChange={(_, data) => {
-                            field.onChange(data); // Tetapkan nilai ke form
-                          }}
-                          getOptionSelected={(option, value) =>
-                            option.id === value.id
-                          } // Pastikan opsi dipilih berdasarkan ID
-                          isOptionEqualToValue={(option, value) =>
-                            option.id === value.id
-                          }
-                          renderOption={(props, option) => (
-                            <li {...props} key={option.id}>
-                              {" "}
-                              {/* Gunakan ID untuk key */}
-                              {option.nama}
-                            </li>
-                          )}
-                        />
-                      )}
-                    />
-                    {errorsAll.supplier && (
-                      <p className="text-red-500">
-                        {String(errorsAll.supplier.message)}
-                      </p>
-                    )}
-                  </div>
-
-                  <button
-                    className="bg-[#65558f] text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-purple-700 transition duration-200"
-                    type="submit"
-                    disabled={loading}
-                  >
-                    {loading ? "Membuat laporan..." : "Generate Report"}
-                  </button>
-                </form>
-
-                {/* Modal untuk preview dokumen */}
-                <Modal open={open} onClose={() => setOpen(false)}>
-                  <Box sx={modalStyle}>
-                    <h2>Preview Laporan</h2>
-                    {pdfUrl && (
-                      <iframe
-                        src={pdfUrl}
-                        width="100%"
-                        height="80%"
-                        title="Preview PDF"
-                        style={{ border: "none" }}
-                      ></iframe>
-                    )}
-                    <Button
-                      variant="contained"
-                      onClick={handleDownload}
-                      sx={{ mt: 2 }}
-                    >
-                      Download PDF
-                    </Button>
-                  </Box>
-                </Modal>
-              </div>
+      <Paper className="overflow-hidden shadow-lg rounded-xl bg-white">
+        <div className="p-8">
+          {/* Form section */}
+          <form
+            onSubmit={handleSubmitHeader(onSubmitReportFilter)}
+            className="space-y-6 mb-5"
+          >
+            {/* Input tanggal input  */}
+            <div className="flex-1 mr-4">
+              <label
+                htmlFor="tglInput"
+                className="text-lg font-semibold text-gray-700"
+              >
+                Tanggal Input
+              </label>
+              <input
+                type="date"
+                id="tglInput"
+                {...register("tgl_input")}
+                className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
+                placeholder="Masukkan range tanggal awal"
+              />
+              {errorsAll.tgl_input && (
+                <p className="text-red-500">
+                  {String(errorsAll.tgl_input.message)}
+                </p>
+              )}
             </div>
-          </div>
+
+            {/* Input combobox supplier */}
+            <div className="flex-1 mr-4">
+              <Controller
+                name="supplier"
+                control={controlHeader}
+                render={({ field }) => (
+                  <Autocomplete
+                    {...field}
+                    value={field.value || null}
+                    options={supplierOptions}
+                    getOptionLabel={(option) => option.nama}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Pilih Supplier"
+                        variant="outlined"
+                      />
+                    )}
+                    onChange={(_, data) => {
+                      field.onChange(data); // Tetapkan nilai ke form
+                    }}
+                    getOptionSelected={(option, value) =>
+                      option.id === value.id
+                    } // Pastikan opsi dipilih berdasarkan ID
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.id}>
+                        {" "}
+                        {/* Gunakan ID untuk key */}
+                        {option.nama}
+                      </li>
+                    )}
+                  />
+                )}
+              />
+              {errorsAll.supplier && (
+                <p className="text-red-500">
+                  {String(errorsAll.supplier.message)}
+                </p>
+              )}
+            </div>
+
+            <button
+              className="bg-[#65558f] text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-purple-700 transition duration-200"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Membuat laporan..." : "Generate Report"}
+            </button>
+          </form>
+
+          {/* Modal untuk preview dokumen */}
+          <Modal open={open} onClose={() => setOpen(false)}>
+            <Box sx={modalStyle}>
+              <h2>Preview Laporan</h2>
+              {pdfUrl && (
+                <iframe
+                  src={pdfUrl}
+                  width="100%"
+                  height="80%"
+                  title="Preview PDF"
+                  style={{ border: "none" }}
+                ></iframe>
+              )}
+              <Button
+                variant="contained"
+                onClick={handleDownload}
+                sx={{ mt: 2 }}
+              >
+                Download PDF
+              </Button>
+            </Box>
+          </Modal>
         </div>
-      </div>
+      </Paper>
     </>
   );
 }

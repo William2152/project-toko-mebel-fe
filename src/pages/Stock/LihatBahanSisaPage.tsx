@@ -119,49 +119,53 @@ function LihatBahanSisaPage() {
     }, [satuan_terkecil]);
     return (
         <>
-            <div>
-                <Snackbar
-                    open={!!error}
-                    autoHideDuration={6000}
-                    onClose={() => setError("")}
-                    message={error}
-                    action={
-                        <Fragment>
-                            <IconButton
-                                size="small"
-                                aria-label="close"
-                                color="inherit"
-                                onClick={() => setError("")}
-                            >
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        </Fragment>
-                    }
-                />
-            </div>
-            <div className="text-center mb-8">
-                <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+            {/* Snackbar untuk Notifikasi */}
+            <Snackbar
+                open={!!error}
+                autoHideDuration={6000}
+                onClose={() => setError("")}
+                message={error}
+                action={
+                    <Fragment>
+                        <IconButton
+                            size="small"
+                            aria-label="close"
+                            color="inherit"
+                            onClick={() => setError("")}
+                        >
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    </Fragment>
+                }
+            />
+
+            {/* Header Halaman */}
+            <div className="text-center mb-8 bg-[#65558f] rounded-lg py-2">
+                <h1 className="text-4xl font-bold text-white tracking-tight">
                     List Bahan Sisa
                 </h1>
-                <p className="mt-2 text-lg text-gray-600">
+                <p className="mt-2 text-lg text-white">
                     Berikut adalah List Bahan Sisa dari Seluruh Proyek.
                 </p>
             </div>
-            <div className="border-2 rounded-lg shadow-2xl mx-12">
-                <div className="container mx-auto px-12 py-12">
-                    <Paper sx={{ width: "100%", overflow: "hidden" }}>
-                        {/* Search Bar */}
-                        <div className="px-4 py-2 flex justify-between items-center">
-                            <TextField
-                                label="Cari Barang"
-                                variant="outlined"
-                                size="small"
-                                fullWidth
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
 
+            {/* Kontainer Utama */}
+            <Paper className="overflow-hidden shadow-lg rounded-xl bg-white">
+                <div className="p-8">
+                    {/* Search Bar */}
+                    <Paper className="mb-6 p-4">
+                        <TextField
+                            label="Cari Barang"
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </Paper>
+
+                    {/* Tabel Data */}
+                    <Paper sx={{ width: "100%", overflow: "hidden" }} className="shadow-lg">
                         <TableContainer sx={{ maxHeight: 400 }}>
                             <Table stickyHeader>
                                 <TableHead>
@@ -177,7 +181,7 @@ function LihatBahanSisaPage() {
                                 <TableBody>
                                     {loading ? (
                                         <TableRow>
-                                            <TableCell colSpan={5} align="center">
+                                            <TableCell colSpan={6} align="center">
                                                 <CircularProgress />
                                             </TableCell>
                                         </TableRow>
@@ -192,14 +196,7 @@ function LihatBahanSisaPage() {
                                                 <TableCell>
                                                     <button
                                                         onClick={() => handleAmbil(row.id, row.satuan_terkecil)}
-                                                        style={{
-                                                            padding: '5px 10px',
-                                                            backgroundColor: '#4CAF50',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '5px',
-                                                            cursor: 'pointer',
-                                                        }}
+                                                        className="bg-[#4CAF50] text-white px-4 py-2 rounded-lg"
                                                     >
                                                         Ambil
                                                     </button>
@@ -208,7 +205,7 @@ function LihatBahanSisaPage() {
                                         ))
                                     ) : (
                                         <TableRow>
-                                            <TableCell colSpan={5} align="center">
+                                            <TableCell colSpan={6} align="center">
                                                 Tidak ada data yang sesuai
                                             </TableCell>
                                         </TableRow>
@@ -216,6 +213,8 @@ function LihatBahanSisaPage() {
                                 </TableBody>
                             </Table>
                         </TableContainer>
+
+                        {/* Pagination */}
                         <div className="flex items-center justify-between px-4 py-2">
                             <span className="text-sm text-gray-600">
                                 Page {page + 1} of {totalPages}
@@ -232,7 +231,9 @@ function LihatBahanSisaPage() {
                         </div>
                     </Paper>
                 </div>
-            </div>
+            </Paper>
+
+            {/* Modal Input */}
             <Modal open={open} onClose={handleClose}>
                 <Box
                     sx={{
@@ -246,23 +247,24 @@ function LihatBahanSisaPage() {
                         p: 4,
                         borderRadius: 2,
                     }}
+                    className="shadow-xl border rounded-lg"
                 >
-                    <h2 className="text-2xl font-bold mb-4">Input Quantity and Unit</h2>
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        {/* Searchable Combobox Satuan */}
+                    <h2 className="text-2xl font-bold mb-4 text-center">Input Quantity dan Unit</h2>
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        {/* Combobox Satuan */}
                         <Controller
                             name="satuan"
                             control={control}
                             render={({ field }) => (
                                 <Autocomplete
                                     {...field}
-                                    value={field.value || null} // Default value untuk menghindari undefined
+                                    value={field.value || null}
                                     options={satuanOptions}
-                                    getOptionLabel={(option) => option.nama} // Label opsi
-                                    onChange={(_, data) => field.onChange(data)} // Handle change
+                                    getOptionLabel={(option) => option.nama}
+                                    onChange={(_, data) => field.onChange(data)}
                                     isOptionEqualToValue={(option, value) =>
                                         option.id === value?.id
-                                    } // Bandingkan berdasarkan ID unik
+                                    }
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
@@ -279,7 +281,7 @@ function LihatBahanSisaPage() {
                                 />
                             )}
                         />
-                        {/* Input Number Quantity */}
+                        {/* Input Quantity */}
                         <Controller
                             name="quantity"
                             control={control}
@@ -288,13 +290,14 @@ function LihatBahanSisaPage() {
                                     {...field}
                                     label="Masukkan Quantity"
                                     type="number"
-                                    inputProps={{ step: "0.1" }} // Dua desimal
+                                    inputProps={{ step: "0.1" }}
                                     fullWidth
                                     variant="outlined"
                                 />
                             )}
                         />
-                        <div className="flex justify-end space-x-4 mt-4">
+                        {/* Tombol Simpan dan Batal */}
+                        <div className="flex justify-end space-x-4">
                             <Button type="submit" variant="contained" color="primary">
                                 Simpan
                             </Button>
@@ -306,7 +309,8 @@ function LihatBahanSisaPage() {
                 </Box>
             </Modal>
         </>
-    )
+    );
+
 }
 
 export default LihatBahanSisaPage

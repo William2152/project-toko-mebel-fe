@@ -2,7 +2,7 @@ import axios from "axios";
 import { Fragment, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/storeRedux";
-import { Box, Button, IconButton, Modal, Snackbar } from "@mui/material";
+import { Box, Button, IconButton, Modal, Paper, Snackbar } from "@mui/material";
 import { useForm } from "react-hook-form";
 import CloseIcon from "@mui/icons-material/Close";
 import Joi from "joi";
@@ -143,101 +143,98 @@ function GenerateLaporanNotaByTanggal() {
           }
         />
       </div>
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+      <div className="text-center mb-8 bg-[#65558f] rounded-lg py-2">
+        <h1 className="text-4xl font-bold text-white tracking-tight">
           Laporan Nota per Tanggal
         </h1>
+        <p className="mt-2 text-lg text-white">
+          Generate Laporan Nota per Tanggal
+        </p>
       </div>
-      <div className="px-12 my-6">
-        <div className="mb-8">
-          <div className="py-6">
-            <div className="border-2 rounded-lg shadow-2xl">
-              <div className="px-12 py-12">
-                {/* Form section */}
-                <form
-                  onSubmit={handleSubmitHeader(onSubmitReportFilter)}
-                  className="space-y-6 mb-5"
-                >
-                  {/* Input tanggal input  */}
-                  <div className="flex-1 mr-4">
-                    <label
-                      htmlFor="tglInput"
-                      className="text-lg font-semibold text-gray-700"
-                    >
-                      Tanggal Input
-                    </label>
-                    <input
-                      type="date"
-                      id="tglInput"
-                      {...register("tgl_input")}
-                      className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
-                      placeholder="Masukkan range tanggal awal"
-                    />
-                    {errorsAll.tgl_input && (
-                      <p className="text-red-500">
-                        {String(errorsAll.tgl_input.message)}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Input tanggal nota  */}
-                  <div className="flex-1 mr-4">
-                    <label
-                      htmlFor="tglNota"
-                      className="text-lg font-semibold text-gray-700"
-                    >
-                      Tanggal Nota
-                    </label>
-                    <input
-                      type="date"
-                      id="tglNota"
-                      {...register("tgl_nota")}
-                      className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
-                      placeholder="Masukkan range tanggal awal"
-                    />
-                    {errorsAll.tgl_nota && (
-                      <p className="text-red-500">
-                        {String(errorsAll.tgl_nota.message)}
-                      </p>
-                    )}
-                  </div>
-
-                  <button
-                    className="bg-[#65558f] text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-purple-700 transition duration-200"
-                    type="submit"
-                    disabled={loading}
-                  >
-                    {loading ? "Membuat laporan..." : "Generate Report"}
-                  </button>
-                </form>
-
-                {/* Modal untuk preview dokumen */}
-                <Modal open={open} onClose={() => setOpen(false)}>
-                  <Box sx={modalStyle}>
-                    <h2>Preview Laporan</h2>
-                    {pdfUrl && (
-                      <iframe
-                        src={pdfUrl}
-                        width="100%"
-                        height="80%"
-                        title="Preview PDF"
-                        style={{ border: "none" }}
-                      ></iframe>
-                    )}
-                    <Button
-                      variant="contained"
-                      onClick={handleDownload}
-                      sx={{ mt: 2 }}
-                    >
-                      Download PDF
-                    </Button>
-                  </Box>
-                </Modal>
-              </div>
+      <Paper className="overflow-hidden shadow-lg rounded-xl bg-white">
+        <div className="p-8">
+          {/* Form section */}
+          <form
+            onSubmit={handleSubmitHeader(onSubmitReportFilter)}
+            className="space-y-6 mb-5"
+          >
+            {/* Input tanggal input  */}
+            <div className="flex-1 mr-4">
+              <label
+                htmlFor="tglInput"
+                className="text-lg font-semibold text-gray-700"
+              >
+                Tanggal Input
+              </label>
+              <input
+                type="date"
+                id="tglInput"
+                {...register("tgl_input")}
+                className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
+                placeholder="Masukkan range tanggal awal"
+              />
+              {errorsAll.tgl_input && (
+                <p className="text-red-500">
+                  {String(errorsAll.tgl_input.message)}
+                </p>
+              )}
             </div>
-          </div>
+
+            {/* Input tanggal nota  */}
+            <div className="flex-1 mr-4">
+              <label
+                htmlFor="tglNota"
+                className="text-lg font-semibold text-gray-700"
+              >
+                Tanggal Nota
+              </label>
+              <input
+                type="date"
+                id="tglNota"
+                {...register("tgl_nota")}
+                className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
+                placeholder="Masukkan range tanggal awal"
+              />
+              {errorsAll.tgl_nota && (
+                <p className="text-red-500">
+                  {String(errorsAll.tgl_nota.message)}
+                </p>
+              )}
+            </div>
+
+            <button
+              className="bg-[#65558f] text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-purple-700 transition duration-200"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Membuat laporan..." : "Generate Report"}
+            </button>
+          </form>
+
+          {/* Modal untuk preview dokumen */}
+          <Modal open={open} onClose={() => setOpen(false)}>
+            <Box sx={modalStyle}>
+              <h2>Preview Laporan</h2>
+              {pdfUrl && (
+                <iframe
+                  src={pdfUrl}
+                  width="100%"
+                  height="80%"
+                  title="Preview PDF"
+                  style={{ border: "none" }}
+                ></iframe>
+              )}
+              <Button
+                variant="contained"
+                onClick={handleDownload}
+                sx={{ mt: 2 }}
+              >
+                Download PDF
+              </Button>
+            </Box>
+          </Modal>
         </div>
-      </div>
+      </Paper>
     </>
   );
 }

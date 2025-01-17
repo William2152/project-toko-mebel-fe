@@ -59,132 +59,129 @@ function HistoryPemakaianBahan() {
 
     return (
         <>
-            <div>
-                <Snackbar
-                    open={!!error}
-                    autoHideDuration={6000}
-                    onClose={() => setError('')}
-                    message={error}
-                    action={
-                        <Fragment>
-                            <IconButton
-                                size="small"
-                                aria-label="close"
-                                color="inherit"
-                                onClick={() => setError('')}
-                            >
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        </Fragment>
-                    }
-                />
-            </div>
-            <div className="text-center mb-8">
-                <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
-                    List Pemakaian Bahan
-                </h1>
-                <p className="mt-2 text-lg text-gray-600">
-                    Berikut adalah List Pemakaian Bahan dari Proyek.
-                </p>
-            </div>
-            <div className="border-2 h-[80vh] rounded-lg shadow-2xl mx-12 bg-white">
-                <div className="container mx-auto px-8 py-8">
-                    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                        {/* Search Bar and Filter */}
-                        <div className="px-4 py-2 flex justify-between items-center">
-                            <TextField
-                                label="Cari Proyek"
-                                variant="outlined"
-                                size="small"
-                                fullWidth
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                            <Select
-                                value={filter}
-                                onChange={(e) => setFilter(e.target.value)}
-                                displayEmpty
-                                size="small"
-                                sx={{ minWidth: 150, marginLeft: 2 }}
-                            >
-                                <MenuItem value="all">Semua Proyek</MenuItem>
-                                <MenuItem value="completed">Proyek Selesai</MenuItem>
-                                <MenuItem value="pending">Proyek Belum Selesai</MenuItem>
-                            </Select>
-                        </div>
+            <Snackbar
+                open={!!error}
+                autoHideDuration={6000}
+                onClose={() => setError("")}
+                message={error}
+                action={
+                    <Fragment>
+                        <IconButton
+                            size="small"
+                            aria-label="close"
+                            color="inherit"
+                            onClick={() => setError("")}
+                        >
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    </Fragment>
+                }
+            />
+            <div className="w-full">
+                {/* Header Section */}
+                <div className="text-center mb-8 bg-[#65558f] rounded-lg py-2">
+                    <h1 className="text-4xl font-bold text-white tracking-tight">
+                        List Pemakaian Bahan
+                    </h1>
+                    <p className="mt-2 text-lg text-white">
+                        Berikut adalah List Pemakaian Bahan dari Proyek.
+                    </p>
+                </div>
 
-                        <TableContainer sx={{ maxHeight: 600 }}>
-                            <Table stickyHeader>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>No</TableCell>
-                                        <TableCell>Nama Proyek</TableCell>
-                                        <TableCell>Nama Produk</TableCell>
-                                        <TableCell>Nama Karyawan</TableCell>
-                                        <TableCell>Detail</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {loading ? (
+                {/* Table Section */}
+                <Paper className="overflow-hidden shadow-lg rounded-xl bg-white">
+                    <div className="p-8">
+                        <Paper sx={{ width: "100%", overflow: "hidden" }}>
+                            {/* Search Bar and Filter */}
+                            <div className="flex justify-between items-center mb-6">
+                                <TextField
+                                    label="Cari Proyek"
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                                <Select
+                                    value={filter}
+                                    onChange={(e) => setFilter(e.target.value)}
+                                    displayEmpty
+                                    size="small"
+                                    className="ml-4"
+                                    sx={{ minWidth: 150 }}
+                                >
+                                    <MenuItem value="all">Semua Proyek</MenuItem>
+                                    <MenuItem value="completed">Proyek Selesai</MenuItem>
+                                    <MenuItem value="pending">Proyek Belum Selesai</MenuItem>
+                                </Select>
+                            </div>
+
+                            <TableContainer sx={{ maxHeight: 600 }}>
+                                <Table stickyHeader>
+                                    <TableHead>
                                         <TableRow>
-                                            <TableCell colSpan={5} align="center">
-                                                <CircularProgress />
-                                            </TableCell>
+                                            <TableCell className="font-bold text-lg">No</TableCell>
+                                            <TableCell className="font-bold text-lg">Nama Proyek</TableCell>
+                                            <TableCell className="font-bold text-lg">Nama Produk</TableCell>
+                                            <TableCell className="font-bold text-lg">Nama Karyawan</TableCell>
+                                            <TableCell className="font-bold text-lg">Detail</TableCell>
                                         </TableRow>
-                                    ) : filteredData.length > 0 ? (
-                                        filteredData.map((row, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell>{index + 1}</TableCell>
-                                                <TableCell>{row.nama_proyek}</TableCell>
-                                                <TableCell>{row.nama_produk}</TableCell>
-                                                <TableCell>{row.nama_karyawan}</TableCell>
-                                                <TableCell>
-                                                    <button
-                                                        onClick={() => handleDetail(row.id)}
-                                                        style={{
-                                                            padding: '5px 10px',
-                                                            marginRight: '10px',
-                                                            backgroundColor: '#4CAF50',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '5px',
-                                                            cursor: 'pointer',
-                                                        }}
-                                                    >
-                                                        Detail
-                                                    </button>
+                                    </TableHead>
+                                    <TableBody>
+                                        {loading ? (
+                                            <TableRow>
+                                                <TableCell colSpan={5} align="center">
+                                                    <CircularProgress />
                                                 </TableCell>
                                             </TableRow>
-                                        ))
-                                    ) : (
-                                        <TableRow>
-                                            <TableCell colSpan={5} align="center">
-                                                Tidak ada data yang sesuai
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                        <div className="flex items-center justify-between px-4 py-2">
-                            <span className="text-sm text-gray-600">
-                                Page {page + 1} of {totalPages}
-                            </span>
-                            <TablePagination
-                                rowsPerPageOptions={[10, 20, 50]}
-                                component="div"
-                                count={totalPages * rowsPerPage}
-                                rowsPerPage={rowsPerPage}
-                                page={page}
-                                onPageChange={handleChangePage}
-                                onRowsPerPageChange={handleChangeRowsPerPage}
-                            />
-                        </div>
-                    </Paper>
-                </div>
+                                        ) : filteredData.length > 0 ? (
+                                            filteredData.map((row, index) => (
+                                                <TableRow key={index}>
+                                                    <TableCell>{index + 1}</TableCell>
+                                                    <TableCell>{row.nama_proyek}</TableCell>
+                                                    <TableCell>{row.nama_produk}</TableCell>
+                                                    <TableCell>{row.nama_karyawan}</TableCell>
+                                                    <TableCell>
+                                                        <button
+                                                            onClick={() => handleDetail(row.id)}
+                                                            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+                                                        >
+                                                            Detail
+                                                        </button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        ) : (
+                                            <TableRow>
+                                                <TableCell colSpan={5} align="center">
+                                                    Tidak ada data yang sesuai
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                            <div className="flex justify-between items-center mt-4">
+                                <span className="text-sm text-gray-600">
+                                    Page {page + 1} of {totalPages}
+                                </span>
+                                <TablePagination
+                                    rowsPerPageOptions={[10, 20, 50]}
+                                    component="div"
+                                    count={totalPages * rowsPerPage}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    onPageChange={handleChangePage}
+                                    onRowsPerPageChange={handleChangeRowsPerPage}
+                                />
+                            </div>
+                        </Paper>
+                    </div>
+                </Paper>
             </div>
         </>
-    )
+    );
+
 }
 
 export default HistoryPemakaianBahan

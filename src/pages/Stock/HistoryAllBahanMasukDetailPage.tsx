@@ -49,73 +49,82 @@ function HistoryAllBahanMasukDetailPage() {
 
     return (
         <>
-            <div>
-                <Snackbar
-                    open={!!error}
-                    autoHideDuration={6000}
-                    onClose={() => setError('')}
-                    message={error}
-                    action={
-                        <Fragment>
-                            <IconButton
-                                size="small"
-                                aria-label="close"
-                                color="inherit"
-                                onClick={() => setError('')}
-                            >
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        </Fragment>
-                    }
-                />
-            </div>
-            <div className="mb-12 mt-6">
-                <h2 className="text-4xl font-bold text-[#65558f] mb-2 mx-12">
-                    Detail History Pemasukkan Bahan
-                </h2>
-            </div>
-            {/* Informasi Proyek, Produk, dan Karyawan */}
-            <div className="border-2 rounded-lg shadow-md bg-gray-100 mx-12 px-8 py-6 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <p className="text-lg font-semibold">Tanggal Nota:</p>
-                        <p className="text-base">{new Date(headerData.tgl_nota).toLocaleDateString('id-ID', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                        }) || 'Tidak tersedia'}</p>
-                    </div>
-                    <div>
-                        <p className="text-lg font-semibold">Kode Nota:</p>
-                        <p className="text-base">{headerData.kode_nota || 'Tidak tersedia'}</p>
-                    </div>
-                    <div>
-                        <p className="text-lg font-semibold">No SPB:</p>
-                        <p className="text-base">{headerData.no_spb || 'Tidak tersedia'}</p>
-                    </div>
-                    <div>
-                        <p className="text-lg font-semibold">Supplier :</p>
-                        <p className="text-base">{supplier || 'Tidak tersedia'}</p>
+            <Snackbar
+                open={!!error}
+                autoHideDuration={6000}
+                onClose={() => setError('')}
+                message={error}
+                action={
+                    <Fragment>
+                        <IconButton
+                            size="small"
+                            aria-label="close"
+                            color="inherit"
+                            onClick={() => setError('')}
+                        >
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    </Fragment>
+                }
+            />
+            <div className="w-full">
+                {/* Header Section */}
+                <div className="text-center mb-8 bg-[#65558f] rounded-lg py-2">
+                    <h2 className="text-4xl font-bold text-white tracking-tight">
+                        Detail History Pemasukkan Bahan
+                    </h2>
+                    <p className="mt-2 text-lg text-white">
+                        Berikut adalah detail history pemakaian bahan.
+                    </p>
+                </div>
+
+                {/* Informasi Nota */}
+                <div className="bg-gray-100 shadow-md rounded-lg p-6 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div>
+                            <p className="text-lg font-semibold">Tanggal Nota:</p>
+                            <p className="text-base text-gray-700">
+                                {headerData.tgl_nota
+                                    ? new Date(headerData.tgl_nota).toLocaleDateString('id-ID', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric',
+                                    })
+                                    : 'Tidak tersedia'}
+                            </p>
+                        </div>
+                        <div>
+                            <p className="text-lg font-semibold">Kode Nota:</p>
+                            <p className="text-base text-gray-700">{headerData.kode_nota || 'Tidak tersedia'}</p>
+                        </div>
+                        <div>
+                            <p className="text-lg font-semibold">No SPB:</p>
+                            <p className="text-base text-gray-700">{headerData.no_spb || 'Tidak tersedia'}</p>
+                        </div>
+                        <div>
+                            <p className="text-lg font-semibold">Supplier:</p>
+                            <p className="text-base text-gray-700">{supplier || 'Tidak tersedia'}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className="border-2 rounded-lg shadow-2xl mx-12 bg-white">
-                <div className="container mx-auto px-8 py-8">
+
+                {/* Table Section */}
+                <div className="bg-white shadow-lg rounded-lg p-6">
                     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                         <TableContainer sx={{ maxHeight: 600 }}>
                             <Table stickyHeader>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell>No</TableCell>
-                                        <TableCell>Nama Bahan</TableCell>
-                                        <TableCell>Quantity</TableCell>
-                                        <TableCell>Satuan</TableCell>
+                                        <TableCell className="font-bold text-lg">No</TableCell>
+                                        <TableCell className="font-bold text-lg">Nama Bahan</TableCell>
+                                        <TableCell className="font-bold text-lg">Quantity</TableCell>
+                                        <TableCell className="font-bold text-lg">Satuan</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {loading ? (
                                         <TableRow>
-                                            <TableCell colSpan={5} align="center">
+                                            <TableCell colSpan={4} align="center">
                                                 <CircularProgress />
                                             </TableCell>
                                         </TableRow>
@@ -130,7 +139,7 @@ function HistoryAllBahanMasukDetailPage() {
                                         ))
                                     ) : (
                                         <TableRow>
-                                            <TableCell colSpan={5} align="center">
+                                            <TableCell colSpan={4} align="center">
                                                 Tidak ada data yang sesuai
                                             </TableCell>
                                         </TableRow>
@@ -142,7 +151,8 @@ function HistoryAllBahanMasukDetailPage() {
                 </div>
             </div>
         </>
-    )
+    );
+
 }
 
 export default HistoryAllBahanMasukDetailPage

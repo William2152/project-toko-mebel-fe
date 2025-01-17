@@ -275,10 +275,11 @@ function MasterBahanPage() {
                 }
             />
             {/* Header */}
-            <div className="max-w-7xl mx-auto py-8">
-                <div className="text-center mb-8">
-                    <h2 className="text-4xl font-extrabold text-[#65558f] tracking-tight">Master Bahan</h2>
-                </div>
+            <div className="text-center mb-8 bg-[#65558f] rounded-lg py-2">
+                <h2 className="text-4xl font-bold text-white tracking-tight">Master Bahan</h2>
+                <p className="mt-2 text-lg text-white">
+                    Berikut adalah Form Input Nama dan Satuan Bahan
+                </p>
             </div>
 
             {/* Tambah Nama Bahan */}

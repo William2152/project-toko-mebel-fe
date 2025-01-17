@@ -384,48 +384,56 @@ function TambahCustomerSupplierPage() {
 
     return (
         <>
-            <div>
-                <Snackbar
-                    open={!!error}
-                    autoHideDuration={6000}
-                    onClose={() => setError("")}
-                    message={error}
-                    action={
-                        <Fragment>
-                            <IconButton
-                                size="small"
-                                aria-label="close"
-                                color="inherit"
-                                onClick={() => setError("")}
-                            >
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        </Fragment>
-                    }
-                />
-            </div>
-            {/* Header */}
-            <div className="text-center mb-8">
-                <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+            {/* Snackbar untuk pesan error */}
+            <Snackbar
+                open={!!error}
+                autoHideDuration={6000}
+                onClose={() => setError("")}
+                message={error}
+                action={
+                    <Fragment>
+                        <IconButton
+                            size="small"
+                            aria-label="close"
+                            color="inherit"
+                            onClick={() => setError("")}
+                        >
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    </Fragment>
+                }
+            />
+
+            {/* Header Halaman */}
+            <div className="text-center mb-8 bg-[#65558f] rounded-lg py-2">
+                <h1 className="text-4xl font-bold text-white tracking-tight">
                     Tambah Customer / Supplier
                 </h1>
-                <p className="mt-2 text-lg text-gray-600">
+                <p className="mt-2 text-lg text-white">
                     Berikut adalah form untuk input Customer / Supplier.
                 </p>
             </div>
 
-            {/* Form Container */}
-            <div className="border-2 rounded-lg shadow-2xl mx-12">
-                <div className="container mx-auto px-12 py-12">
-                    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-6">
-                        <div className="flex justify-end mt-4">
-                            <button type="submit" className="bg-[#65558f] hover:bg-[#56437b] text-white px-6 py-3 rounded-lg font-bold text-xl">
-                                {update == true ? "Update User" : "Tambah User"}
+            {/* Kontainer Form dan Tabel */}
+            <Paper className="overflow-hidden shadow-lg rounded-xl bg-white">
+                <div className="p-8">
+                    {/* Form */}
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        {/* Tombol Submit */}
+                        <div className="flex justify-end">
+                            <button
+                                type="submit"
+                                className="bg-[#65558f] hover:bg-[#54437f] text-white px-6 py-3 rounded-lg font-bold text-xl"
+                            >
+                                {update ? "Update User" : "Tambah User"}
                             </button>
                         </div>
 
+                        {/* Role */}
                         <div className="flex items-center gap-x-4">
-                            <label htmlFor="role" className="w-[25%] text-xl font-bold">Role</label>
+                            <label htmlFor="role" className="w-[25%] text-xl font-bold">
+                                Role
+                            </label>
                             <select
                                 id="role"
                                 onChange={(e) => setRole(e.target.value)}
@@ -437,8 +445,11 @@ function TambahCustomerSupplierPage() {
                             </select>
                         </div>
 
+                        {/* Nama */}
                         <div className="flex items-center gap-x-4">
-                            <label htmlFor="nama" className="w-[25%] text-xl font-bold">Nama</label>
+                            <label htmlFor="nama" className="w-[25%] text-xl font-bold">
+                                Nama
+                            </label>
                             <input
                                 type="text"
                                 id="nama"
@@ -448,45 +459,64 @@ function TambahCustomerSupplierPage() {
                             {errors.nama && <span className="text-red-500 text-sm">{String(errors.nama.message)}</span>}
                         </div>
 
+                        {/* Kondisional untuk Supplier */}
                         {role === "Supplier" && (
                             <>
+                                {/* No Rekening */}
                                 <div className="flex items-center gap-x-4">
-                                    <label htmlFor="noRekening" className="w-[25%] text-xl font-bold">No Rekening</label>
+                                    <label htmlFor="noRekening" className="w-[25%] text-xl font-bold">
+                                        No Rekening
+                                    </label>
                                     <input
                                         type="text"
                                         id="noRekening"
                                         {...register("noRekening")}
                                         className="border-2 border-gray-300 rounded px-4 py-2 w-full"
                                     />
-                                    {errors.noRekening && <span className="text-red-500 text-sm">{String(errors.noRekening.message)}</span>}
+                                    {errors.noRekening && (
+                                        <span className="text-red-500 text-sm">{String(errors.noRekening.message)}</span>
+                                    )}
                                 </div>
 
+                                {/* Nama Bank */}
                                 <div className="flex items-center gap-x-4">
-                                    <label htmlFor="namaBank" className="w-[25%] text-xl font-bold">Nama Bank</label>
+                                    <label htmlFor="namaBank" className="w-[25%] text-xl font-bold">
+                                        Nama Bank
+                                    </label>
                                     <input
                                         type="text"
                                         id="namaBank"
                                         {...register("namaBank")}
                                         className="border-2 border-gray-300 rounded px-4 py-2 w-full"
                                     />
-                                    {errors.namaBank && <span className="text-red-500 text-sm">{String(errors.namaBank.message)}</span>}
+                                    {errors.namaBank && (
+                                        <span className="text-red-500 text-sm">{String(errors.namaBank.message)}</span>
+                                    )}
                                 </div>
                             </>
                         )}
 
+                        {/* No Telepon */}
                         <div className="flex items-center gap-x-4">
-                            <label htmlFor="noTelepon" className="w-[25%] text-xl font-bold">No Telepon</label>
+                            <label htmlFor="noTelepon" className="w-[25%] text-xl font-bold">
+                                No Telepon
+                            </label>
                             <input
                                 type="text"
                                 id="noTelepon"
                                 {...register("noTelepon")}
                                 className="border-2 border-gray-300 rounded px-4 py-2 w-full"
                             />
-                            {errors.noTelepon && <span className="text-red-500 text-sm">{String(errors.noTelepon.message)}</span>}
+                            {errors.noTelepon && (
+                                <span className="text-red-500 text-sm">{String(errors.noTelepon.message)}</span>
+                            )}
                         </div>
 
+                        {/* Alamat */}
                         <div className="flex items-center gap-x-4">
-                            <label htmlFor="alamat" className="w-[25%] text-xl font-bold">Alamat</label>
+                            <label htmlFor="alamat" className="w-[25%] text-xl font-bold">
+                                Alamat
+                            </label>
                             <textarea
                                 id="alamat"
                                 {...register("alamat")}
@@ -496,20 +526,27 @@ function TambahCustomerSupplierPage() {
                             {errors.alamat && <span className="text-red-500 text-sm">{String(errors.alamat.message)}</span>}
                         </div>
                     </form>
-                    {rows.length == 0 ? "Belum ada data" : <>
-                        <Paper className="mt-10" sx={{ height: 400, width: '100%', boxShadow: 3 }}>
-                            <TableVirtuoso
-                                data={rows}
-                                components={VirtuosoTableComponents}
-                                fixedHeaderContent={fixedHeaderContent}
-                                itemContent={(index, row) => rowContent(index, row)} // Hilangkan TableRow di sini
-                            />
-                        </Paper>
-                    </>}
+
+                    {/* Tabel Data */}
+                    <div className="mt-10">
+                        {rows.length === 0 ? (
+                            <p className="text-center text-gray-500">Belum ada data yang tersedia</p>
+                        ) : (
+                            <Paper sx={{ height: 400, width: "100%", boxShadow: 3 }}>
+                                <TableVirtuoso
+                                    data={rows}
+                                    components={VirtuosoTableComponents}
+                                    fixedHeaderContent={fixedHeaderContent}
+                                    itemContent={(index, row) => rowContent(index, row)}
+                                />
+                            </Paper>
+                        )}
+                    </div>
                 </div>
-            </div>
+            </Paper>
         </>
     );
+
 }
 
 export default TambahCustomerSupplierPage;

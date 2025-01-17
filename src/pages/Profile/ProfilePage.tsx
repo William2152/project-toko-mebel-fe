@@ -86,11 +86,11 @@ function ProfilePage() {
             />
 
             <div className="max-w mx-auto">
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl font-extrabold text-[#65558f] tracking-tight">
+                <div className="text-center mb-12 bg-[#65558f] rounded-lg py-2">
+                    <h1 className="text-4xl font-bold text-white tracking-tight">
                         Profile Settings
                     </h1>
-                    <p className="mt-2 text-lg text-gray-600">
+                    <p className="mt-2 text-lg text-white">
                         Manage your account information and password
                     </p>
                 </div>
