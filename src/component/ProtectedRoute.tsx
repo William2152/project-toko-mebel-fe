@@ -15,9 +15,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   if (!isLoggedIn) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
+  const currenPath = location.pathname;
 
   const currentRoute = routePermissions.find(route => {
-    return location.pathname.startsWith(route.path);
+    const routePattern = route.path.replace(/:\w+/g, '[^/]+').replace(/\//g, '\\/');
+    const regex = new RegExp(`^${routePattern}$`);
+    return regex.test(currenPath);
   });
 
   if (!currentRoute) {

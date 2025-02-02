@@ -8,6 +8,8 @@ export const routePermissions: RoutePermission[] = [
   { path: '/project/tambah', allowedRoles: ['superadmin', 'adminworkshop'] },
   { path: '/project/product', allowedRoles: ['superadmin', 'adminworkshop'] },
   { path: '/project/list', allowedRoles: ['superadmin', 'adminworkshop'] },
+  { path: '/project/detail/:id', allowedRoles: ['superadmin', 'adminworkshop'] },
+  { path: '/project/product/detail/:id', allowedRoles: ['superadmin', 'adminworkshop'] },
   
   // Stock routes
   { path: '/stock/master', allowedRoles: ['superadmin', 'adminworkshop'] },
@@ -18,10 +20,14 @@ export const routePermissions: RoutePermission[] = [
   { path: '/stock/history/pemasukkan', allowedRoles: ['superadmin', 'adminworkshop'] },
   { path: '/stock/history/keluar', allowedRoles: ['superadmin', 'adminworkshop'] },
   { path: '/stock/bahansisa', allowedRoles: ['superadmin', 'adminworkshop'] },
+  {path:'/stock/detail/pemakaian/:id', allowedRoles: ['superadmin', 'adminworkshop']},
+  {path:'/stock/detail/keluar/:id', allowedRoles: ['superadmin', 'adminworkshop']},
+  {path:'/stock/history/pemasukan/:id', allowedRoles: ['superadmin', 'adminworkshop']},
   
   // Nota routes
   { path: '/nota/tambah', allowedRoles: ['superadmin', 'adminkantor'] },
   { path: '/nota/lihat', allowedRoles: ['superadmin', 'adminkantor'] },
+  { path: '/nota/detail/:id', allowedRoles: ['superadmin', 'adminkantor'] },
   
   // Report routes
   { path: '/report/laporan/hpp', allowedRoles: ['superadmin', 'adminkantor', 'adminworkshop', 'karyawankantor', 'karyawanworkshop'] },
