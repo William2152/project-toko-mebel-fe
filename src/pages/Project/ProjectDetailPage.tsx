@@ -13,6 +13,7 @@ import CloseIcon from '@mui/icons-material/Close';
 
 
 function ProjectDetailPage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const token = useSelector((state: RootState) => state.localStorage.value);
     const { id } = useParams(); // Mengambil id dari URL params
     const id_projek = id;
@@ -45,7 +46,7 @@ function ProjectDetailPage() {
 
     const fetchProduk = async () => {
         try {
-            const response = await axios.get(`http://localhost:6347/api/proyek/produk?id_proyek=${id}`, {
+            const response = await axios.get(`${API_URL}/api/proyek/produk?id_proyek=${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
@@ -67,7 +68,7 @@ function ProjectDetailPage() {
     useEffect(() => {
         const fetchProject = async () => {
             try {
-                const response = await axios.get(`http://localhost:6347/api/proyek/${id}`, {
+                const response = await axios.get(`${API_URL}/api/proyek/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     }
@@ -94,7 +95,7 @@ function ProjectDetailPage() {
 
     const onSubmit = async (formData) => {
         try {
-            await axios.put(`http://localhost:6347/api/proyek/${id}`, formData, {
+            await axios.put(`${API_URL}/api/proyek/${id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -109,7 +110,7 @@ function ProjectDetailPage() {
     };
 
     const handleSelesai = async () => {
-        await axios.put(`http://localhost:6347/api/proyek/${id}/status`, { status: 1 }, {
+        await axios.put(`${API_URL}/api/proyek/${id}/status`, { status: 1 }, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
@@ -120,7 +121,7 @@ function ProjectDetailPage() {
 
     const handleDelete = async () => {
         try {
-            await axios.delete(`http://localhost:6347/api/proyek/${id}`, {
+            await axios.delete(`${API_URL}/api/proyek/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

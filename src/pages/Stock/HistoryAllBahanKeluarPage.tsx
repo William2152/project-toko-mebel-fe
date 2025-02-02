@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../../../app/storeRedux'
 
 function HistoryAllBahanKeluarPage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const token = useSelector((state: RootState) => state.localStorage.value)
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
@@ -45,7 +46,7 @@ function HistoryAllBahanKeluarPage() {
                     Authorization: `Bearer ${token}`
                 };
 
-                const response = await axios.get(`http://localhost:6347/api/history-bahan-keluar`, { params, headers });
+                const response = await axios.get(`${API_URL}/api/history-bahan-keluar`, { params, headers });
                 setData(response.data.data || []); // Pastikan data default
                 setTotalPages(response.data.total_page || 0); // Pastikan total_page default
             } catch (error) {
@@ -60,7 +61,7 @@ function HistoryAllBahanKeluarPage() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await axios.get(`http://localhost:6347/api/master/proyek-produk`, {
+            const response = await axios.get(`${API_URL}/api/master/proyek-produk`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -74,7 +75,7 @@ function HistoryAllBahanKeluarPage() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await axios.get(`http://localhost:6347/api/master/karyawan?id_proyek_produk=${produkId}`, {
+            const response = await axios.get(`${API_URL}/api/master/karyawan?id_proyek_produk=${produkId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

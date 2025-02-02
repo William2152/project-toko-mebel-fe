@@ -2,13 +2,14 @@ import { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { RootState } from "../../app/storeRedux";
 import Joi from "joi";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { IconButton, Paper, Snackbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { RootState } from "../../../app/storeRedux";
 
 function TambahNotaPage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const token = useSelector((state: RootState) => state.localStorage.value);
     const [namaBahan, setNamaBahan] = useState([]);
     const [satuan, setSatuan] = useState([]);
@@ -60,7 +61,7 @@ function TambahNotaPage() {
     ]);
 
     useEffect(() => {
-        axios.get("http://localhost:6347/api/supplier?per_page=1000", {
+        axios.get(`${API_URL}/api/supplier?per_page=1000`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
@@ -76,7 +77,7 @@ function TambahNotaPage() {
     }, [])
 
     useEffect(() => {
-        axios.get("http://localhost:6347/api/bahan?per_page=1000", {
+        axios.get(`${API_URL}/api/bahan?per_page=1000`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
@@ -92,7 +93,7 @@ function TambahNotaPage() {
     }, [])
 
     useEffect(() => {
-        axios.get("http://localhost:6347/api/satuan?per_page=1000", {
+        axios.get(`${API_URL}/api/satuan?per_page=1000`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
@@ -113,14 +114,14 @@ function TambahNotaPage() {
 
     const handleAddItem = async (data) => {
         console.log(data);
-        const responseBahan = await axios.get(`http://localhost:6347/api/bahan/${data.namaBahan}`, {
+        const responseBahan = await axios.get(`${API_URL}/api/bahan/${data.namaBahan}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
         })
         const bahan = responseBahan.data.nama;
 
-        const responseSatuan = await axios.get(`http://localhost:6347/api/satuan/${data.satuan}`, {
+        const responseSatuan = await axios.get(`${API_URL}/api/satuan/${data.satuan}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
@@ -144,7 +145,7 @@ function TambahNotaPage() {
 
     const onSubmitNota = async (data) => {
         try {
-            await axios.post("http://localhost:6347/api/nota", {
+            await axios.post(`${API_URL}/api/nota`, {
                 kode_nota: data.kodeNota,
                 tgl_nota: data.tanggalNota,
                 id_supplier: data.supplier,

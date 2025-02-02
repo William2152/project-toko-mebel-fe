@@ -23,6 +23,7 @@ const modalStyle = {
 };
 
 function GenerateLaporanNotaByTanggal() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const token = useSelector((state: RootState) => state.localStorage.value);
   const [loading, setLoading] = useState(false);
   // Untuk mengontrol state modal
@@ -66,7 +67,7 @@ function GenerateLaporanNotaByTanggal() {
 
     try {
       const response = await axios.post(
-        "http://localhost:6347/api/laporan/nota",
+        `${API_URL}/api/laporan/nota`,
         {
           //   tgl_input: formatDate(data.start_date),
           tgl_input: formatDate(data.tgl_input),

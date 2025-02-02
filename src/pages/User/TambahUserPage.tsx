@@ -8,19 +8,14 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import axios from 'axios';
-import { RootState } from '../../app/storeRedux';
 import { useSelector } from 'react-redux';
 import Joi from 'joi';
 import { joiResolver } from '@hookform/resolvers/joi';
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import { Button, CircularProgress, TablePagination, TextField } from '@mui/material';
+import { CircularProgress, TablePagination, TextField } from '@mui/material';
+import { RootState } from '../../../app/storeRedux';
 
 interface Data {
     id: number;
@@ -32,28 +27,28 @@ interface Data {
     password: string;
 }
 
-const isUsernameDuplicate = async (username: string) => {
-    try {
-        const response = await axios.get(`http://localhost:6347/api/users?username=${username}`);
-        return response.data.length > 0;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        return false;
-    }
-};
-
-const isEmailDuplicate = async (email: string) => {
-    try {
-        const response = await axios.get(`http://localhost:6347/api/users?email=${email}`);
-        return response.data.length > 0;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        return false;
-    }
-};
-
 function TambahUserPage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const token = useSelector((state: RootState) => state.localStorage.value);
+    const isUsernameDuplicate = async (username: string) => {
+        try {
+            const response = await axios.get(`${API_URL}/api/users?username=${username}`);
+            return response.data.length > 0;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return false;
+        }
+    };
+
+    const isEmailDuplicate = async (email: string) => {
+        try {
+            const response = await axios.get(`${API_URL}/api/users?email=${email}`);
+            return response.data.length > 0;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return false;
+        }
+    };
     const schema = Joi.object({
         username: Joi.string()
             .required()
@@ -148,7 +143,7 @@ function TambahUserPage() {
 
     const handleDelete = async (id: number) => {
         console.log('Deleting row with ID:', id);
-        const response = await axios.delete(`http://localhost:6347/api/users/${id}`, {
+        const response = await axios.delete(`${API_URL}/api/users/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -161,7 +156,7 @@ function TambahUserPage() {
         try {
             let response;
             if (update) {
-                response = await axios.put(`http://localhost:6347/api/users/${updateId}/role`, {
+                response = await axios.put(`${API_URL}/api/users/${updateId}/role`, {
                     role: data.role,
                 },
                     {
@@ -174,7 +169,7 @@ function TambahUserPage() {
                 setUpdate(false);
                 reset();
             } else {
-                response = await axios.post("http://localhost:6347/api/users", {
+                response = await axios.post(`${API_URL}/api/users`, {
                     username: data.username,
                     nama: data.nama,
                     password: data.password,
@@ -216,7 +211,7 @@ function TambahUserPage() {
 
     useEffect(() => {
         setLoading(true);
-        axios.get('http://localhost:6347/api/users', {
+        axios.get(`${API_URL}/api/users`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

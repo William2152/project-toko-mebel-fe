@@ -8,6 +8,7 @@ import axios from 'axios';
 import { Controller, useForm } from 'react-hook-form';
 
 function ListPemakaianBahanDetailPage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const { id } = useParams();
     const token = useSelector((state: RootState) => state.localStorage.value);
     const [error, setError] = useState('');
@@ -28,7 +29,7 @@ function ListPemakaianBahanDetailPage() {
     const onSubmit = async (data: any) => {
         console.log(data);
         try {
-            await axios.post(`http://localhost:6347/api/bahan-sisa`, {
+            await axios.post(`${API_URL}/api/bahan-sisa`, {
                 id_history_bahan_keluar_detail: historyId,
                 id_satuan: data.satuan.id,
                 qty: data.quantity
@@ -56,7 +57,7 @@ function ListPemakaianBahanDetailPage() {
         console.log(satuan_terkecil);
 
         const fetchSatuan = async () => {
-            const satuanResponse = await axios.get(`http://localhost:6347/api/master/satuan?satuan_terkecil=${satuan_terkecil}`, {
+            const satuanResponse = await axios.get(`${API_URL}/api/master/satuan?satuan_terkecil=${satuan_terkecil}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
@@ -73,7 +74,7 @@ function ListPemakaianBahanDetailPage() {
         const fetchHistoryPemakaianBahan = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:6347/api/history-bahan-keluar/${id}`, {
+                const response = await axios.get(`${API_URL}/api/history-bahan-keluar/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

@@ -23,6 +23,7 @@ import { RootState } from "../../../app/storeRedux";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 function InputPemakaianBahan() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const token = useSelector((state: RootState) => state.localStorage.value);
   const {
     control: controlHeader,
@@ -48,7 +49,7 @@ function InputPemakaianBahan() {
   const onSubmitHeader = async (data) => {
     try {
       await axios.post(
-        "http://localhost:6347/api/history-bahan-keluar",
+        `${API_URL}/api/history-bahan-keluar`,
         {
           id_proyek_produk: data.produk.id,
           id_karyawan: data.karyawan.id,
@@ -100,7 +101,7 @@ function InputPemakaianBahan() {
     const fetchOptions = async () => {
       try {
         const proyekResponse = await axios.get(
-          "http://localhost:6347/api/master/proyek",
+          `${API_URL}/api/master/proyek`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -108,7 +109,7 @@ function InputPemakaianBahan() {
           }
         );
         const satuanResponse = await axios.get(
-          "http://localhost:6347/api/master/satuan",
+          `${API_URL}/api/master/satuan`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -131,7 +132,7 @@ function InputPemakaianBahan() {
   useEffect(() => {
     const fetchProduk = async () => {
       const produkResponse = await axios.get(
-        `http://localhost:6347/api/master/proyek-produk?id_proyek=${idProyek}`,
+        `${API_URL}/api/master/proyek-produk?id_proyek=${idProyek}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -148,7 +149,7 @@ function InputPemakaianBahan() {
   useEffect(() => {
     const fetchKaryawan = async () => {
       const karyawanResponse = await axios.get(
-        `http://localhost:6347/api/master/karyawan?id_proyek_produk=${idProyekProduk}`,
+        `${API_URL}/api/master/karyawan?id_proyek_produk=${idProyekProduk}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -164,7 +165,7 @@ function InputPemakaianBahan() {
   useEffect(() => {
     const fetchBahan = async () => {
       const bahanResponse = await axios.get(
-        `http://localhost:6347/api/master/stok?id_proyek_produk=${idProyekProduk}`,
+        `${API_URL}/api/master/stok?id_proyek_produk=${idProyekProduk}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -12,10 +12,10 @@ import axios from 'axios';
 import Joi from 'joi';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../app/storeRedux';
 import { Snackbar } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import { RootState } from '../../../app/storeRedux';
 
 interface Data {
     id: number
@@ -78,6 +78,7 @@ const VirtuosoTableComponents: TableComponents<Data> = {
 
 
 function TambahCustomerSupplierPage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const token = useSelector((state: RootState) => state.localStorage.value);
     const [rows, setRows] = useState<Data[]>([]);
     const [reload, setReload] = useState(false);
@@ -217,14 +218,14 @@ function TambahCustomerSupplierPage() {
     const handleDelete = (id: number) => {
         console.log('Deleting row with ID:', id);
         if (role === 'Customer') {
-            axios.delete(`http://localhost:6347/api/customer/${id}`, {
+            axios.delete(`${API_URL}/api/customer/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
             setReload(!reload);
         } else if (role === 'Supplier') {
-            axios.delete(`http://localhost:6347/api/supplier/${id}`, {
+            axios.delete(`${API_URL}/api/supplier/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -238,7 +239,7 @@ function TambahCustomerSupplierPage() {
         if (update == true) {
             const id = updateId;
             if (role === "Customer") {
-                const response = await axios.put(`http://localhost:6347/api/customer/${id}`, {
+                const response = await axios.put(`${API_URL}/api/customer/${id}`, {
                     nama: data.nama,
                     no_telepon: data.noTelepon,
                     alamat: data.alamat
@@ -253,7 +254,7 @@ function TambahCustomerSupplierPage() {
                 reset();
                 setReload(!reload);
             } else if (role === "Supplier") {
-                const response = await axios.put(`http://localhost:6347/api/supplier/${id}`, {
+                const response = await axios.put(`${API_URL}/api/supplier/${id}`, {
                     nama: data.nama,
                     no_rekening: data.noRekening,
                     nama_bank: data.namaBank,
@@ -275,7 +276,7 @@ function TambahCustomerSupplierPage() {
 
             if (role === "Customer") {
                 try {
-                    const response = await axios.post("http://localhost:6347/api/customer", {
+                    const response = await axios.post(`${API_URL}/api/customer`, {
                         nama: data.nama,
                         no_telepon: data.noTelepon,
                         alamat: data.alamat
@@ -306,7 +307,7 @@ function TambahCustomerSupplierPage() {
 
             } else if (role === "Supplier") {
                 try {
-                    const response = await axios.post("http://localhost:6347/api/supplier", {
+                    const response = await axios.post(`${API_URL}/api/supplier`, {
                         nama: data.nama,
                         no_rekening: data.noRekening,
                         nama_bank: data.namaBank,
@@ -342,7 +343,7 @@ function TambahCustomerSupplierPage() {
 
     useEffect(() => {
         if (role === 'Supplier') {
-            axios.get('http://localhost:6347/api/supplier', {
+            axios.get(`${API_URL}/api/supplier`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -361,7 +362,7 @@ function TambahCustomerSupplierPage() {
                     console.error('Error fetching users:', error);
                 });
         } else if (role === 'Customer') {
-            axios.get('http://localhost:6347/api/customer', {
+            axios.get(`${API_URL}/api/customer`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

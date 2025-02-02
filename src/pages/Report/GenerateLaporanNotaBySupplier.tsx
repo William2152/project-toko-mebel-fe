@@ -32,6 +32,7 @@ const modalStyle = {
 };
 
 function GenerateLaporanNotaBySupplier() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const token = useSelector((state: RootState) => state.localStorage.value);
   const [loading, setLoading] = useState(false);
   // Untuk mengontrol state modal
@@ -79,7 +80,7 @@ function GenerateLaporanNotaBySupplier() {
 
     try {
       const response = await axios.post(
-        "http://localhost:6347/api/laporan/nota",
+        `${API_URL}/api/laporan/nota`,
         {
           //   tgl_input: formatDate(data.start_date),
           tgl_input: formatDate(data.tgl_input),
@@ -140,7 +141,7 @@ function GenerateLaporanNotaBySupplier() {
     const fetchOptions = async () => {
       try {
         const supplierResponse = await axios.get(
-          "http://localhost:6347/api/master/supplier?per_page=1000",
+          `${API_URL}/api/master/supplier?per_page=1000`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -19,6 +19,7 @@ import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogC
 import { KaryawanData } from "../../interface";
 
 function TambahKaryawanPage() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const token = useSelector((state: RootState) => state.localStorage.value);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
@@ -58,7 +59,7 @@ function TambahKaryawanPage() {
 
   const handleDelete = async (id: number) => {
     console.log('Deleting row with ID:', id);
-    const response = await axios.delete(`http://localhost:6347/api/karyawan/${deleteId}`, {
+    const response = await axios.delete(`${API_URL}/api/karyawan/${deleteId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -76,7 +77,7 @@ function TambahKaryawanPage() {
     if (update) {
       try {
         await axios.put(
-          `http://localhost:6347/api/karyawan/${updateId}`,
+          `${API_URL}/api/karyawan/${updateId}`,
           {
             nama: data.nama,
             role: data.role,
@@ -99,7 +100,7 @@ function TambahKaryawanPage() {
     } else {
       try {
         await axios.post(
-          "http://localhost:6347/api/karyawan",
+          `${API_URL}/api/karyawan`,
           {
             nama: data.nama,
             role: data.role,
@@ -125,7 +126,7 @@ function TambahKaryawanPage() {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:6347/api/karyawan?page=${page + 1}&per_page=${rowsPerPage}&search=${searchTerm}`,
+        `${API_URL}/api/karyawan?page=${page + 1}&per_page=${rowsPerPage}&search=${searchTerm}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

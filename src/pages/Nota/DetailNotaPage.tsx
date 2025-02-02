@@ -5,9 +5,9 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../../../app/storeRedux'
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
-import { get } from 'react-hook-form'
 
 function DetailNotaPage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const token = useSelector((state: RootState) => state.localStorage.value)
     const { id } = useParams()
     const [error, setError] = useState('')
@@ -17,7 +17,7 @@ function DetailNotaPage() {
     const [supplier, setSupplier] = useState('')
 
     const getNamaSupplier = async (id: number) => {
-        const response = await axios.get(`http://localhost:6347/api/supplier/${id}`, {
+        const response = await axios.get(`${API_URL}/api/supplier/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -28,7 +28,7 @@ function DetailNotaPage() {
     useEffect(() => {
         const fetchDetailNota = async () => {
             try {
-                const response = await axios.get(`http://localhost:6347/api/history-bahan-masuk/${id}`, {
+                const response = await axios.get(`${API_URL}/api/history-bahan-masuk/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

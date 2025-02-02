@@ -7,6 +7,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 
 function HistoryAllBahanMasukDetailPage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const { id } = useParams();
     const token = useSelector((state: RootState) => state.localStorage.value);
     const [error, setError] = useState<string>('');
@@ -16,7 +17,7 @@ function HistoryAllBahanMasukDetailPage() {
     const [supplier, setSupplier] = useState("");
 
     const getNamaSupplier = async (id: number) => {
-        const response = await axios.get(`http://localhost:6347/api/supplier/${id}`, {
+        const response = await axios.get(`${API_URL}/api/supplier/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -28,7 +29,7 @@ function HistoryAllBahanMasukDetailPage() {
         const fetchHistoryPemakaianBahan = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:6347/api/history-bahan-masuk/${id}`, {
+                const response = await axios.get(`${API_URL}/api/history-bahan-masuk/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

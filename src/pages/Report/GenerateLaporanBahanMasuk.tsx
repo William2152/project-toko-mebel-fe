@@ -31,6 +31,7 @@ const modalStyle = {
   p: 4,
 };
 function GenerateLaporanBahanMasuk() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const token = useSelector((state: RootState) => state.localStorage.value);
   const [loading, setLoading] = useState(false);
   // Untuk mengontrol state modal
@@ -82,7 +83,7 @@ function GenerateLaporanBahanMasuk() {
 
     try {
       const response = await axios.post(
-        "http://localhost:6347/api/laporan/bahan-masuk",
+        `${API_URL}/api/laporan/bahan-masuk`,
         {
           start_date: formatDate(data.start_date),
           end_date: formatDate(data.end_date),
@@ -136,7 +137,7 @@ function GenerateLaporanBahanMasuk() {
     const fetchOptions = async () => {
       try {
         const supplierResponse = await axios.get(
-          "http://localhost:6347/api/master/supplier?per_page=1000",
+          `${API_URL}/api/master/supplier?per_page=1000`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

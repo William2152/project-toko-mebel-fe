@@ -32,6 +32,7 @@ const modalStyle = {
 };
 
 function GenerateLaporanBahanKeluar() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const token = useSelector((state: RootState) => state.localStorage.value);
   const [loading, setLoading] = useState(false);
   // Untuk mengontrol state modal
@@ -83,7 +84,7 @@ function GenerateLaporanBahanKeluar() {
 
     try {
       const response = await axios.post(
-        "http://localhost:6347/api/laporan/bahan-keluar",
+        `${API_URL}/api/laporan/bahan-keluar`,
         {
           start_date: formatDate(data.start_date),
           end_date: formatDate(data.end_date),
@@ -137,7 +138,7 @@ function GenerateLaporanBahanKeluar() {
     const fetchOptions = async () => {
       try {
         const customerResponse = await axios.get(
-          "http://localhost:6347/api/master/customer?per_page=1000",
+          `${API_URL}/api/master/customer?per_page=1000`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

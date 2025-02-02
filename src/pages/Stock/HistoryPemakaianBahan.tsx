@@ -6,6 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 
 function HistoryPemakaianBahan() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const token = useSelector((state: RootState) => state.localStorage.value);
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
@@ -37,7 +38,7 @@ function HistoryPemakaianBahan() {
         const fetchHistoryPemakaianBahan = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get('http://localhost:6347/api/history-bahan-keluar', {
+                const response = await axios.get(`${API_URL}/api/history-bahan-keluar`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

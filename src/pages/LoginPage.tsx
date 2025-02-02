@@ -10,6 +10,7 @@ import { CredentialsLogin } from "../interface";
 import { useState } from "react";
 
 function LoginPage() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const [showPassword, setShowPassword] = useState(false);
@@ -33,7 +34,7 @@ function LoginPage() {
 
   async function loginUser(credentials: CredentialsLogin) {
     try {
-      const response = await axios.post("http://localhost:6347/auth/login", {
+      const response = await axios.post(`${API_URL}/auth/login`, {
         username: credentials.username,
         password: credentials.password,
       });

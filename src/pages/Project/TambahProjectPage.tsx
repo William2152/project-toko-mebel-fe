@@ -10,6 +10,7 @@ import Joi from 'joi';
 import { joiResolver } from '@hookform/resolvers/joi';
 
 function TambahProjectPage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const token = useSelector((state: RootState) => state.localStorage.value);
     const schema = Joi.object({
         nama: Joi.string().required().messages({
@@ -37,7 +38,7 @@ function TambahProjectPage() {
     const onSubmit = async (data: ProjectData) => {
         console.log(data);
         try {
-            await axios.post('http://localhost:6347/api/proyek', {
+            await axios.post(`${API_URL}/api/proyek`, {
                 nama: data.nama,
                 id_customer: data.id_customer,
                 start: data.start,
@@ -59,7 +60,7 @@ function TambahProjectPage() {
 
     const fetchCustomer = async () => {
         try {
-            const response = await axios.get('http://localhost:6347/api/customer', {
+            const response = await axios.get(`${API_URL}/api/customer`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

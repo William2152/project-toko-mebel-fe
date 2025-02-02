@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 
 function HistoryAllBahanKeluarDetailPage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const { id } = useParams();
     const token = useSelector((state: RootState) => state.localStorage.value);
     const [error, setError] = useState<string>('');
@@ -18,7 +19,7 @@ function HistoryAllBahanKeluarDetailPage() {
         const fetchHistoryPemakaianBahan = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:6347/api/history-bahan-keluar/${id}`, {
+                const response = await axios.get(`${API_URL}/api/history-bahan-keluar/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

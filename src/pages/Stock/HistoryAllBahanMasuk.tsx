@@ -20,6 +20,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../app/storeRedux";
 
 function HistoryAllBahanMasuk() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const token = useSelector((state: RootState) => state.localStorage.value);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -68,7 +69,7 @@ function HistoryAllBahanMasuk() {
     if (supplierNames[id]) return supplierNames[id];
     try {
       const response = await axios.get(
-        `http://localhost:6347/api/supplier/${id}`,
+        `${API_URL}/api/supplier/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -100,7 +101,7 @@ function HistoryAllBahanMasuk() {
     const fetchSupplierOptions = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:6347/api/master/supplier?per_page=1000`,
+          `${API_URL}/api/master/supplier?per_page=1000`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -138,7 +139,7 @@ function HistoryAllBahanMasuk() {
 
       try {
         const response = await axios.get(
-          `http://localhost:6347/api/history-bahan-masuk`,
+          `${API_URL}/api/history-bahan-masuk`,
           { params, headers }
         );
         console.log(response);

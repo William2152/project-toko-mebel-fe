@@ -10,10 +10,10 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import React, { Fragment, useEffect, useState } from "react";
 import { CircularProgress, IconButton, Snackbar, TablePagination, TextField } from "@mui/material";
-import { RootState } from "../../app/storeRedux";
 import Joi from "joi";
 import { joiResolver } from "@hookform/resolvers/joi";
 import CloseIcon from '@mui/icons-material/Close';
+import { RootState } from "../../../app/storeRedux";
 
 function MasterBahanPage() {
     interface DataBahan {
@@ -44,7 +44,7 @@ function MasterBahanPage() {
             "number.base": "Konversi harus diisi",
         }),
     });
-
+    const API_URL = import.meta.env.VITE_API_URL;
     const token = useSelector((state: RootState) => state.localStorage.value);
     const formBahan = useForm({ resolver: joiResolver(schemaBahan) });
     const { register: registerBahan, handleSubmit: handleSubmitBahan, formState: { errors: errorsBahan }, reset: resetBahan, setValue: setBahan } = formBahan;
@@ -108,7 +108,7 @@ function MasterBahanPage() {
 
     const handleDeleteBahan = async (id: number) => {
         console.log('Deleting row with ID:', id);
-        await axios.delete(`http://localhost:6347/api/bahan/${id}`, {
+        await axios.delete(`${API_URL}/api/bahan/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -118,7 +118,7 @@ function MasterBahanPage() {
     };
     const handleDeleteSatuan = async (id: number) => {
         console.log('Deleting row with ID:', id);
-        await axios.delete(`http://localhost:6347/api/satuan/${id}`, {
+        await axios.delete(`${API_URL}/api/satuan/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -132,7 +132,7 @@ function MasterBahanPage() {
         console.log('rowsPerPageBahan:', rowsPerPageBahan);
         console.log('pageBahan:', pageBahan + 1);
         setLoading(true);
-        axios.get(`http://localhost:6347/api/bahan?search=${searchTermBahan}&page=${pageBahan + 1}&per_page=${rowsPerPageBahan}`, {
+        axios.get(`${API_URL}/api/bahan?search=${searchTermBahan}&page=${pageBahan + 1}&per_page=${rowsPerPageBahan}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -154,7 +154,7 @@ function MasterBahanPage() {
     }, [searchTermBahan, rowsPerPageBahan, pageBahan, reload]);
 
     useEffect(() => {
-        axios.get(`http://localhost:6347/api/satuan?search=${searchTermSatuan}&page=${pageSatuan + 1}&per_page=${rowsPerPageSatuan}`, {
+        axios.get(`${API_URL}/api/satuan?search=${searchTermSatuan}&page=${pageSatuan + 1}&per_page=${rowsPerPageSatuan}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -176,7 +176,7 @@ function MasterBahanPage() {
 
     const onSubmitBahan = async (data: any) => {
         if (updateBahan) {
-            const response = await axios.put(`http://localhost:6347/api/bahan/${updateIdBahan}`, {
+            const response = await axios.put(`${API_URL}/api/bahan/${updateIdBahan}`, {
                 nama: data.namaBahan,
             },
                 {
@@ -191,7 +191,7 @@ function MasterBahanPage() {
             setUpdateBahan(false);
         } else {
             try {
-                const response = await axios.post("http://localhost:6347/api/bahan", {
+                const response = await axios.post(`${API_URL}/api/bahan`, {
                     nama: data.namaBahan,
                 },
                     {
@@ -214,7 +214,7 @@ function MasterBahanPage() {
 
     const onSubmitSatuan = async (data: any) => {
         if (updateSatuan) {
-            const response = await axios.put(`http://localhost:6347/api/satuan/${updateIdSatuan}`, {
+            const response = await axios.put(`${API_URL}/api/satuan/${updateIdSatuan}`, {
                 nama: data.satuanBahan,
                 satuan_terkecil: data.satuanTerkecil,
                 konversi: data.konversi
@@ -231,7 +231,7 @@ function MasterBahanPage() {
             setUpdateSatuan(false);
         } else {
             try {
-                const response = await axios.post("http://localhost:6347/api/satuan", {
+                const response = await axios.post(`${API_URL}/api/satuan`, {
                     nama: data.satuanBahan,
                     satuan_terkecil: data.satuanTerkecil,
                     konversi: data.konversi

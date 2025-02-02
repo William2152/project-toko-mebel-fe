@@ -10,6 +10,7 @@ import Joi from 'joi';
 import { joiResolver } from '@hookform/resolvers/joi';
 
 function TambahProductProjectPage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const token = useSelector((state: RootState) => state.localStorage.value);
     const schema = Joi.object({
         id_proyek: Joi.string().required().messages({
@@ -46,7 +47,7 @@ function TambahProductProjectPage() {
     const onSubmit = async (data: ProyekProdukData) => {
         console.log(data)
         try {
-            await axios.post("http://localhost:6347/api/proyek/produk", {
+            await axios.post(`${API_URL}/api/proyek/produk`, {
                 id_proyek: data.id_proyek,
                 tipe: data.tipe,
                 id_penanggung_jawab: data.id_penanggung_jawab,
@@ -70,7 +71,7 @@ function TambahProductProjectPage() {
 
     const fetchProyek = async () => {
         try {
-            const response = await axios.get("http://localhost:6347/api/proyek", {
+            const response = await axios.get(`${API_URL}/api/proyek`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -85,7 +86,7 @@ function TambahProductProjectPage() {
 
     const fetchKetua = async () => {
         try {
-            const response = await axios.get("http://localhost:6347/api/karyawan?role=ketua", {
+            const response = await axios.get(`${API_URL}/api/karyawan?role=ketua`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -100,7 +101,7 @@ function TambahProductProjectPage() {
 
     const fetchMember = async () => {
         try {
-            const response = await axios.get("http://localhost:6347/api/karyawan?role=member", {
+            const response = await axios.get(`${API_URL}/api/karyawan?role=member`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

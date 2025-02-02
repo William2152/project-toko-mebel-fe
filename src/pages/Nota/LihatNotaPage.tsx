@@ -15,8 +15,8 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { RootState } from "../../app/storeRedux";
 import CloseIcon from "@mui/icons-material/Close";
+import { RootState } from "../../../app/storeRedux";
 
 interface NotaData {
     tgl_nota: string;
@@ -33,6 +33,7 @@ interface SupplierData {
 }
 
 function LihatNotaPage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const token = useSelector((state: RootState) => state.localStorage.value);
     const [data, setData] = useState<NotaData[]>([]);
     const [suppliers, setSuppliers] = useState<SupplierData[]>([]);
@@ -46,7 +47,7 @@ function LihatNotaPage() {
     const fetchSuppliers = async () => {
         try {
             const response = await axios.get(
-                "http://localhost:6347/api/supplier",
+                `${API_URL}/api/supplier`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -65,7 +66,7 @@ function LihatNotaPage() {
         setLoading(true);
         try {
             const response = await axios.get(
-                `http://localhost:6347/api/nota?page=${page + 1}&per_page=${rowsPerPage}&search=${searchTerm}`
+                `${API_URL}/api/nota?page=${page + 1}&per_page=${rowsPerPage}&search=${searchTerm}`
                 , {
                     headers: {
                         Authorization: `Bearer ${token}`,

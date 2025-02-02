@@ -7,9 +7,9 @@ import { RootState } from '../../../app/storeRedux';
 import { Autocomplete, Box, Button, CircularProgress, IconButton, Modal, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from '@mui/material';
 import { BahanData, BahanProdukData, DetailBahanProdukData, SatuanData } from '../../interface';
 import CloseIcon from '@mui/icons-material/Close';
-import { set } from 'date-fns';
 
 function ProdukDetailPage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const { id } = useParams();
     const id_projek = localStorage.getItem('id_projek');
     const token = useSelector((state: RootState) => state.localStorage.value);
@@ -65,7 +65,7 @@ function ProdukDetailPage() {
     };
 
     const handleSelesai = async () => {
-        await axios.put(`http://localhost:6347/api/proyek/${id_projek}/produk/${id}/status`, { status: 1 }, {
+        await axios.put(`${API_URL}/api/proyek/${id_projek}/produk/${id}/status`, { status: 1 }, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
@@ -92,7 +92,7 @@ function ProdukDetailPage() {
     const fetchProduk = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:6347/api/bahan?per_page=1000`, {
+            const response = await axios.get(`${API_URL}/api/bahan?per_page=1000`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -109,7 +109,7 @@ function ProdukDetailPage() {
     const fetchSatuan = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:6347/api/satuan?per_page=1000`, {
+            const response = await axios.get(`${API_URL}/api/satuan?per_page=1000`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -125,7 +125,7 @@ function ProdukDetailPage() {
 
     const fetchBahan = async () => {
         try {
-            const response = await axios.get(`http://localhost:6347/api/produk/${id}`, {
+            const response = await axios.get(`${API_URL}/api/produk/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
@@ -138,7 +138,7 @@ function ProdukDetailPage() {
     };
 
     const getNamaBahan = async (id: number) => {
-        const response = await axios.get(`http://localhost:6347/api/bahan/${id}`, {
+        const response = await axios.get(`${API_URL}/api/bahan/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
@@ -147,7 +147,7 @@ function ProdukDetailPage() {
     }
 
     const getNamaSatuan = async (id: number) => {
-        const response = await axios.get(`http://localhost:6347/api/satuan/${id}`, {
+        const response = await axios.get(`${API_URL}/api/satuan/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
@@ -164,7 +164,7 @@ function ProdukDetailPage() {
         console.log("payload : " + payload);
 
         try {
-            const response = await axios.put(`http://localhost:6347/api/produk/${id}`, payload, {
+            const response = await axios.put(`${API_URL}/api/produk/${id}`, payload, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
@@ -178,7 +178,7 @@ function ProdukDetailPage() {
     }
 
     const handleDeleteJasa = async (id: number) => {
-        await axios.delete(`http://localhost:6347/api/produk-jasa/${id}`, {
+        await axios.delete(`${API_URL}/api/produk-jasa/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
@@ -221,7 +221,7 @@ function ProdukDetailPage() {
     const onSubmitJasa = async (data: any) => {
         console.log("tes: " + data.nama);
         try {
-            const response = await axios.post('http://localhost:6347/api/produk-jasa', {
+            const response = await axios.post(`${API_URL}/api/produk-jasa`, {
                 id_produk: id,
                 id_satuan: data.satuan.id,
                 nama: data.nama,
@@ -265,7 +265,7 @@ function ProdukDetailPage() {
         const fetchSatuan = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get(`http://localhost:6347/api/master/satuan`, {
+                const response = await axios.get(`${API_URL}/api/master/satuan`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -285,7 +285,7 @@ function ProdukDetailPage() {
         const fetchJasa = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get(`http://localhost:6347/api/produk-jasa?id_produk=${id}`, {
+                const response = await axios.get(`${API_URL}/api/produk-jasa?id_produk=${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

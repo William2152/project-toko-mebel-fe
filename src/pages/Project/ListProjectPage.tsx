@@ -7,11 +7,11 @@ import { RootState } from '../../../app/storeRedux';
 import CloseIcon from '@mui/icons-material/Close';
 
 function ListProjectPage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const token = useSelector((state: RootState) => state.localStorage.value);
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<ProjectData[]>([]);
-    const [filteredData, setFilteredData] = useState<ProjectData[]>([]);
     const [page, setPage] = useState<number>(0);
     const [rowsPerPage, setRowsPerPage] = useState<number>(10);
     const [totalPages, setTotalPages] = useState<number>(0);
@@ -37,7 +37,7 @@ function ListProjectPage() {
     const fetchProyek = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:6347/api/proyek?page=${page + 1}&per_page=${rowsPerPage}&search=${searchTerm}&status=${filter}`, {
+            const response = await axios.get(`${API_URL}/api/proyek?page=${page + 1}&per_page=${rowsPerPage}&search=${searchTerm}&status=${filter}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -57,7 +57,7 @@ function ListProjectPage() {
 
     const getCustomerName = async (id: number) => {
         try {
-            const response = await axios.get(`http://localhost:6347/api/customer/${id}`, {
+            const response = await axios.get(`${API_URL}/api/customer/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

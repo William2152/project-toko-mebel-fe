@@ -31,6 +31,7 @@ const modalStyle = {
 };
 
 function GenerateLaporanHppPage() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const token = useSelector((state: RootState) => state.localStorage.value);
   const [loading, setLoading] = useState(false);
   // Untuk mengontrol state modal
@@ -93,7 +94,7 @@ function GenerateLaporanHppPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:6347/api/laporan/hpp",
+        `${API_URL}/api/laporan/hpp`,
         {
           jenis_proyek: data.jenis_proyek,
           sj_no: data.sj_no,
@@ -158,7 +159,7 @@ function GenerateLaporanHppPage() {
     const fetchOptions = async () => {
       try {
         const proyekResponse = await axios.get(
-          "http://localhost:6347/api/master/proyek",
+          `${API_URL}/api/master/proyek`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -181,7 +182,7 @@ function GenerateLaporanHppPage() {
   useEffect(() => {
     const fetchProduk = async () => {
       const produkResponse = await axios.get(
-        `http://localhost:6347/api/master/proyek-produk?id_proyek=${idProyek}`,
+        `${API_URL}/api/master/proyek-produk?id_proyek=${idProyek}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

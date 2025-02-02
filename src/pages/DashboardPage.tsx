@@ -19,6 +19,7 @@ import {
 } from '@mui/icons-material';
 
 const DashboardPage: React.FC = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const token = useSelector((state: RootState) => state.localStorage.value);
   const [projectData, setProjectData] = useState<ProjectData[]>([]);
   const [projectDataSelesai, setProjectDataSelesai] = useState<ProjectData[]>([]);
@@ -26,7 +27,7 @@ const DashboardPage: React.FC = () => {
 
   const fetchProjectData = async () => {
     try {
-      const response = await axios.get('http://localhost:6347/api/proyek', {
+      const response = await axios.get(`${API_URL}/api/proyek`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProjectData(response.data.data);
@@ -37,7 +38,7 @@ const DashboardPage: React.FC = () => {
 
   const fetchProjectSelesai = async () => {
     try {
-      const response = await axios.get('http://localhost:6347/api/master/proyek?status=true', {
+      const response = await axios.get(`${API_URL}/api/master/proyek?status=true`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProjectDataSelesai(response.data.data);
@@ -48,7 +49,7 @@ const DashboardPage: React.FC = () => {
 
   const fetchProjectActive = async () => {
     try {
-      const response = await axios.get('http://localhost:6347/api/master/proyek?status=false', {
+      const response = await axios.get(`${API_URL}/api/master/proyek?status=false`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProjectDataActive(response.data.data);

@@ -11,6 +11,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 
 
 function ProfilePage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const token = useSelector((state: RootState) => state.localStorage.value);
     const schema = Joi.object({
         "oldPassword": Joi.string().required().pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])')).messages({
@@ -30,7 +31,7 @@ function ProfilePage() {
 
     const onSubmitPassword = async (data: PasswordFormData) => {
         try {
-            await axios.put('http://localhost:6347/api/users/profile/password', { old_password: data.oldPassword, new_password: data.newPassword }, {
+            await axios.put(`${API_URL}/api/users/profile/password`, { old_password: data.oldPassword, new_password: data.newPassword }, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -47,7 +48,7 @@ function ProfilePage() {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const response = await axios.get('http://localhost:6347/api/users/profile', {
+                const response = await axios.get(`${API_URL}/api/users/profile`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

@@ -8,16 +8,11 @@ import {
 import MainLayout from "./component/MainLayout";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
-import CatatStockPage from "./pages/CatatStockPage";
+import CatatStockPage from "./pages/Stock/CatatStockPage";
 import TambahProjectPage from "./pages/Project/TambahProjectPage";
 import TambahProductProjectPage from "./pages/Project/TambahProductProjectPage";
-import TambahUserPage from "./pages/TambahUserPage";
-import TambahCustomerSupplierPage from "./pages/TambahCustomerSupplierPage";
-import MasterBahanPage from "./pages/MasterBahanPage";
 import ListProjectPage from "./pages/Project/ListProjectPage";
-import LihatStockPage from "./pages/LihatStockPage";
-import TambahNotaPage from "./pages/TambahNotaPage";
-import LihatNotaPage from "./pages/LihatNotaPage";
+import LihatStockPage from "./pages/Stock/LihatStockPage";
 import TambahKaryawanPage from "./pages/User/TambahKaryawanPage";
 import ProjectDetailPage from "./pages/Project/ProjectDetailPage";
 import ProdukDetailPage from "./pages/Project/ProdukDetailPage";
@@ -37,6 +32,11 @@ import GenerateLaporanBahanMasuk from "./pages/Report/GenerateLaporanBahanMasuk"
 import GenerateLaporanBahanKeluar from "./pages/Report/GenerateLaporanBahanKeluar";
 import GenerateLaporanNotaBySupplier from "./pages/Report/GenerateLaporanNotaBySupplier";
 import GenerateLaporanNotaByTanggal from "./pages/Report/GenerateLaporanNotaByTanggal";
+import MasterBahanPage from "./pages/Stock/MasterBahanPage";
+import TambahNotaPage from "./pages/Nota/TambahNotaPage";
+import LihatNotaPage from "./pages/Nota/LihatNotaPage";
+import TambahUserPage from "./pages/User/TambahUserPage";
+import TambahCustomerSupplierPage from "./pages/User/TambahCustomerSupplierPage";
 
 function App() {
   return (

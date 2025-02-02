@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { RootState } from "../../app/storeRedux";
+import { RootState } from "../../../app/storeRedux";
 import CloseIcon from "@mui/icons-material/Close";
 
 // Define the structure of your data
@@ -29,6 +29,7 @@ interface StockData {
 
 function LihatStockPage() {
     // State for table data and pagination
+    const API_URL = import.meta.env.VITE_API_URL;
     const token = useSelector((state: RootState) => state.localStorage.value);
     const [data, setData] = useState<StockData[]>([]);
     const [page, setPage] = useState<number>(0);
@@ -43,7 +44,7 @@ function LihatStockPage() {
         setLoading(true);
         try {
             const response = await axios.get(
-                `http://localhost:6347/api/history-bahan-masuk/stok?page=${page + 1}&per_page=${rowsPerPage}&search=${searchTerm}`
+                `${API_URL}/api/history-bahan-masuk/stok?page=${page + 1}&per_page=${rowsPerPage}&search=${searchTerm}`
                 , {
                     headers: {
                         Authorization: `Bearer ${token}`,

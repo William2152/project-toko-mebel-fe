@@ -24,6 +24,7 @@ import { Controller, useForm } from "react-hook-form";
 import CloseIcon from "@mui/icons-material/Close";
 
 function LihatBahanSisaPage() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
@@ -45,7 +46,7 @@ function LihatBahanSisaPage() {
 
     const onSubmit = async (data: any) => {
         try {
-            await axios.put(`http://localhost:6347/api/bahan-sisa/${historyId}`, {
+            await axios.put(`${API_URL}/api/bahan-sisa/${historyId}`, {
                 id_satuan: data.satuan.id,
                 qty: data.quantity
             }, {
@@ -83,7 +84,7 @@ function LihatBahanSisaPage() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get("http://localhost:6347/api/bahan-sisa", {
+                const response = await axios.get(`${API_URL}/api/bahan-sisa`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -105,7 +106,7 @@ function LihatBahanSisaPage() {
         console.log(satuan_terkecil);
 
         const fetchSatuan = async () => {
-            const satuanResponse = await axios.get(`http://localhost:6347/api/master/satuan?satuan_terkecil=${satuan_terkecil}`, {
+            const satuanResponse = await axios.get(`${API_URL}/api/master/satuan?satuan_terkecil=${satuan_terkecil}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
